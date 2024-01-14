@@ -1,0 +1,45 @@
+{
+  "name": "@biliblitz/blitz",
+  "version": "0.0.1",
+  "description": "A blitzing minimal backend-framework for Preact",
+  "type": "module",
+  "main": "./dist/cjs/mod.cjs",
+  "types": "./dist/types/mod.d.ts",
+  "module": "./dist/esm/mod.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/types/mod.d.ts",
+      "import": "./dist/esm/mod.mjs",
+      "require": "./dist/cjs/mod.cjs"
+    },
+    "./server": {
+      "types": "./dist/types/server.d.ts",
+      "import": "./dist/esm/server.mjs",
+      "require": "./dist/cjs/server.cjs"
+    },
+    "./vite": {
+      "types": "./dist/types/vite.d.ts",
+      "import": "./dist/esm/vite.mjs",
+      "require": "./dist/cjs/vite.cjs"
+    }
+  },
+  "scripts": {
+    "fmt": "prettier --write src",
+    "dev": "node build.js --watch & tsc --build --watch",
+    "build": "rm -rf dist && node build.js && tsc --build"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@preact/signals": "^1.2.1",
+    "preact": "^10.18.2",
+    "preact-render-to-string": "^6.2.2",
+    "vite": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.10",
+    "esbuild": "^0.19.5",
+    "prettier": "^3.0.3",
+    "tiny-glob": "^0.2.9",
+    "typescript": "^5.2.2"
+  }
+}
