@@ -7,6 +7,16 @@ export interface FetchEvent {
   readonly request: Request;
 
   /**
+   * Route params.
+   *
+   * ```js
+   * // app/routes/[user]/index.tsx
+   * evt.params.get("user"); // => string
+   * ```
+   */
+  readonly params: Map<string, string>;
+
+  /**
    * Appending headers to final response
    *
    * ```js
@@ -15,15 +25,14 @@ export interface FetchEvent {
    */
   headers: Headers;
 
-  /**
-   * Route params.
-   *
-   * ```js
-   * // app/routes/[user]/index.tsx
-   * evt.params.get("user"); // => string
-   * ```
-   */
-  params: Map<string, string>;
+  // /**
+  //  * Set the response status code.
+  //  *
+  //  * ```js
+  //  * evt.status = 404;
+  //  * ```
+  //  */
+  // status: number;
 
   /**
    * Returns the return value of middleware.

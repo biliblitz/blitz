@@ -31,7 +31,7 @@ export type LoaderFunction<T extends LoaderReturnValue> = (
  * ## Linking Middleware
  *
  * ```js
- * import middleware from "./middleware";
+ * import middleware from "./middleware.ts";
  * export const useUser = loader$((evt) => {
  *   // get return value of middleware
  *   const value = evt.load(middleware);

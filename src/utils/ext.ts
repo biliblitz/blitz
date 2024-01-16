@@ -79,7 +79,7 @@ export function isVideo(filename: string) {
   return VIDEO_FILE_EXTENSIONS.some((ext) => filename.endsWith(ext));
 }
 
-export function isAssert(filename: string) {
+export function isAsset(filename: string) {
   return (
     isImage(filename) ||
     isAudio(filename) ||

@@ -1,9 +1,9 @@
 import type { Plugin } from "vite";
 import { resolve, manifestId } from "./vmod.ts";
-import { convertToRequest, writeToResponse } from "./utils.ts";
+import { getRequestListener } from "@hono/node-server";
 
 export async function blitzCity(): Promise<Plugin> {
-  const vmods = [manifestId, "./app/entry.dev.tsx"];
+  const vmods = [manifestId];
 
   return {
     name: "blitz-city",
@@ -18,27 +18,32 @@ export async function blitzCity(): Promise<Plugin> {
     async load(id) {
       switch (id) {
         case resolve(manifestId):
+          // TODO: parse app/ folder here
           return `export const x = "manifest";`;
       }
     },
 
-    config() {
-      return {
-        appType: "custom",
-        build: {
-          ssr: true,
-          manifest: true,
-          ssrManifest: true,
-          rollupOptions: {
-            input: [...vmods],
+    config(config, env) {
+      if (env.command === "build" && !config.build?.ssr) {
+        return {
+          build: {
+            rollupOptions: {
+              input: ["./app/entry.client.tsx"],
+            },
           },
-        },
-      };
+        };
+      }
+
+      if (env.command === "serve") {
+        return {
+          appType: "custom",
+        };
+      }
     },
 
     configureServer(vite) {
       return () => {
-        vite.middlewares.use(async (req, res, next) => {
+        vite.middlewares.use(async (req, res) => {
           // invalidate old modules
           for (const vmod of vmods) {
             const node = vite.moduleGraph.getModuleById(resolve(vmod));
@@ -49,11 +54,10 @@ export async function blitzCity(): Promise<Plugin> {
 
           console.log("middleware", req.url);
 
-          const request = convertToRequest(req);
-
           const module = await vite.ssrLoadModule("./app/entry.dev.tsx");
-          const response = module.default(request);
-          await writeToResponse(res, response);
+
+          const listener = getRequestListener((req) => module.default(req));
+          await listener(req, res);
         });
       };
     },
