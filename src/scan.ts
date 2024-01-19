@@ -160,7 +160,7 @@ export async function scanProjectStructure(entrance: string) {
   async function scanRoute(
     dirPath: string,
     currentDirnames: string[],
-    currentRoutes: number[]
+    currentRoutes: number[],
   ) {
     const filenames: string[] = [];
     const dirnames: string[] = [];
@@ -191,22 +191,22 @@ export async function scanProjectStructure(entrance: string) {
     // Test conflit files
     if (indexPaths.length > 1) {
       throw new Error(
-        `Multiple index page in same route found: ${indexPaths[1]}`
+        `Multiple index page in same route found: ${indexPaths[1]}`,
       );
     }
     if (errorPaths.length > 1) {
       throw new Error(
-        `Multiple error page in same route found: ${indexPaths[1]}`
+        `Multiple error page in same route found: ${indexPaths[1]}`,
       );
     }
     if (layoutPaths.length > 1) {
       throw new Error(
-        `Multiple layout page in same route found: ${layoutPaths[1]}`
+        `Multiple layout page in same route found: ${layoutPaths[1]}`,
       );
     }
     if (middlewarePaths.length > 1) {
       throw new Error(
-        `Multiple middleware in same route found: ${middlewarePaths[1]}`
+        `Multiple middleware in same route found: ${middlewarePaths[1]}`,
       );
     }
 
@@ -240,7 +240,7 @@ export async function scanProjectStructure(entrance: string) {
       await scanRoute(
         newDirPath,
         [...currentDirnames, dirname],
-        [...currentRoutes, route]
+        [...currentRoutes, route],
       );
     }
   }
@@ -264,7 +264,7 @@ export function toClientManifestCode(structure: ProjectStructure) {
     /** @see https://vitejs.dev/guide/backend-integration.html */
     "import 'vite/modulepreload-polyfill';",
     ...structure.componentPaths.map(
-      (filePath, i) => `import c${i} from "${filePath}";`
+      (filePath, i) => `import c${i} from "${filePath}";`,
     ),
     `export const components = [${structure.componentPaths
       .map((_, i) => `c${i}`)

@@ -2,7 +2,7 @@ import { FetchEvent } from "./event.ts";
 
 export type ActionReturnValue = {} | null;
 export type ActionFunction<T extends ActionReturnValue> = (
-  evt: FetchEvent
+  evt: FetchEvent,
 ) => T | Promise<T>;
 
 /**

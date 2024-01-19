@@ -2,7 +2,7 @@ import { FetchEvent } from "./event.ts";
 
 export type LoaderReturnValue = {} | null;
 export type LoaderFunction<T extends LoaderReturnValue> = (
-  evt: FetchEvent
+  evt: FetchEvent,
 ) => T | Promise<T>;
 
 /**

@@ -14,7 +14,7 @@ const find = <T, R>(arr: T[], fn: (t: T) => R | null) => {
 
 export function resolveRoute(
   route: Route,
-  subroutes: Array<[string, Resolve]>
+  subroutes: Array<[string, Resolve]>,
 ): Resolve {
   const fakes = new Array<Resolve>();
   const params = new Array<Resolve>();

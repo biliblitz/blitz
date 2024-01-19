@@ -24,16 +24,21 @@ export async function blitzCity(): Promise<Plugin> {
     },
 
     config(config, env) {
+      // build client
       if (env.command === "build" && !config.build?.ssr) {
         return {
           build: {
             rollupOptions: {
               input: ["./app/entry.client.tsx"],
+              output: {
+                entryFileNames: "assets/[name].js",
+              },
             },
           },
         };
       }
 
+      // dev mode
       if (env.command === "serve") {
         return {
           appType: "custom",
