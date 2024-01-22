@@ -8,7 +8,7 @@ type Router = (pathname: string) => ResolveResult | null;
 
 export function createRouter(
   route: Route,
-  subroutes: [string, Router][]
+  subroutes: [string, Router][],
 ): Router {
   const fakes = new Array<Router>();
   const params = new Map<string, Router>();
@@ -86,6 +86,6 @@ export function createRouter(
 export function resolveRouter(directory: Directory): Router {
   return createRouter(
     directory.route,
-    directory.children.map(([name, sub]) => [name, resolveRouter(sub)])
+    directory.children.map(([name, sub]) => [name, resolveRouter(sub)]),
   );
 }

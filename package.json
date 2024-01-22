@@ -39,10 +39,15 @@
     "@types/node": "^20.8.10",
     "esbuild": "^0.19.5",
     "prettier": "^3.0.3",
+    "pretty-quick": "^4.0.0",
+    "simple-git-hooks": "^2.9.0",
     "tiny-glob": "^0.2.9",
     "typescript": "^5.2.2"
   },
   "dependencies": {
     "@hono/node-server": "^1.4.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm pretty-quick --staged"
   }
 }

@@ -49,7 +49,7 @@ export class Option<T> {
 
 export function find<T>(
   array: Array<T> | IterableIterator<T>,
-  fn: (t: T) => boolean
+  fn: (t: T) => boolean,
 ): Option<T> {
   for (const item of array) {
     if (fn(item)) {

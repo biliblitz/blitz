@@ -83,7 +83,7 @@ function getActions(id: number): ActionFunction<any>[] {
 
 export async function createLoaderRunner(
   request: Request,
-  directory: Directory
+  directory: Directory,
 ) {
   const router = resolveRouter(directory);
   const url = new URL(request.url);
@@ -121,7 +121,7 @@ export async function createLoaderRunner(
 export async function createActionRunner(
   request: Request,
   directory: Directory,
-  actionRef: string
+  actionRef: string,
 ) {
   const router = resolveRouter(directory);
   const url = new URL(request.url);
@@ -136,7 +136,7 @@ export async function createActionRunner(
   const index = routes.findIndex(
     (route) =>
       route.actions !== null &&
-      getActions(route.actions).some((action) => action._ref === actionRef)
+      getActions(route.actions).some((action) => action._ref === actionRef),
   );
 
   if (index === -1) {

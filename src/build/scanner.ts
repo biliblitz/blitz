@@ -175,7 +175,7 @@ export function toClientManifestCode(structure: ProjectStructure) {
     /** @see https://vitejs.dev/guide/backend-integration.html */
     "import 'vite/modulepreload-polyfill';",
     ...structure.componentPaths.map(
-      (filePath, i) => `import c${i} from "${filePath}";`
+      (filePath, i) => `import c${i} from "${filePath}";`,
     ),
     `export const components = [${structure.componentPaths
       .map((_, i) => `c${i}`)
