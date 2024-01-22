@@ -1,6 +1,9 @@
 import { FetchEvent } from "./event.ts";
 
-export type Middleware<T = void> = (evt: FetchEvent) => T | Promise<T>;
+export interface Middleware<T = void> {
+  (evt: FetchEvent): T | Promise<T>;
+  _ref?: string;
+}
 
 /**
  * Middleware for nesting routes.

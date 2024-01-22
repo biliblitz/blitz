@@ -3,24 +3,24 @@
   "version": "0.0.1",
   "description": "A blitzing minimal backend-framework for Preact",
   "type": "module",
-  "main": "./dist/cjs/mod.cjs",
-  "types": "./dist/types/mod.d.ts",
-  "module": "./dist/esm/mod.mjs",
+  "main": "./dist/cjs/client/index.cjs",
+  "types": "./dist/types/client/index.d.ts",
+  "module": "./dist/esm/client/index.mjs",
   "exports": {
     ".": {
-      "types": "./dist/types/mod.d.ts",
-      "import": "./dist/esm/mod.mjs",
-      "require": "./dist/cjs/mod.cjs"
+      "types": "./dist/types/client/index.d.ts",
+      "import": "./dist/esm/client/index.mjs",
+      "require": "./dist/cjs/client/index.cjs"
     },
     "./server": {
-      "types": "./dist/types/server.d.ts",
-      "import": "./dist/esm/server.mjs",
-      "require": "./dist/cjs/server.cjs"
+      "types": "./dist/types/server/index.d.ts",
+      "import": "./dist/esm/server/index.mjs",
+      "require": "./dist/cjs/server/index.cjs"
     },
     "./vite": {
-      "types": "./dist/types/vite.d.ts",
-      "import": "./dist/esm/vite.mjs",
-      "require": "./dist/cjs/vite.cjs"
+      "types": "./dist/types/build/index.d.ts",
+      "import": "./dist/esm/build/index.mjs",
+      "require": "./dist/cjs/build/index.cjs"
     }
   },
   "scripts": {

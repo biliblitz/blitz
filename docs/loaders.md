@@ -4,6 +4,32 @@ Loader 用来加载渲染页面时需要获取的数据。
 
 ## 使用方法
 
+创建 `loader.ts`，然后使用命名导出来定义 loader。
+
+```js
+export const useUsername = loader$(async (evt) => {
+  if (checkUsername(evt)) {
+    return { username: "alice" };
+  } else {
+    return null;
+  }
+});
+```
+
+同一个 `loader.ts` 文件中的所有 loader 无论是否被使用，在加载其目录下的所有子路由的时候都会被运行。
+
+在该 `loader.ts` 文件所在目录的同级或子目录下的所有 `layout.tsx` 和 `index.tsx` 中都可以随意引用和使用该 loader。
+
+```jsx
+import { useUsername } from "./loader.ts";
+
+export default index$(() => {
+  /** @type {ReadonlySignal<{ username: string } | null>} */
+  const username = useUsername();
+  return <div>user: {username.value?.username}</div>;
+});
+```
+
 ## 运行流程
 
 服务端

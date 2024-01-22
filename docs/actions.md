@@ -70,6 +70,8 @@ export function LoginManually() {
 }
 ```
 
+注意，action 只能被同级或者子路由中的布局文件所引用，否则将会抛出 action 未找到错误。
+
 ## 运行流程
 
 对于服务端：

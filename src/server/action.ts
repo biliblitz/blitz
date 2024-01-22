@@ -1,10 +1,10 @@
 import { FetchEvent } from "./event.ts";
 
 export type ActionReturnValue = {} | null;
-export type ActionFunction<T extends ActionReturnValue> = (
-  evt: FetchEvent,
-) => T | Promise<T>;
-
+export interface ActionFunction<T extends ActionReturnValue> {
+  (evt: FetchEvent): T | Promise<T>;
+  _ref?: string;
+}
 /**
  * Making some changes to local database
  *
@@ -44,5 +44,6 @@ export type ActionFunction<T extends ActionReturnValue> = (
  * ```
  */
 export function action$<T extends ActionReturnValue>(fn: ActionFunction<T>) {
+  fn._ref = "";
   return fn;
 }

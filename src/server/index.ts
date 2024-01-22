@@ -14,3 +14,7 @@ export function createServer<T = void>(vnode: VNode): Handler<T> {
     return new Response("<!DOCTYPE html>" + html, { headers });
   };
 }
+
+export { loader$ } from "./loader.ts";
+export { action$ } from "./action.ts";
+export { middleware$ } from "./middleware.ts";

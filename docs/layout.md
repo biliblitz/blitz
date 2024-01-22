@@ -54,7 +54,9 @@ export default layout$((props) => {
 
 ```jsx
 // index.tsx
-export default () => {
+import { index$ } from "@biliblitz/blitz";
+
+export default index$(() => {
   return <span>Index</span>;
-};
+});
 ```

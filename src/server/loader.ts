@@ -1,9 +1,10 @@
 import { FetchEvent } from "./event.ts";
 
 export type LoaderReturnValue = {} | null;
-export type LoaderFunction<T extends LoaderReturnValue> = (
-  evt: FetchEvent,
-) => T | Promise<T>;
+export interface LoaderFunction<T extends LoaderReturnValue> {
+  (evt: FetchEvent): T | Promise<T>;
+  _ref?: string;
+}
 
 /**
  * Perform data-query for frontend
@@ -39,5 +40,6 @@ export type LoaderFunction<T extends LoaderReturnValue> = (
  * ```
  */
 export function loader$<T extends LoaderReturnValue>(fn: LoaderFunction<T>) {
+  fn._ref = "";
   return fn;
 }
