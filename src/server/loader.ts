@@ -1,10 +1,17 @@
+import { ReadonlySignal } from "@preact/signals";
+import { useLoader } from "../client/loader.ts";
 import { FetchEvent } from "./event.ts";
 
 export type LoaderReturnValue = {} | null;
-export interface LoaderFunction<T extends LoaderReturnValue> {
-  (evt: FetchEvent): T | Promise<T>;
+export type LoaderFunction<T extends LoaderReturnValue> = (
+  evt: FetchEvent,
+) => T | Promise<T>;
+export interface Loader<T extends LoaderReturnValue> {
+  (): LoaderHandler<T>;
+  _fn?: LoaderFunction<T>;
   _ref?: string;
 }
+export type LoaderHandler<T extends LoaderReturnValue> = ReadonlySignal<T>;
 
 /**
  * Perform data-query for frontend
@@ -39,7 +46,11 @@ export interface LoaderFunction<T extends LoaderReturnValue> {
  * });
  * ```
  */
-export function loader$<T extends LoaderReturnValue>(fn: LoaderFunction<T>) {
-  fn._ref = "";
-  return fn;
+export function loader$<T extends LoaderReturnValue>(
+  fn: LoaderFunction<T>,
+): Loader<T> {
+  const handler = () => useLoader<T>(handler._ref);
+  handler._fn = fn;
+  handler._ref = "";
+  return handler;
 }

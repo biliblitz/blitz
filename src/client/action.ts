@@ -1,0 +1,33 @@
+import { batch, signal } from "@preact/signals";
+import type { ActionHandler, ActionReturnValue } from "../server/action.ts";
+import { useRuntime } from "./runtime.ts";
+
+export function useAction<T extends ActionReturnValue>(
+  ref: string,
+): ActionHandler<T> {
+  // TODO
+
+  const runtime = useRuntime();
+  const data = signal<T | null>(null);
+  const error = signal<Error | null>(null);
+  const submit = async (formData: FormData) => {
+    const response = await fetch(
+      runtime.pathname.value + "_data.json?_action=" + ref,
+    );
+    const { loader, action } = (await response.json()) as {
+      loader: any;
+      action: T;
+    };
+    batch(() => {
+      data.value = action;
+      error.value = null;
+    });
+    return action;
+  };
+
+  return {
+    data,
+    error,
+    submit,
+  };
+}

@@ -1,10 +1,22 @@
+import { ReadonlySignal } from "@preact/signals";
 import { FetchEvent } from "./event.ts";
+import { useAction } from "../client/action.ts";
 
 export type ActionReturnValue = {} | null;
-export interface ActionFunction<T extends ActionReturnValue> {
-  (evt: FetchEvent): T | Promise<T>;
+export type ActionFunction<T extends ActionReturnValue> = (
+  evt: FetchEvent,
+) => T | Promise<T>;
+export interface Action<T extends ActionReturnValue> {
+  (): ActionHandler<T>;
+  _fn?: ActionFunction<T>;
   _ref?: string;
 }
+export type ActionHandler<T extends ActionReturnValue> = {
+  data: ReadonlySignal<T | null>;
+  error: ReadonlySignal<Error | null>;
+  submit(data: FormData): Promise<T>;
+};
+
 /**
  * Making some changes to local database
  *
@@ -44,6 +56,8 @@ export interface ActionFunction<T extends ActionReturnValue> {
  * ```
  */
 export function action$<T extends ActionReturnValue>(fn: ActionFunction<T>) {
-  fn._ref = "";
+  const handler = () => useAction(handler._ref);
+  handler._fn = fn;
+  handler._ref = "";
   return fn;
 }

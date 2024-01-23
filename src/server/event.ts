@@ -1,6 +1,6 @@
 import type { Middleware } from "./middleware.ts";
-import type { LoaderFunction, LoaderReturnValue } from "./loader.ts";
-import { ActionFunction, ActionReturnValue } from "./action.ts";
+import type { Loader, LoaderFunction, LoaderReturnValue } from "./loader.ts";
+import { Action, ActionFunction, ActionReturnValue } from "./action.ts";
 import { Directory } from "../build/scanner.ts";
 import { resolveRouter } from "./router.ts";
 
@@ -74,10 +74,10 @@ export function createFetchEvent(request: Request, params: [string, string][]) {
 function getMiddleware(id: number): Middleware<any> | null {
   throw new Error("Unimplemented");
 }
-function getLoaders(id: number): LoaderFunction<any>[] {
+function getLoaders(id: number): Loader<any>[] {
   throw new Error("Unimplemented");
 }
-function getActions(id: number): ActionFunction<any>[] {
+function getActions(id: number): Action<any>[] {
   throw new Error("Unimplemented");
 }
 
