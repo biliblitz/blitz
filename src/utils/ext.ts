@@ -12,9 +12,7 @@ const JAVASCRIPT_FILE_EXTENSIONS = [
   ".mts",
   ".mtsx",
 ];
-
 const MDX_FILE_EXTENSIONS = [".md", ".mdx"];
-
 const STYLE_FILE_EXTENSIONS = [
   ".css",
   ".scss",
@@ -25,7 +23,6 @@ const STYLE_FILE_EXTENSIONS = [
   ".pcss",
   ".sss",
 ];
-
 const IMAGE_FILE_EXTENSIONS = [
   ".apng",
   ".png",
@@ -40,11 +37,8 @@ const IMAGE_FILE_EXTENSIONS = [
   ".webp",
   ".avif",
 ];
-
 const VIDEO_FILE_EXTENSIONS = [".ogg", ".mp4", ".webm"];
-
 const AUDIO_FILE_EXTENSIONS = [".mp3", ".wav", ".flac", ".aac", ".opus"];
-
 const FONT_FILE_EXTENSIONS = [".woff", ".woff2", ".eot", ".ttf", ".otf"];
 
 export function isJs(filename: string) {

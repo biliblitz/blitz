@@ -1,20 +1,17 @@
 import { extname, join, resolve } from "node:path";
 import { isJs, isJsOrMdx } from "../utils/ext.ts";
-import { readdir, stat } from "node:fs/promises";
+import { readFile, readdir, stat } from "node:fs/promises";
 import { DuplicateError } from "../utils/errors.ts";
+import { init, parse } from "es-module-lexer";
+import { hashRef, toBase64 } from "../utils/crypto.ts";
+
+await init;
 
 function getFilenameWithoutExt(filename: string) {
   const ext = extname(filename);
   return ext ? filename.slice(0, -ext.length) : filename;
 }
 
-/**
- * @param name name of the file
- * @param filename filename to test
- * @returns filename is a javascript file and the exactly starts with `name`
- *
- * @example "${name}.ext"
- */
 function isNameOf(name: string, filename: string) {
   return getFilenameWithoutExt(filename) === name;
 }
@@ -170,18 +167,81 @@ export async function scanProjectStructure(entrance: string) {
 
 export type ProjectStructure = Awaited<ReturnType<typeof scanProjectStructure>>;
 
+export async function parseAction(actionPath: string, index: number) {
+  const source = await readFile(actionPath, "utf8");
+  const [_, exports] = parse(source);
+  if (!exports.length) {
+    throw new Error(`No action export in ${actionPath}`);
+  }
+  return await Promise.all(
+    exports
+      .map((e) => e.n)
+      .map(async (name) => ({
+        name: name,
+        ref: await hashRef(`action-${index}-${name}`),
+      })),
+  );
+}
+
+export async function parseLoader(loaderPath: string, index: number) {
+  const source = await readFile(loaderPath, "utf8");
+  const [_, exports] = parse(source);
+  if (!exports.length) {
+    throw new Error(`No loader export in ${loaderPath}`);
+  }
+  return await Promise.all(
+    exports
+      .map((e) => e.n)
+      .map(async (name) => ({
+        name: name,
+        ref: await hashRef(`loader-${index}-${name}`),
+      })),
+  );
+}
+
+export async function parseMiddleware(middlewarePath: string, index: number) {
+  const source = await readFile(middlewarePath, "utf8");
+  const [_, exports] = parse(source);
+  const middleware = exports.find((e) => e.n === "default");
+  if (!middleware) {
+    throw new Error(`No default export in ${middlewarePath}`);
+  }
+  return { ref: await hashRef(`middleware-${index}`) };
+}
+
 export function toClientManifestCode(structure: ProjectStructure) {
-  const codes = [
+  return [
     /** @see https://vitejs.dev/guide/backend-integration.html */
-    "import 'vite/modulepreload-polyfill';",
+    `import "vite/modulepreload-polyfill";`,
     ...structure.componentPaths.map(
       (filePath, i) => `import c${i} from "${filePath}";`,
     ),
-    `export const components = [${structure.componentPaths
-      .map((_, i) => `c${i}`)
-      .join(", ")}];`,
-    `console.log(components)`,
-  ];
 
-  return codes.join("\n");
+    `export const components = [${structure.componentPaths.map((_, i) => `c${i}`).join(", ")}];`,
+    `export const actions = [];`,
+    `export const loaders = [];`,
+    `export const middlewares = [];`,
+  ].join("\n");
+}
+
+export function toServerManifestCode(structure: ProjectStructure) {
+  return [
+    ...structure.componentPaths.map(
+      (filePath, i) => `import c${i} from "${filePath}";`,
+    ),
+    ...structure.actionPaths.map(
+      (filePath, i) => `import * as a${i} from "${filePath}";`,
+    ),
+    ...structure.loaderPaths.map(
+      (filePath, i) => `import * as l${i} from "${filePath}";`,
+    ),
+    ...structure.middlewarePaths.map(
+      (filePath, i) => `import m${i} from "${filePath}";`,
+    ),
+
+    `export const components = [${structure.componentPaths.map((_, i) => `c${i}`).join(", ")}];`,
+    `export const actions = [${structure.actionPaths.map((_, i) => `a${i}`).join(", ")}];`,
+    `export const loaders = [${structure.loaderPaths.map((_, i) => `l${i}`).join(", ")}];`,
+    `export const middlewares = [${structure.middlewarePaths.map((_, i) => `m${i}`).join(", ")}];`,
+  ].join("\n");
 }

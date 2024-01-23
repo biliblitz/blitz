@@ -3,24 +3,20 @@
   "version": "0.0.1",
   "description": "A blitzing minimal backend-framework for Preact",
   "type": "module",
-  "main": "./dist/cjs/client/index.cjs",
   "types": "./dist/types/client/index.d.ts",
   "module": "./dist/esm/client/index.mjs",
   "exports": {
     ".": {
       "types": "./dist/types/client/index.d.ts",
-      "import": "./dist/esm/client/index.mjs",
-      "require": "./dist/cjs/client/index.cjs"
+      "import": "./dist/esm/client/index.mjs"
     },
     "./server": {
       "types": "./dist/types/server/index.d.ts",
-      "import": "./dist/esm/server/index.mjs",
-      "require": "./dist/cjs/server/index.cjs"
+      "import": "./dist/esm/server/index.mjs"
     },
     "./vite": {
       "types": "./dist/types/build/index.d.ts",
-      "import": "./dist/esm/build/index.mjs",
-      "require": "./dist/cjs/build/index.cjs"
+      "import": "./dist/esm/build/index.mjs"
     }
   },
   "scripts": {
@@ -45,7 +41,8 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@hono/node-server": "^1.4.0"
+    "@hono/node-server": "^1.4.0",
+    "es-module-lexer": "^1.4.1"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm pretty-quick --staged"
