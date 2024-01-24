@@ -4,11 +4,13 @@ import { useContext } from "preact/hooks";
 import { Signal, signal } from "@preact/signals";
 
 export class Runtime {
-  /** Current URL pathname */
-  pathname: Signal<string> = signal("/");
-  /** Current Loader data */
-  loaders: Signal<[string, LoaderReturnValue][]> = signal([]);
-  constructor() {}
+  pathname: Signal<string>;
+  loaders: Signal<[string, LoaderReturnValue][]>;
+
+  constructor(pathname: string, loaders: [string, LoaderReturnValue][]) {
+    this.pathname = signal(pathname);
+    this.loaders = signal(loaders);
+  }
 }
 
 export const RuntimeContext = createContext<Runtime | null>(null);
