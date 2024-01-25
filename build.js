@@ -37,5 +37,5 @@ const esmOptions = {
 if (watch) {
   await esbuild.context(esmOptions).then((ctx) => ctx.watch());
 } else {
-  await esbuild.build({ ...esmOptions, minify: true });
+  await esbuild.build({ ...esmOptions });
 }

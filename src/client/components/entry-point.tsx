@@ -12,9 +12,9 @@ function DevEntryPoint() {
 }
 
 export function EntryPoint() {
-  if (import.meta.env.MODE === "production") {
-    return <ProdEntryPoint />;
-  } else {
+  if (import.meta.env?.DEV) {
     return <DevEntryPoint />;
+  } else {
+    return <ProdEntryPoint />;
   }
 }

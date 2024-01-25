@@ -17,6 +17,10 @@
     "./vite": {
       "types": "./dist/types/build/index.d.ts",
       "import": "./dist/esm/build/index.mjs"
+    },
+    "./node": {
+      "types": "./dist/types/node/index.d.ts",
+      "import": "./dist/esm/node/index.mjs"
     }
   },
   "scripts": {
@@ -42,7 +46,8 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.4.0",
-    "es-module-lexer": "^1.4.1"
+    "es-module-lexer": "^1.4.1",
+    "hono": "^3.12.7"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm pretty-quick --staged"

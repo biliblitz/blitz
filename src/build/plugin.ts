@@ -51,8 +51,21 @@ export async function blitzCity(): Promise<Plugin> {
             rollupOptions: {
               input: ["./app/entry.client.tsx"],
               output: {
-                entryFileNames: "assets/[name].js",
+                entryFileNames: "assets/e-[hash].js",
+                assetFileNames: "assets/a-[hash].[ext]",
+                chunkFileNames: "assets/c-[hash].js",
               },
+            },
+          },
+        };
+      }
+
+      // build server
+      if (env.command === "build" && config.build?.ssr) {
+        return {
+          build: {
+            rollupOptions: {
+              external: [/^@biliblitz\/blitz/],
             },
           },
         };

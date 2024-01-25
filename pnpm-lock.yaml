@@ -14,6 +14,9 @@ dependencies:
   es-module-lexer:
     specifier: ^1.4.1
     version: 1.4.1
+  hono:
+    specifier: ^3.12.7
+    version: 3.12.7
   preact:
     specifier: ^10.19.3
     version: 10.19.3
@@ -599,6 +602,14 @@ packages:
         integrity: sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==,
       }
     dev: true
+
+  /hono@3.12.7:
+    resolution:
+      {
+        integrity: sha512-jfyIoE8D5I1PGj0tXAGqpQ2miAWBBuHFjJsWjh0hbBVludQ8QO4lF6KTbPvjMi4venp8Q6DyMoJ51CwP6L5LNA==,
+      }
+    engines: { node: ">=16.0.0" }
+    dev: false
 
   /human-signals@2.1.0:
     resolution:
