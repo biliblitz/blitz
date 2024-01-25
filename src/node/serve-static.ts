@@ -33,6 +33,7 @@ export const serveStatic = <T>(
     const url = new URL(req.url);
     const filename = decodeURIComponent(url.pathname);
 
+    // TODO: security test here
     let path = join(root, filename);
     if (path.endsWith("/")) path += index;
     path = `./${path}`;
@@ -68,7 +69,7 @@ export const serveStatic = <T>(
     }
 
     headers.append("Accept-Ranges", "bytes");
-    headers.append("Last-Modified", stat.birthtime.toUTCString());
+    headers.append("Last-Modified", stat.ctime.toUTCString());
 
     const range = req.headers.get("range") || "";
 

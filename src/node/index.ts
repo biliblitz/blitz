@@ -4,6 +4,14 @@ export type HandlerMiddle<T> = (
   t?: T,
 ) => null | Response | Promise<null | Response>;
 export type Condition<T> = (req: Request, t?: T) => boolean | Promise<boolean>;
+export type Method =
+  | "GET"
+  | "HEAD"
+  | "POST"
+  | "OPTIONS"
+  | "PUT"
+  | "DELETE"
+  | "PATCH";
 
 export function chain<T>(...handlers: HandlerMiddle<T>[]): HandlerMiddle<T> {
   return async (req, t) => {
@@ -41,12 +49,30 @@ export function matches<T>(regex: RegExp): Condition<T> {
   return (req) => regex.test(new URL(req.url).pathname);
 }
 
+export function method<T>(method: Method): Condition<T> {
+  return (req) => req.method === method;
+}
+
 export function and<T>(...conditions: Condition<T>[]): Condition<T> {
-  return (req) => conditions.every((cond) => cond(req));
+  return async (req, t) => {
+    for (const cond of conditions) {
+      if (!(await cond(req, t))) {
+        return false;
+      }
+    }
+    return true;
+  };
 }
 
 export function or<T>(...conditions: Condition<T>[]): Condition<T> {
-  return (req) => conditions.some((cond) => cond(req));
+  return async (req, t) => {
+    for (const cond of conditions) {
+      if (await cond(req, t)) {
+        return true;
+      }
+    }
+    return false;
+  };
 }
 
 export { serveStatic } from "./serve-static.ts";
