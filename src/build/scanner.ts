@@ -183,6 +183,8 @@ export async function parseAction(actionPath: string, index: number) {
   );
 }
 
+export type ActionMeta = Awaited<ReturnType<typeof parseAction>>;
+
 export async function parseLoader(loaderPath: string, index: number) {
   const source = await readFile(loaderPath, "utf8");
   const [_, exports] = parse(source);
@@ -199,6 +201,8 @@ export async function parseLoader(loaderPath: string, index: number) {
   );
 }
 
+export type LoaderMeta = Awaited<ReturnType<typeof parseLoader>>;
+
 export async function parseMiddleware(middlewarePath: string, index: number) {
   const source = await readFile(middlewarePath, "utf8");
   const [_, exports] = parse(source);
@@ -209,39 +213,17 @@ export async function parseMiddleware(middlewarePath: string, index: number) {
   return { ref: await hashRef(`middleware-${index}`) };
 }
 
-export function toClientManifestCode(structure: ProjectStructure) {
-  return [
-    /** @see https://vitejs.dev/guide/backend-integration.html */
-    `import "vite/modulepreload-polyfill";`,
-    ...structure.componentPaths.map(
-      (filePath, i) => `import c${i} from "${filePath}";`,
-    ),
+export type MiddlewareMeta = Awaited<ReturnType<typeof parseMiddleware>>;
 
-    `export const components = [${structure.componentPaths.map((_, i) => `c${i}`).join(", ")}];`,
-    `export const actions = [];`,
-    `export const loaders = [];`,
-    `export const middlewares = [];`,
-  ].join("\n");
+export async function resolveProject(structure: ProjectStructure) {
+  return {
+    structure,
+    actions: await Promise.all(structure.actionPaths.map(parseAction)),
+    loaders: await Promise.all(structure.loaderPaths.map(parseLoader)),
+    middlewares: await Promise.all(
+      structure.middlewarePaths.map(parseMiddleware),
+    ),
+  };
 }
 
-export function toServerManifestCode(structure: ProjectStructure) {
-  return [
-    ...structure.componentPaths.map(
-      (filePath, i) => `import c${i} from "${filePath}";`,
-    ),
-    ...structure.actionPaths.map(
-      (filePath, i) => `import * as a${i} from "${filePath}";`,
-    ),
-    ...structure.loaderPaths.map(
-      (filePath, i) => `import * as l${i} from "${filePath}";`,
-    ),
-    ...structure.middlewarePaths.map(
-      (filePath, i) => `import m${i} from "${filePath}";`,
-    ),
-
-    `export const components = [${structure.componentPaths.map((_, i) => `c${i}`).join(", ")}];`,
-    `export const actions = [${structure.actionPaths.map((_, i) => `a${i}`).join(", ")}];`,
-    `export const loaders = [${structure.loaderPaths.map((_, i) => `l${i}`).join(", ")}];`,
-    `export const middlewares = [${structure.middlewarePaths.map((_, i) => `m${i}`).join(", ")}];`,
-  ].join("\n");
-}
+export type Project = Awaited<ReturnType<typeof resolveProject>>;

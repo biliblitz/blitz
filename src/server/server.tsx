@@ -2,7 +2,7 @@ import { VNode } from "preact";
 import { Runtime, RuntimeContext } from "../client/runtime.ts";
 import { render } from "preact-render-to-string";
 import { Handler } from "../node/index.ts";
-import { ServerManifest } from "../utils/manifest.ts";
+import { ServerManifest } from "../build/manifest.ts";
 import { LoaderStore } from "./event.ts";
 
 export type ServerOptions = {
