@@ -6,7 +6,7 @@ export type ActionReturnValue = {} | null;
 export type ActionFunction<T extends ActionReturnValue> = (
   evt: FetchEvent,
 ) => T | Promise<T>;
-export interface Action<T extends ActionReturnValue> {
+export interface Action<T extends ActionReturnValue = ActionReturnValue> {
   (): ActionHandler<T>;
   _fn?: ActionFunction<T>;
   _ref?: string;

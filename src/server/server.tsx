@@ -2,15 +2,26 @@ import { VNode } from "preact";
 import { Runtime, RuntimeContext } from "../client/runtime.ts";
 import { render } from "preact-render-to-string";
 import { Handler } from "../node/index.ts";
+import { ServerManifest } from "../utils/manifest.ts";
+import { LoaderStore } from "./event.ts";
 
-export function createServer<T = void>(vnode: VNode): Handler<T> {
+export type ServerOptions = {
+  manifest: ServerManifest;
+};
+
+export function createServer<T = void>(
+  vnode: VNode,
+  options: ServerOptions,
+): Handler<T> {
+  console.log(options.manifest);
+
   return async (req) => {
     console.log(`ssr running for ${req.url}`);
     const url = new URL(req.url);
 
     const headers = new Headers();
     const pathname = url.pathname;
-    const loaders = [] as never[];
+    const loaders = [] as LoaderStore;
     const runtime = new Runtime(pathname, loaders);
 
     try {

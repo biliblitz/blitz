@@ -1,9 +1,15 @@
 import { VNode, render } from "preact";
 import { Runtime, RuntimeContext } from "./runtime.ts";
 import { SerializedRuntime } from "./components/router-head.tsx";
+import { ClientManifest } from "../utils/manifest.ts";
 
-export function hydrate(vnode: VNode) {
+export type Options = {
+  manifest: ClientManifest;
+};
+
+export function hydrate(vnode: VNode, options: Options) {
   const runtime = createClientRuntime();
+  console.log(options.manifest);
 
   return render(
     <RuntimeContext.Provider value={runtime}>{vnode}</RuntimeContext.Provider>,

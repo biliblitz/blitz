@@ -6,7 +6,7 @@ export type LoaderReturnValue = {} | null;
 export type LoaderFunction<T extends LoaderReturnValue> = (
   evt: FetchEvent,
 ) => T | Promise<T>;
-export interface Loader<T extends LoaderReturnValue> {
+export interface Loader<T extends LoaderReturnValue = LoaderReturnValue> {
   (): LoaderHandler<T>;
   _fn?: LoaderFunction<T>;
   _ref?: string;
