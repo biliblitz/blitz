@@ -1,10 +1,12 @@
 import type { Directory, Route } from "../build/scanner.ts";
 
-type ResolveResult = {
+export type Params = [string, string][];
+export type ParamsMap = Map<string, string>;
+export type ResolveResult = {
   routes: Route[];
-  params: [string, string][];
+  params: Params;
 };
-type Router = (pathname: string) => ResolveResult | null;
+export type Router = (pathname: string) => ResolveResult | null;
 
 export function createRouter(
   route: Route,

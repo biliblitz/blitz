@@ -1,8 +1,7 @@
 import type { Middleware } from "./middleware.ts";
 import type { Loader, LoaderFunction, LoaderReturnValue } from "./loader.ts";
 import { Action, ActionFunction, ActionReturnValue } from "./action.ts";
-import { Directory } from "../build/scanner.ts";
-import { resolveRouter } from "./router.ts";
+import { Params, ParamsMap, Router } from "./router.ts";
 
 export type FetchEvent = {
   /**
@@ -18,7 +17,7 @@ export type FetchEvent = {
    * evt.params.get("user"); // => string
    * ```
    */
-  params: Map<string, string>;
+  params: ParamsMap;
 
   /**
    * Appending headers to final response
@@ -37,8 +36,11 @@ export type FetchEvent = {
   load<T>(middleware: Middleware<T>): T;
 };
 
-export function createFetchEvent(request: Request, params: [string, string][]) {
-  const headers = new Headers();
+export function createFetchEvent(
+  request: Request,
+  params: Params,
+  headers: Headers,
+) {
   const store = new Map<string, any>();
 
   const event: FetchEvent = {
@@ -67,7 +69,6 @@ export function createFetchEvent(request: Request, params: [string, string][]) {
     async runAction<T extends ActionReturnValue>(action: ActionFunction<T>) {
       return await action(event);
     },
-    headers,
   };
 }
 
@@ -81,11 +82,13 @@ function getActions(id: number): Action<any>[] {
   throw new Error("Unimplemented");
 }
 
+export type LoaderStore = [string, LoaderReturnValue][];
+
 export async function createLoaderRunner(
+  router: Router,
   request: Request,
-  directory: Directory,
+  headers: Headers,
 ) {
-  const router = resolveRouter(directory);
   const url = new URL(request.url);
 
   const result = router(url.pathname);
@@ -94,8 +97,8 @@ export async function createLoaderRunner(
   }
   const { routes, params } = result;
 
-  const event = createFetchEvent(request, params);
-  const store = [] as [string, LoaderReturnValue][];
+  const event = createFetchEvent(request, params, headers);
+  const store = [] as LoaderStore;
 
   for (const route of routes) {
     if (route.middleware !== null) {
@@ -115,24 +118,22 @@ export async function createLoaderRunner(
     }
   }
 
-  return { store, headers: event.headers };
+  return store;
 }
 
 export async function createActionRunner(
+  router: Router,
   request: Request,
-  directory: Directory,
+  headers: Headers,
   actionRef: string,
 ) {
-  const router = resolveRouter(directory);
   const url = new URL(request.url);
 
   const result = router(url.pathname);
-  if (result === null) {
-    throw new Error("404");
-  }
+  if (result === null) throw new Error("404");
   const { routes, params } = result;
 
-  const event = createFetchEvent(request, params);
+  const event = createFetchEvent(request, params, headers);
   const index = routes.findIndex(
     (route) =>
       route.actions !== null &&
