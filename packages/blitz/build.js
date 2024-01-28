@@ -1,15 +1,12 @@
 import esbuild from "esbuild";
 import glob from "tiny-glob";
 
-const watch = process.argv.includes("--watch");
-
 const entryPoints = [
   ...(await glob("src/**/*.ts")),
   ...(await glob("src/**/*.tsx")),
 ];
 
-/** @type {import("esbuild").BuildOptions} */
-const esmOptions = {
+await esbuild.build({
   entryPoints,
   format: "esm",
   outdir: "dist/esm",
@@ -32,10 +29,4 @@ const esmOptions = {
       },
     },
   ],
-};
-
-if (watch) {
-  await esbuild.context(esmOptions).then((ctx) => ctx.watch());
-} else {
-  await esbuild.build({ ...esmOptions });
-}
+});

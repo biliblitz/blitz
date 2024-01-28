@@ -33,7 +33,6 @@
   },
   "scripts": {
     "fmt": "prettier --write src",
-    "dev": "node build.js --watch & tsc --build --watch",
     "build": "rm -rf dist && tsc --build && node build.js"
   },
   "license": "MIT",
@@ -45,12 +44,8 @@
   "devDependencies": {
     "@types/node": "^20.8.10",
     "esbuild": "^0.19.5",
-    "prettier": "^3.0.3",
-    "pretty-quick": "^4.0.0",
-    "simple-git-hooks": "^2.9.0",
     "tiny-glob": "^0.2.9",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.12"
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "@hono/node-server": "^1.4.0",

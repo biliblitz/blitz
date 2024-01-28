@@ -22,7 +22,10 @@ export function toClientManifestCode({ structure }: Project) {
     `import "vite/modulepreload-polyfill";`,
     `const components = new Array(${structure.componentPaths.length});`,
     `const _components = [${structure.componentPaths
-      .map((filePath) => `() => import("${filePath}")`)
+      .map(
+        (filePath) =>
+          `() => import("${filePath}").then(module => module.default)`,
+      )
       .join(", ")}];`,
     `async function preloadComponents(ids) {
       await Promise.all(ids.map(async (id) => {

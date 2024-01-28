@@ -12,7 +12,6 @@ function DevEntryPoint() {
 }
 
 export function EntryPoint() {
-  console.log(import.meta.env.DEV);
   if (import.meta.env?.DEV) {
     return <DevEntryPoint />;
   } else {
