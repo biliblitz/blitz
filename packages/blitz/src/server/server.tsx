@@ -30,13 +30,11 @@ export function createServer<T = void>(
     const runtime = new Runtime(manifest, url, loaders, components);
 
     try {
-      console.log("start render");
       const html = render(
         <RuntimeContext.Provider value={runtime}>
           {vnode}
         </RuntimeContext.Provider>,
       );
-      console.log("end render");
       headers.set("Content-Type", "text/html");
       return new Response("<!DOCTYPE html>" + html, { headers });
     } catch (e) {

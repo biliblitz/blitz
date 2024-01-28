@@ -1,0 +1,60 @@
+{
+  "name": "@biliblitz/blitz",
+  "version": "0.0.2",
+  "description": "A blitzing minimal backend-framework for Preact",
+  "type": "module",
+  "files": [
+    "dist",
+    "env.d.ts",
+    "README.md"
+  ],
+  "types": "./dist/types/client/index.d.ts",
+  "module": "./dist/esm/client/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/types/client/index.d.ts",
+      "import": "./dist/esm/client/index.mjs"
+    },
+    "./server": {
+      "types": "./dist/types/server/index.d.ts",
+      "import": "./dist/esm/server/index.mjs"
+    },
+    "./vite": {
+      "types": "./dist/types/build/index.d.ts",
+      "import": "./dist/esm/build/index.mjs"
+    },
+    "./node": {
+      "types": "./dist/types/node/index.d.ts",
+      "import": "./dist/esm/node/index.mjs"
+    },
+    "./env": {
+      "types": "./env.d.ts"
+    }
+  },
+  "scripts": {
+    "fmt": "prettier --write src",
+    "dev": "node build.js --watch & tsc --build --watch",
+    "build": "rm -rf dist && tsc --build && node build.js"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@preact/signals": ">=1",
+    "preact": ">=10",
+    "vite": ">=5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.10",
+    "esbuild": "^0.19.5",
+    "prettier": "^3.0.3",
+    "pretty-quick": "^4.0.0",
+    "simple-git-hooks": "^2.9.0",
+    "tiny-glob": "^0.2.9",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.12"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.4.0",
+    "es-module-lexer": "^1.4.1",
+    "hono": "^3.12.7"
+  }
+}

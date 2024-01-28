@@ -1,5 +1,5 @@
 function ProdEntryPoint() {
-  return <script type="module" src="/assets/entry.client.js"></script>;
+  return <script type="module" src="/build/entry.client.js"></script>;
 }
 
 function DevEntryPoint() {
@@ -12,6 +12,7 @@ function DevEntryPoint() {
 }
 
 export function EntryPoint() {
+  console.log(import.meta.env.DEV);
   if (import.meta.env?.DEV) {
     return <DevEntryPoint />;
   } else {

@@ -7,8 +7,8 @@ export type Options = {
   manifest: ClientManifest;
 };
 
-export function hydrate(vnode: VNode, { manifest }: Options) {
-  const runtime = createClientRuntime(manifest);
+export async function hydrate(vnode: VNode, { manifest }: Options) {
+  const runtime = await createClientRuntime(manifest);
 
   return render(
     <RuntimeContext.Provider value={runtime}>{vnode}</RuntimeContext.Provider>,
@@ -17,11 +17,12 @@ export function hydrate(vnode: VNode, { manifest }: Options) {
   );
 }
 
-function createClientRuntime(manifest: ClientManifest) {
+async function createClientRuntime(manifest: ClientManifest) {
   const element = document.querySelector("script[data-blitz-metadata]");
   if (!element || !element.textContent)
     throw new Error("Can't find SSR hydrate data");
   const json = JSON.parse(element.textContent) as SerializedRuntime;
+  await manifest.preloadComponents(json.components);
   return new Runtime(
     manifest,
     new URL(json.url),
