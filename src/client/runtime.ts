@@ -1,14 +1,14 @@
 import { createContext } from "preact";
-import { LoaderReturnValue } from "../server/loader.ts";
 import { useContext } from "preact/hooks";
 import { Signal, signal } from "@preact/signals";
+import { LoaderStore } from "../server/event.ts";
 
 export class Runtime {
-  pathname: Signal<string>;
-  loaders: Signal<[string, LoaderReturnValue][]>;
+  url: Signal<URL>;
+  loaders: Signal<LoaderStore>;
 
-  constructor(pathname: string, loaders: [string, LoaderReturnValue][]) {
-    this.pathname = signal(pathname);
+  constructor(url: URL, loaders: LoaderStore) {
+    this.url = signal(url);
     this.loaders = signal(loaders);
   }
 }

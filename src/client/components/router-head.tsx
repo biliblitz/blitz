@@ -1,6 +1,6 @@
 import { useComputed } from "@preact/signals";
 import { useRuntime } from "../runtime.ts";
-import { LoaderReturnValue } from "../../server/loader.ts";
+import { LoaderStoreArray } from "../../server/event.ts";
 
 export function RouterHead() {
   return (
@@ -12,8 +12,8 @@ export function RouterHead() {
 }
 
 export type SerializedRuntime = {
-  pathname: string;
-  loaders: [string, LoaderReturnValue][];
+  url: string;
+  loaders: LoaderStoreArray;
 };
 
 function MetadataInjector() {
@@ -21,8 +21,8 @@ function MetadataInjector() {
 
   const serialized = useComputed(() => {
     const object: SerializedRuntime = {
-      pathname: runtime.pathname.value,
-      loaders: runtime.loaders.value,
+      url: runtime.url.value.href,
+      loaders: Array.from(runtime.loaders.value),
     };
 
     return JSON.stringify(object).replaceAll("/", "\\/");

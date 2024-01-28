@@ -82,7 +82,8 @@ function getActions(id: number): Action<any>[] {
   throw new Error("Unimplemented");
 }
 
-export type LoaderStore = [string, LoaderReturnValue][];
+export type LoaderStore = Map<string, LoaderReturnValue>;
+export type LoaderStoreArray = [string, LoaderReturnValue][];
 
 export async function createLoaderRunner(
   router: Router,
@@ -98,7 +99,7 @@ export async function createLoaderRunner(
   const { routes, params } = result;
 
   const event = createFetchEvent(request, params, headers);
-  const store = [] as LoaderStore;
+  const store = new Map() as LoaderStore;
 
   for (const route of routes) {
     if (route.middleware !== null) {
@@ -113,7 +114,7 @@ export async function createLoaderRunner(
       if (middleware) await event.runMiddleware(middleware);
       const loaders = getLoaders(route.loaders);
       for (const loader of loaders) {
-        store.push([loader._ref!, await event.runLoader(loader)]);
+        store.set(loader._ref!, await event.runLoader(loader));
       }
     }
   }

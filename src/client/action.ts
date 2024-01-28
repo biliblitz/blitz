@@ -11,9 +11,14 @@ export function useAction<T extends ActionReturnValue>(
   const data = signal<T | null>(null);
   const error = signal<Error | null>(null);
   const submit = async (formData: FormData) => {
-    const response = await fetch(
-      runtime.pathname.value + "_data.json?_action=" + ref,
-    );
+    const url = new URL(runtime.url.value);
+    if (!url.pathname.endsWith("/")) {
+      url.pathname += "/";
+    }
+    url.pathname += "_data.json";
+    url.searchParams.set("_action", ref);
+
+    const response = await fetch(url, { method: "POST", body: formData });
     const { loader, action } = (await response.json()) as {
       loader: any;
       action: T;

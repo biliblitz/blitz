@@ -17,12 +17,11 @@ export function createServer<T = void>(
 
   return async (req) => {
     console.log(`ssr running for ${req.url}`);
-    const url = new URL(req.url);
 
+    const url = new URL(req.url);
     const headers = new Headers();
-    const pathname = url.pathname;
-    const loaders = [] as LoaderStore;
-    const runtime = new Runtime(pathname, loaders);
+    const loaders = new Map() as LoaderStore;
+    const runtime = new Runtime(url, loaders);
 
     try {
       const html = render(

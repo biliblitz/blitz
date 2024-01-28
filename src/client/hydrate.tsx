@@ -23,5 +23,5 @@ function createClientRuntime() {
   if (!element || !element.textContent)
     throw new Error("Can't find SSR hydrate data");
   const json = JSON.parse(element.textContent) as SerializedRuntime;
-  return new Runtime(json.pathname, json.loaders);
+  return new Runtime(new URL(json.url), new Map(json.loaders));
 }

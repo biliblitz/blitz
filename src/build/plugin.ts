@@ -57,7 +57,7 @@ export async function blitzCity(): Promise<Plugin> {
 
         if (project.structure.middlewarePaths.includes(id)) {
           console.warn(`Warning: ${id} should be imported in web`);
-          return `export default {}`;
+          return `export {};`;
         }
       }
     },
@@ -65,6 +65,7 @@ export async function blitzCity(): Promise<Plugin> {
     async config(config, env) {
       if (env.command === "build") {
         await getProject();
+
         // build client
         if (!config.build?.ssr) {
           return {
@@ -72,14 +73,15 @@ export async function blitzCity(): Promise<Plugin> {
               rollupOptions: {
                 input: ["./app/entry.client.tsx"],
                 output: {
-                  entryFileNames: "assets/[name].js",
-                  assetFileNames: "assets/a-[hash].[ext]",
-                  chunkFileNames: "assets/c-[hash].js",
+                  entryFileNames: "build/[name].js",
+                  chunkFileNames: "build/chunk-[hash].js",
+                  assetFileNames: "build/assets/[hash].[ext]",
                 },
               },
             },
           };
         }
+
         // build server
         else {
           return {

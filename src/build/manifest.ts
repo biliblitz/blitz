@@ -63,12 +63,12 @@ export function toServerManifestCode({
 
     // assign ref
     ...actions.flatMap((actions, i) =>
-      actions.map(({ ref }, j) => `a${i}_${j}.ref = "${ref}";`),
+      actions.map(({ ref }, j) => `a${i}_${j}._ref = "${ref}";`),
     ),
     ...loaders.flatMap((loaders, i) =>
-      loaders.map(({ ref }, j) => `l${i}_${j}.ref = "${ref}";`),
+      loaders.map(({ ref }, j) => `l${i}_${j}._ref = "${ref}";`),
     ),
-    ...middlewares.map(({ ref }, i) => `m${i}.ref = "${ref}";`),
+    ...middlewares.map(({ ref }, i) => `m${i}._ref = "${ref}";`),
 
     // export
     `const components = [${structure.componentPaths.map((_, i) => `c${i}`).join(", ")}];`,
