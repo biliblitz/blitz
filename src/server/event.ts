@@ -1,7 +1,7 @@
 import type { Middleware } from "./middleware.ts";
-import type { Loader, LoaderFunction, LoaderReturnValue } from "./loader.ts";
-import { Action, ActionFunction, ActionReturnValue } from "./action.ts";
-import { Params, ParamsMap, Router } from "./router.ts";
+import type { LoaderReturnValue } from "./loader.ts";
+import { ParamsMap, Router } from "./router.ts";
+import { ServerManifest } from "../build/manifest.ts";
 
 export type FetchEvent = {
   /**
@@ -37,10 +37,17 @@ export type FetchEvent = {
 };
 
 export function createFetchEvent(
+  manifest: ServerManifest,
+  router: Router,
   request: Request,
-  params: Params,
   headers: Headers,
 ) {
+  const url = new URL(request.url);
+
+  const result = router(url.pathname);
+  if (result === null) throw new Error("404");
+  const { routes, params } = result;
+
   const store = new Map<string, any>();
 
   const event: FetchEvent = {
@@ -58,108 +65,75 @@ export function createFetchEvent(
     },
   };
 
+  async function runMiddleware<T>(middleware: Middleware<T>) {
+    const data = await middleware(event);
+    store.set(middleware._ref!, data);
+  }
+
   return {
-    async runMiddleware<T>(middleware: Middleware<T>) {
-      const data = await middleware(event);
-      store.set(middleware._ref!, data);
+    async runLoaders() {
+      const store = new Map() as LoaderStore;
+
+      for (const route of routes) {
+        if (route.middleware !== null) {
+          await runMiddleware(manifest.middlewares[route.middleware]);
+        }
+      }
+
+      for (const route of routes) {
+        if (route.loaders !== null) {
+          const loaders = manifest.loaders[route.loaders];
+          for (const loader of loaders) {
+            store.set(loader._ref!, await loader._fn!(event));
+          }
+        }
+      }
+
+      return store;
     },
-    async runLoader<T extends LoaderReturnValue>(loader: LoaderFunction<T>) {
-      return await loader(event);
+
+    async runAction(ref: string) {
+      const found = routes.some(
+        (route) =>
+          route.actions !== null &&
+          manifest.actions[route.actions].some((action) => action._ref === ref),
+      );
+
+      if (!found) {
+        throw new Error("Action not found");
+      }
+
+      for (const route of routes) {
+        if (route.middleware !== null) {
+          await runMiddleware(manifest.middlewares[route.middleware]);
+        }
+        if (route.actions !== null) {
+          const actions = manifest.actions[route.actions];
+          const action = actions.find((action) => action._ref === ref);
+          if (action) {
+            return await action._fn!(event);
+          }
+        }
+      }
+
+      throw new Error("Unreachable");
     },
-    async runAction<T extends ActionReturnValue>(action: ActionFunction<T>) {
-      return await action(event);
+
+    get components() {
+      const components = [] as number[];
+      for (const route of routes) {
+        if (route.layout !== null) {
+          components.push(route.layout);
+        }
+      }
+      const last = routes.at(-1);
+      if (last && last.index !== null) {
+        components.push(last.index);
+      }
+      return components;
     },
   };
 }
 
-function getMiddleware(id: number): Middleware<any> | null {
-  throw new Error("Unimplemented");
-}
-function getLoaders(id: number): Loader<any>[] {
-  throw new Error("Unimplemented");
-}
-function getActions(id: number): Action<any>[] {
-  throw new Error("Unimplemented");
-}
-
 export type LoaderStore = Map<string, LoaderReturnValue>;
 export type LoaderStoreArray = [string, LoaderReturnValue][];
-
-export async function createLoaderRunner(
-  router: Router,
-  request: Request,
-  headers: Headers,
-) {
-  const url = new URL(request.url);
-
-  const result = router(url.pathname);
-  if (result === null) {
-    throw new Error("404");
-  }
-  const { routes, params } = result;
-
-  const event = createFetchEvent(request, params, headers);
-  const store = new Map() as LoaderStore;
-
-  for (const route of routes) {
-    if (route.middleware !== null) {
-      const middleware = getMiddleware(route.middleware);
-      if (middleware) await event.runMiddleware(middleware);
-    }
-  }
-
-  for (const route of routes) {
-    if (route.loaders !== null) {
-      const middleware = getMiddleware(route.loaders);
-      if (middleware) await event.runMiddleware(middleware);
-      const loaders = getLoaders(route.loaders);
-      for (const loader of loaders) {
-        store.set(loader._ref!, await event.runLoader(loader));
-      }
-    }
-  }
-
-  return store;
-}
-
-export async function createActionRunner(
-  router: Router,
-  request: Request,
-  headers: Headers,
-  actionRef: string,
-) {
-  const url = new URL(request.url);
-
-  const result = router(url.pathname);
-  if (result === null) throw new Error("404");
-  const { routes, params } = result;
-
-  const event = createFetchEvent(request, params, headers);
-  const index = routes.findIndex(
-    (route) =>
-      route.actions !== null &&
-      getActions(route.actions).some((action) => action._ref === actionRef),
-  );
-
-  if (index === -1) {
-    throw new Error("Action not found");
-  }
-
-  for (const route of routes.slice(0, index)) {
-    if (route.middleware !== null) {
-      const middleware = getMiddleware(route.middleware);
-      if (middleware) await event.runMiddleware(middleware);
-    }
-    if (route.actions !== null) {
-      const actions = getActions(route.actions);
-      const action = actions.find((action) => action._ref === actionRef);
-      if (action) {
-        const middleware = getMiddleware(route.actions);
-        if (middleware) await event.runMiddleware(middleware);
-        return await event.runAction(action);
-      }
-    }
-  }
-
-  throw new Error("Unreachable");
-}

@@ -87,7 +87,9 @@ export async function blitzCity(): Promise<Plugin> {
           return {
             build: {
               rollupOptions: {
-                external: [/^@biliblitz\/blitz/],
+                // FIXME: versions of "preact" and "preact-render-to-string" always mismatch
+                // FIXME: so we cannot mark out library as external
+                // external: [/^@biliblitz\/blitz/],
               },
             },
           };

@@ -14,6 +14,7 @@ export function RouterHead() {
 export type SerializedRuntime = {
   url: string;
   loaders: LoaderStoreArray;
+  components: number[];
 };
 
 function MetadataInjector() {
@@ -23,6 +24,7 @@ function MetadataInjector() {
     const object: SerializedRuntime = {
       url: runtime.url.value.href,
       loaders: Array.from(runtime.loaders.value),
+      components: runtime.components.value,
     };
 
     return JSON.stringify(object).replaceAll("/", "\\/");

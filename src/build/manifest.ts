@@ -1,11 +1,11 @@
-import { AnyComponent } from "preact";
+import { FunctionComponent } from "preact";
 import { ActionMeta, Directory, LoaderMeta, Project } from "./scanner.ts";
 import { Action } from "../server/action.ts";
 import { Loader } from "../server/loader.ts";
 import { Middleware } from "../server/middleware.ts";
 
 export interface ClientManifest {
-  components: AnyComponent[];
+  components: FunctionComponent[];
   preloadComponents(ids: number[]): Promise<void>;
 }
 
@@ -72,10 +72,12 @@ export function toServerManifestCode({
 
     // export
     `const components = [${structure.componentPaths.map((_, i) => `c${i}`).join(", ")}];`,
+    `const preloadComponents = () => Promise.resolve();`,
     `const actions = [${actions.map((a, i) => `[${a.map((_, j) => `a${i}_${j}`).join(", ")}]`).join(", ")}];`,
     `const loaders = [${loaders.map((l, i) => `[${l.map((_, j) => `l${i}_${j}`).join(", ")}]`).join(", ")}];`,
     `const middlewares = [${middlewares.map((_, i) => `m${i}`).join(", ")}];`,
-    `export const manifest = { components, actions, loaders, middlewares };`,
+    `const directory = ${JSON.stringify(structure.directory)};`,
+    `export const manifest = { components, preloadComponents, actions, loaders, middlewares, directory };`,
   ].join("\n");
 }
 

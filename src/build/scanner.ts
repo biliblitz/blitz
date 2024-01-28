@@ -112,24 +112,18 @@ export async function scanProjectStructure(entrance: string) {
     }
 
     // Test conflit files
-    if (indexPaths.length > 1) {
+    if (indexPaths.length > 1)
       throw new DuplicateError("index page", indexPaths[1]);
-    }
-    if (errorPaths.length > 1) {
+    if (errorPaths.length > 1)
       throw new DuplicateError("error page", indexPaths[1]);
-    }
-    if (layoutPaths.length > 1) {
+    if (layoutPaths.length > 1)
       throw new DuplicateError("layout page", layoutPaths[1]);
-    }
-    if (loaderPaths.length > 1) {
+    if (loaderPaths.length > 1)
       throw new DuplicateError("loaders", loaderPaths[1]);
-    }
-    if (actionPaths.length > 1) {
+    if (actionPaths.length > 1)
       throw new DuplicateError("actions", actionPaths[1]);
-    }
-    if (middlewarePaths.length > 1) {
+    if (middlewarePaths.length > 1)
       throw new DuplicateError("middleware", middlewarePaths[1]);
-    }
 
     // register everything
     const index = registerComponent(indexPaths.at(0));

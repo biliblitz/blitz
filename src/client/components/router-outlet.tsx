@@ -1,16 +1,20 @@
-import { useSignal } from "@preact/signals";
 import { EntryPoint } from "./entry-point.tsx";
+import { useRuntime } from "../runtime.ts";
+import { VNode } from "preact";
 
 export function RouterOutlet() {
-  const count = useSignal(0);
+  const runtime = useRuntime();
+
+  const layouts = runtime.components.value
+    .map((id) => runtime.manifest.components[id])
+    .reduceRight<VNode | null>(
+      (children, Component) => <Component>{children}</Component>,
+      null,
+    );
 
   return (
     <>
-      <div>
-        <span>{count}</span>
-        <button onClick={() => count.value++}>+1</button>
-      </div>
-
+      {layouts}
       <EntryPoint />
     </>
   );
