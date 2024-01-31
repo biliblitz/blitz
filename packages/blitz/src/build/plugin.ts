@@ -8,17 +8,30 @@ import {
   toClientManifestCode,
   toServerManifestCode,
 } from "./manifest.ts";
+import { relative } from "node:path";
+import { loadClientGraph, loadDevGraph } from "./graph.ts";
 
 export async function blitzCity(): Promise<Plugin> {
   const vmods = [manifestClient, manifestServer];
+  let isDev = false;
 
   let project: Project | null = null;
   async function getProject() {
     if (!project) {
-      const structure = await scanProjectStructure("./app/routes");
-      project = await resolveProject(structure);
+      project = await resolveProject(
+        await scanProjectStructure("./app/routes"),
+      );
     }
     return project;
+  }
+  async function getEntries() {
+    const project = await getProject();
+    const cwd = process.cwd();
+    const entry = "app/entry.client.tsx";
+    const components = project.structure.componentPaths.map((path) =>
+      relative(cwd, path),
+    );
+    return { entry, components };
   }
 
   return {
@@ -37,23 +50,27 @@ export async function blitzCity(): Promise<Plugin> {
       switch (id) {
         case resolve(manifestClient):
           return toClientManifestCode(await getProject());
+
         case resolve(manifestServer):
-          return toServerManifestCode(await getProject());
+          const project = await getProject();
+          const { entry, components } = await getEntries();
+          const graph = isDev
+            ? await loadDevGraph(entry, components)
+            : await loadClientGraph(entry, components);
+          return toServerManifestCode(project, graph);
       }
 
-      // if in browser
+      // replace action/loader in browser
       if (!options?.ssr) {
         const project = await getProject();
 
         const actionIndex = project.structure.actionPaths.indexOf(id);
-        if (actionIndex > -1) {
+        if (actionIndex > -1)
           return toClientActionCode(project.actions[actionIndex]);
-        }
 
         const loaderIndex = project.structure.loaderPaths.indexOf(id);
-        if (loaderIndex > -1) {
+        if (loaderIndex > -1)
           return toClientLoaderCode(project.loaders[loaderIndex]);
-        }
 
         if (project.structure.middlewarePaths.includes(id)) {
           console.warn(`Warning: ${id} should be imported in web`);
@@ -64,20 +81,22 @@ export async function blitzCity(): Promise<Plugin> {
 
     async config(config, env) {
       if (env.command === "build") {
-        await getProject();
-
         // build client
         if (!config.build?.ssr) {
+          const { entry, components } = await getEntries();
+
           return {
             build: {
               rollupOptions: {
-                input: ["./app/entry.client.tsx"],
+                input: [entry, ...components],
                 output: {
-                  entryFileNames: "build/[name].js",
-                  chunkFileNames: "build/chunk-[hash].js",
+                  entryFileNames: "build/p-[hash].js",
+                  chunkFileNames: "build/p-[hash].js",
                   assetFileNames: "build/assets/[hash].[ext]",
                 },
+                preserveEntrySignatures: "allow-extension",
               },
+              minify: false,
             },
           };
         }
@@ -87,8 +106,6 @@ export async function blitzCity(): Promise<Plugin> {
           return {
             build: {
               rollupOptions: {
-                // FIXME: versions of "preact" and "preact-render-to-string" always mismatch
-                // FIXME: so we cannot mark out library as external
                 external: [/^@biliblitz\/blitz/],
               },
             },
@@ -98,6 +115,7 @@ export async function blitzCity(): Promise<Plugin> {
 
       // dev mode
       if (env.command === "serve") {
+        isDev = true;
         return {
           appType: "custom",
         };

@@ -1,6 +1,6 @@
 import { layout$ } from "@biliblitz/blitz";
 
-import "./test.css";
+import "./bbb.css";
 
 export default layout$((props) => {
   return <div>layout [ {props.children} ]</div>;

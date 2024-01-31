@@ -27,7 +27,13 @@ export function createServer<T = void>(
     const components = event.components;
     console.log(loaders, components);
 
-    const runtime = new Runtime(manifest, url, loaders, components);
+    const runtime = new Runtime(
+      manifest,
+      url,
+      loaders,
+      components,
+      manifest.graph,
+    );
 
     try {
       const html = render(

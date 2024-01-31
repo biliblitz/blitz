@@ -1,5 +1,14 @@
+import { useRuntime } from "../runtime.ts";
+
 function ProdEntryPoint() {
-  return <script type="module" src="/build/entry.client.js"></script>;
+  const runtime = useRuntime();
+
+  return (
+    <script
+      type="module"
+      src={`/${runtime.graph.assets[runtime.graph.entry[0]]}`}
+    ></script>
+  );
 }
 
 function DevEntryPoint() {

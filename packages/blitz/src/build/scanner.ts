@@ -3,7 +3,7 @@ import { isJs, isJsOrMdx } from "../utils/ext.ts";
 import { readFile, readdir, stat } from "node:fs/promises";
 import { DuplicateError } from "../utils/errors.ts";
 import { init, parse } from "es-module-lexer";
-import { hashRef, toBase64 } from "../utils/crypto.ts";
+import { hashRef } from "../utils/crypto.ts";
 
 await init;
 
