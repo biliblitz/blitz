@@ -8,6 +8,14 @@ export function useLocation() {
   return new URL(runtime.url.value);
 }
 
+function longestCommonPrefix<T>(a: T[], b: T[]) {
+  const c = [] as T[];
+  for (let i = 0, len = Math.min(a.length, b.length); i < len; ++i)
+    if (a[i] === b[i]) c.push(a[i]);
+    else break;
+  return c;
+}
+
 export function useRender() {
   const runtime = useRuntime();
 
@@ -15,9 +23,18 @@ export function useRender() {
     runtime.preload(components);
     await runtime.load(components);
 
-    batch(() => {
-      runtime.components.value = components;
-      runtime.loaders.value = loaders;
+    // remove old components
+    runtime.components.value = longestCommonPrefix(
+      runtime.components.value,
+      components,
+    );
+
+    // trigger actual update
+    setTimeout(() => {
+      batch(() => {
+        runtime.loaders.value = loaders;
+        runtime.components.value = components;
+      });
     });
   };
 }
@@ -68,7 +85,7 @@ export function useNavigate() {
       replaceState({ position: [scrollX, scrollY] });
       pushState(
         {
-          stores: data.store,
+          loaders: data.store,
           position: [0, 0],
           components: data.components,
         },

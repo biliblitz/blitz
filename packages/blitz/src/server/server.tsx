@@ -36,6 +36,7 @@ export function createServer<T = void>(
         JSON.stringify({
           ok: "data",
           store: loaders,
+          components: event.components,
         }),
         { headers },
       );

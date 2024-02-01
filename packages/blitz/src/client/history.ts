@@ -4,7 +4,7 @@ import { LoaderStore } from "../server/event.ts";
  * 古希腊掌管历史记录的神
  */
 export type HistoryState = {
-  stores: LoaderStore;
+  loaders: LoaderStore;
   position: [number, number];
   components: number[];
 };

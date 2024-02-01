@@ -1,4 +1,4 @@
-import { index$ } from "@biliblitz/blitz";
+import { Link, index$ } from "@biliblitz/blitz";
 import { useUsername } from "./loader.ts";
 import { useComputed, useSignal } from "@preact/signals";
 
@@ -8,8 +8,14 @@ export default index$(() => {
   const count = useSignal(0);
 
   return (
-    <h2 onClick={() => count.value++}>
-      Index: {username} - {count}
-    </h2>
+    <div>
+      <h2 onClick={() => count.value++}>
+        Index: {username} - {count}
+      </h2>
+      <p>
+        <Link href="/foo">/foo</Link>
+        <Link href="/bar">/bar</Link>
+      </p>
+    </div>
   );
 });

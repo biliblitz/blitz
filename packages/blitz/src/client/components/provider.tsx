@@ -15,14 +15,14 @@ export function BlitzCityProvider(props: ProviderProps) {
   useEffect(() => {
     // initialize
     replaceState({
-      stores: Array.from(runtime.loaders.value),
+      loaders: Array.from(runtime.loaders.value),
       position: [0, 0],
       components: runtime.components.value,
     });
     // add popstate callback
     addEventListener("popstate", async (e) => {
       const state = e.state as HistoryState;
-      await render(state.components, state.stores);
+      await render(state.components, state.loaders);
       scrollTo(state.position[0], state.position[1]);
     });
   }, []);
