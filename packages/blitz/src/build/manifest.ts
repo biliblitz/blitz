@@ -1,4 +1,4 @@
-import { FunctionComponent } from "preact";
+import { ComponentType } from "preact";
 import { ActionMeta, Directory, LoaderMeta, Project } from "./scanner.ts";
 import { Action } from "../server/action.ts";
 import { Loader } from "../server/loader.ts";
@@ -6,7 +6,7 @@ import { Middleware } from "../server/middleware.ts";
 import { Graph } from "./graph.ts";
 
 export interface ClientManifest {
-  components: FunctionComponent[];
+  components: ComponentType[];
 }
 
 export interface ServerManifest extends ClientManifest {

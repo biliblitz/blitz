@@ -1,7 +1,12 @@
-import { layout$ } from "@biliblitz/blitz";
+import { Outlet } from "@biliblitz/blitz";
 
 import "./bbb.css";
 
-export default layout$((props) => {
-  return <div>layout [ {props.children} ]</div>;
-});
+export default function () {
+  return (
+    <div>
+      <h1>/layout</h1>
+      <Outlet />
+    </div>
+  );
+}

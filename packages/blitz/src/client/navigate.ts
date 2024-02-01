@@ -2,18 +2,11 @@ import { batch } from "@preact/signals";
 import { LoaderStore } from "../server/event.ts";
 import { pushState, replaceState, replaceURL } from "./history.ts";
 import { useRuntime } from "./runtime.ts";
+import { lcp } from "../utils/algorithms.ts";
 
 export function useLocation() {
   const runtime = useRuntime();
   return new URL(runtime.url.value);
-}
-
-function longestCommonPrefix<T>(a: T[], b: T[]) {
-  const c = [] as T[];
-  for (let i = 0, len = Math.min(a.length, b.length); i < len; ++i)
-    if (a[i] === b[i]) c.push(a[i]);
-    else break;
-  return c;
 }
 
 export function useRender() {
@@ -23,11 +16,11 @@ export function useRender() {
     runtime.preload(components);
     await runtime.load(components);
 
+    // FIXME: here we update the signal twice, which may cause some unexpected behavoir during updating.
+    // However, this looks fine for me all the time.
+
     // remove old components
-    runtime.components.value = longestCommonPrefix(
-      runtime.components.value,
-      components,
-    );
+    runtime.components.value = lcp(runtime.components.value, components);
 
     // trigger actual update
     setTimeout(() => {

@@ -1,8 +1,8 @@
-import { Link, index$ } from "@biliblitz/blitz";
+import { Link } from "@biliblitz/blitz";
 import { useUsername } from "./loader.ts";
 import { useComputed, useSignal } from "@preact/signals";
 
-export default index$(() => {
+export default () => {
   const user = useUsername();
   const username = useComputed(() => user.value.username);
   const count = useSignal(0);
@@ -18,4 +18,4 @@ export default index$(() => {
       </p>
     </div>
   );
-});
+};

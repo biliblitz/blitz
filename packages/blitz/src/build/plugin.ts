@@ -96,7 +96,7 @@ export async function blitzCity(): Promise<Plugin> {
                 },
                 preserveEntrySignatures: "allow-extension",
               },
-              minify: false,
+              // minify: false,
             },
           };
         }

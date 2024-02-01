@@ -4,8 +4,7 @@ import { ReadonlySignal, Signal, computed, signal } from "@preact/signals";
 import { LoaderStore, LoaderStoreMap } from "../server/event.ts";
 import { ClientManifest } from "../build/manifest.ts";
 import { Graph } from "../build/graph.ts";
-
-const unique = <T>(t: T[]) => Array.from(new Set(t));
+import { unique } from "../utils/algorithms.ts";
 
 export class Runtime {
   url: Signal<URL>;

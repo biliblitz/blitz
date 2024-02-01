@@ -11,5 +11,5 @@ export function toBase64(array: Uint8Array) {
 }
 
 export async function hashRef(message: string) {
-  return toBase64(await sha256(message)).slice(0, 12);
+  return toBase64(await sha256(message)).slice(0, 7);
 }

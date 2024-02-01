@@ -1,5 +1,6 @@
 import { access, constants, readFile } from "node:fs/promises";
 import { ManifestChunk } from "vite";
+import { unique } from "../utils/algorithms.ts";
 
 export type Graph = {
   assets: string[];
@@ -22,8 +23,6 @@ export async function loadClientGraph(
     await readFile(viteManifestPath, "utf8"),
   ) as Record<string, ManifestChunk>;
 
-  const unique = <T>(t: T[]) => Array.from(new Set(t));
-
   const values = Object.values(viteManifest);
   const resources = unique([
     ...values.flatMap((m) => m.css || []),
@@ -32,7 +31,7 @@ export async function loadClientGraph(
 
   function dfsDeps(name: string) {
     const rec = viteManifest[name];
-    const deps: number[] = [resources.indexOf(rec.file)];
+    const deps = [resources.indexOf(rec.file)];
 
     if (rec.css) {
       deps.push(...rec.css.map((x) => resources.indexOf(x)));
@@ -44,7 +43,7 @@ export async function loadClientGraph(
       }
     }
 
-    return deps;
+    return unique(deps);
   }
 
   return {
