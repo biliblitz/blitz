@@ -28,7 +28,7 @@ export class Runtime {
     this.manifest = manifest;
     this.components = signal(components);
     this.graph = graph;
-    this.preloads = signal([]);
+    this.preloads = signal([...graph.entry]);
     this.loadersMap = computed(() => new Map(this.loaders.value));
 
     this.preload(components);
