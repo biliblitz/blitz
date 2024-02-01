@@ -7,7 +7,7 @@ function ProdEntryPoint() {
     <script
       type="module"
       src={`/${runtime.graph.assets[runtime.graph.entry[0]]}`}
-    ></script>
+    />
   );
 }
 

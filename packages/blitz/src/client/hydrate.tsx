@@ -34,7 +34,7 @@ async function createClientRuntime(manifest: ClientManifest) {
   const runtime = new Runtime(
     manifest,
     new URL(json.url),
-    new Map(json.loaders),
+    json.loaders,
     json.components,
     json.graph,
   );

@@ -1,6 +1,6 @@
 import { useComputed } from "@preact/signals";
 import { useRuntime } from "../runtime.ts";
-import { LoaderStoreArray } from "../../server/event.ts";
+import { LoaderStore } from "../../server/event.ts";
 import { Graph } from "../../build/graph.ts";
 import { getLinkPreloadAs, isAsset, isCss, isJs } from "../../utils/ext.ts";
 
@@ -16,7 +16,7 @@ export function RouterHead() {
 
 export type SerializedRuntime = {
   url: string;
-  loaders: LoaderStoreArray;
+  loaders: LoaderStore;
   components: number[];
   graph: Graph;
 };
@@ -27,7 +27,7 @@ function MetadataInjector() {
   const serialized = useComputed(() => {
     const object: SerializedRuntime = {
       url: runtime.url.value.href,
-      loaders: Array.from(runtime.loaders.value),
+      loaders: runtime.loaders.value,
       components: runtime.components.value,
       graph: runtime.graph,
     };

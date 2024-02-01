@@ -7,10 +7,10 @@ export function useLoader<T extends LoaderReturnValue>(
 ): LoaderHandler<T> {
   const runtime = useRuntime();
   return useComputed(() => {
-    const loaders = runtime.loaders.value;
+    const loaders = runtime.loadersMap.value;
     if (!loaders.has(ref)) {
       throw new Error(`Loader not found: ${ref}`);
     }
-    return runtime.loaders.value.get(ref) as T;
+    return loaders.get(ref) as T;
   });
 }

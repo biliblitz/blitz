@@ -41,10 +41,11 @@ export function createFetchEvent(
   router: Router,
   request: Request,
   headers: Headers,
+  pathname?: string,
 ) {
   const url = new URL(request.url);
 
-  const result = router(url.pathname);
+  const result = router(pathname || url.pathname);
   if (result === null) throw new Error("404");
   const { routes, params } = result;
 
@@ -72,7 +73,7 @@ export function createFetchEvent(
 
   return {
     async runLoaders() {
-      const store = new Map() as LoaderStore;
+      const store = [] as LoaderStore;
 
       for (const route of routes) {
         if (route.middleware !== null) {
@@ -84,7 +85,7 @@ export function createFetchEvent(
         if (route.loaders !== null) {
           const loaders = manifest.loaders[route.loaders];
           for (const loader of loaders) {
-            store.set(loader._ref!, await loader._fn!(event));
+            store.push([loader._ref!, await loader._fn!(event)]);
           }
         }
       }
@@ -135,5 +136,5 @@ export function createFetchEvent(
   };
 }
 
-export type LoaderStore = Map<string, LoaderReturnValue>;
-export type LoaderStoreArray = [string, LoaderReturnValue][];
+export type LoaderStore = [string, LoaderReturnValue][];
+export type LoaderStoreMap = Map<string, LoaderReturnValue>;

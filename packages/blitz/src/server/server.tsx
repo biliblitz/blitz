@@ -22,6 +22,25 @@ export function createServer<T = void>(
     const url = new URL(req.url);
     const headers = new Headers();
 
+    if (url.pathname.endsWith("/_data.json")) {
+      const event = createFetchEvent(
+        manifest,
+        router,
+        req,
+        headers,
+        url.pathname.slice(0, -10),
+      );
+      const loaders = await event.runLoaders();
+      headers.set("Content-Type", "application/json");
+      return new Response(
+        JSON.stringify({
+          ok: "data",
+          store: loaders,
+        }),
+        { headers },
+      );
+    }
+
     const event = createFetchEvent(manifest, router, req, headers);
     const loaders = await event.runLoaders();
     const components = event.components;
