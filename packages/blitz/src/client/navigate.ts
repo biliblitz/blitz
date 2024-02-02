@@ -17,11 +17,15 @@ export function useRender() {
     // remove old components
     runtime.components.value = lcp(runtime.components.value, components);
 
-    // trigger actual update
-    setTimeout(() => {
-      batch(() => {
-        runtime.loaders.value = loaders;
-        runtime.components.value = components;
+    await new Promise<void>((resolve) => {
+      // trigger actual update
+      setTimeout(() => {
+        batch(() => {
+          runtime.loaders.value = loaders;
+          runtime.components.value = components;
+        });
+        // then wait for dom update finish
+        setTimeout(() => resolve());
       });
     });
   };
@@ -78,6 +82,11 @@ export function useNavigate() {
         target,
       );
       await render(data.components, data.store);
+      if (target.hash) {
+        document
+          .getElementById(target.hash.slice(1))
+          ?.scrollIntoView({ behavior: "smooth" });
+      }
     } else if (data.ok === "redirect") {
       await navigate(data.redirect);
     }

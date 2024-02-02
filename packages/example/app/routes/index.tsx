@@ -15,6 +15,7 @@ export default () => {
       <p>
         <Link href="/foo">/foo</Link>
         <Link href="/bar">/bar</Link>
+        <Link href="/foo/#middle">/foo/#middle</Link>
       </p>
     </div>
   );
