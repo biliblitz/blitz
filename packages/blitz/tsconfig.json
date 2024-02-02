@@ -13,6 +13,8 @@
     "allowImportingTsExtensions": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
 }

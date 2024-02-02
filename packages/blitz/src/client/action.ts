@@ -19,10 +19,7 @@ export function useAction<T extends ActionReturnValue>(
     url.searchParams.set("_action", ref);
 
     const response = await fetch(url, { method: "POST", body: formData });
-    const { loader, action } = (await response.json()) as {
-      loader: any;
-      action: T;
-    };
+    const { action } = await response.json();
     batch(() => {
       data.value = action;
       error.value = null;

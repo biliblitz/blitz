@@ -1,20 +1,15 @@
 import { batch } from "@preact/signals";
 import { LoaderStore } from "../server/event.ts";
 import { pushState, replaceState, replaceURL } from "./history.ts";
-import { useRuntime } from "./runtime.ts";
+import { runtimePreload, runtimeLoad, useRuntime } from "./runtime.ts";
 import { lcp } from "../utils/algorithms.ts";
-
-export function useLocation() {
-  const runtime = useRuntime();
-  return new URL(runtime.url.value);
-}
 
 export function useRender() {
   const runtime = useRuntime();
 
   return async (components: number[], loaders: LoaderStore) => {
-    runtime.preload(components);
-    await runtime.load(components);
+    runtimePreload(runtime, components);
+    await runtimeLoad(runtime, components);
 
     // FIXME: here we update the signal twice, which may cause some unexpected behavoir during updating.
     // However, this looks fine for me all the time.
@@ -33,8 +28,6 @@ export function useRender() {
 }
 
 export function useNavigate() {
-  const runtime = useRuntime();
-  const location = new URL(runtime.url.value);
   const render = useRender();
 
   return async function navigate(target: string | URL) {

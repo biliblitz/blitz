@@ -14,6 +14,7 @@ export function Link(props: LinkProps) {
         const target = new URL(e.currentTarget.href, location.href);
         const self = (e.currentTarget.target || "_self") === "_self";
         const sameOrigin = target.host === location.host;
+        console.log(target, self, sameOrigin);
         if (self && sameOrigin) {
           e.preventDefault();
           navigate(target);

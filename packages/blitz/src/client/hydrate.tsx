@@ -1,5 +1,5 @@
 import { VNode, render } from "preact";
-import { Runtime, RuntimeContext } from "./runtime.ts";
+import { RuntimeContext, createRuntime, runtimeLoad } from "./runtime.ts";
 import { SerializedRuntime } from "./components/router-head.tsx";
 import { ClientManifest } from "../build/manifest.ts";
 
@@ -31,14 +31,14 @@ async function createClientRuntime(manifest: ClientManifest) {
     throw new Error("Can't find SSR hydrate data");
   const json = JSON.parse(element.textContent) as SerializedRuntime;
 
-  const runtime = new Runtime(
+  const runtime = createRuntime(
     manifest,
+    json.graph,
     new URL(json.url),
     json.loaders,
     json.components,
-    json.graph,
   );
-  await runtime.load(json.components);
+  await runtimeLoad(runtime, json.components);
 
   return runtime;
 }

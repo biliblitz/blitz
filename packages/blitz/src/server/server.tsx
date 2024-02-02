@@ -1,5 +1,5 @@
 import { VNode } from "preact";
-import { Runtime, RuntimeContext } from "../client/runtime.ts";
+import { RuntimeContext, createRuntime } from "../client/runtime.ts";
 import { Handler } from "../node/index.ts";
 import { ServerManifest } from "../build/manifest.ts";
 import { resolveRouter } from "./router.ts";
@@ -47,12 +47,12 @@ export function createServer<T = void>(
     const components = event.components;
     console.log(loaders, components);
 
-    const runtime = new Runtime(
+    const runtime = createRuntime(
       manifest,
+      manifest.graph,
       url,
       loaders,
       components,
-      manifest.graph,
     );
 
     try {
