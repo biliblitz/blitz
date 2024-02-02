@@ -3,13 +3,14 @@ import { useRuntime } from "../runtime.ts";
 import { LoaderStore } from "../../server/event.ts";
 import { Graph } from "../../build/graph.ts";
 import { getLinkPreloadAs, isAsset, isCss, isJs } from "../../utils/ext.ts";
+import { isSSR } from "../../utils/envvars.ts";
 
 export function RouterHead() {
   return (
     <>
       <title>hello world</title>
       <PreloadHeads />
-      <MetadataInjector />
+      {isSSR ? <MetadataInjector /> : null}
     </>
   );
 }

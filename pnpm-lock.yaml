@@ -23,7 +23,7 @@ importers:
         specifier: ^1.4.0
         version: 1.5.0
       "@preact/signals":
-        specifier: ">=1"
+        specifier: ^1
         version: 1.2.2(preact@10.19.3)
       es-module-lexer:
         specifier: ^1.4.1
@@ -32,8 +32,11 @@ importers:
         specifier: ^3.12.7
         version: 3.12.8
       preact:
-        specifier: ">=10"
+        specifier: ^10
         version: 10.19.3
+      preact-render-to-string:
+        specifier: ^6
+        version: 6.3.1(preact@10.19.3)
       vite:
         specifier: ">=5"
         version: 5.0.12(@types/node@20.11.9)

@@ -1,4 +1,6 @@
 import { VNode } from "preact";
+import { render } from "preact-render-to-string";
+
 import { RuntimeContext, createRuntime } from "../client/runtime.ts";
 import { Handler } from "../node/index.ts";
 import { ServerManifest } from "../build/manifest.ts";
@@ -8,7 +10,6 @@ import { ActionReturnValue } from "./action.ts";
 
 export type ServerOptions = {
   manifest: ServerManifest;
-  render: (vnode: VNode, context?: any) => string;
 };
 
 export type ActionResponse<T = ActionReturnValue> =
@@ -23,7 +24,7 @@ export type LoaderResponse =
 
 export function createServer<T = void>(
   vnode: VNode,
-  { manifest, render }: ServerOptions,
+  { manifest }: ServerOptions,
 ): Handler<T> {
   const router = resolveRouter(manifest.directory);
 
@@ -31,14 +32,12 @@ export function createServer<T = void>(
     console.log(`ssr running for ${req.url}`);
 
     const url = new URL(req.url);
-    const headers = new Headers();
 
     if (url.pathname.endsWith("/_data.json")) {
       const event = createFetchEvent(
         manifest,
         router,
         req,
-        headers,
         url.pathname.slice(0, -10),
       );
 
@@ -46,7 +45,7 @@ export function createServer<T = void>(
         const ref = url.searchParams.get("_action")!;
         const action = await event.runAction(ref);
         const loaders = await event.runLoaders();
-        headers.set("Content-Type", "application/json");
+        event.headers.set("Content-Type", "application/json");
         return new Response(
           JSON.stringify({
             ok: "data",
@@ -54,23 +53,23 @@ export function createServer<T = void>(
             components: event.components,
             action: action,
           } as ActionResponse),
-          { headers },
+          { headers: event.headers },
         );
       }
 
       const loaders = await event.runLoaders();
-      headers.set("Content-Type", "application/json");
+      event.headers.set("Content-Type", "application/json");
       return new Response(
         JSON.stringify({
           ok: "data",
           loaders: loaders,
           components: event.components,
         } as LoaderResponse),
-        { headers },
+        { headers: event.headers },
       );
     }
 
-    const event = createFetchEvent(manifest, router, req, headers);
+    const event = createFetchEvent(manifest, router, req);
     const loaders = await event.runLoaders();
     const components = event.components;
 
@@ -82,17 +81,15 @@ export function createServer<T = void>(
       components,
     );
 
-    try {
-      const html = render(
-        <RuntimeContext.Provider value={runtime}>
-          {vnode}
-        </RuntimeContext.Provider>,
-      );
-      headers.set("Content-Type", "text/html");
-      return new Response("<!DOCTYPE html>" + html, { headers });
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
+    const html = render(
+      <RuntimeContext.Provider value={runtime}>
+        {vnode}
+      </RuntimeContext.Provider>,
+    );
+    event.headers.set("Content-Type", "text/html");
+    return new Response("<!DOCTYPE html>" + html, {
+      headers: event.headers,
+      status: event.status,
+    });
   };
 }

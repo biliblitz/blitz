@@ -1,3 +1,4 @@
+import { isDev } from "../../utils/envvars.ts";
 import { useRuntime } from "../runtime.ts";
 import { Outlet, OutletContext } from "./outlet.tsx";
 
@@ -16,7 +17,7 @@ export function RouterOutlet() {
 
 function EntryPoint() {
   // dev specific entry
-  if (import.meta.env?.DEV) {
+  if (isDev) {
     return (
       <>
         <script type="module" src="/@vite/client"></script>

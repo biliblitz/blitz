@@ -29,6 +29,11 @@ export type FetchEvent = {
   headers: Headers;
 
   /**
+   * Set the status of the current response (only works on GET with pathname)
+   */
+  status(status: number): void;
+
+  /**
    * Returns the return value of middleware.
    *
    * Use it only if the middleware runs before this call.
@@ -40,21 +45,25 @@ export function createFetchEvent(
   manifest: ServerManifest,
   router: Router,
   request: Request,
-  headers: Headers,
   pathname?: string,
 ) {
   const url = new URL(request.url);
+  const headers = new Headers();
 
   const result = router(pathname || url.pathname);
   if (result === null) throw new Error("404");
   const { routes, params } = result;
 
   const store = new Map<string, any>();
+  let status = 200;
 
   const event: FetchEvent = {
     request,
     params: new Map(params),
     headers,
+    status(value) {
+      status = value;
+    },
     load(middleware) {
       if (!middleware._ref) {
         throw new Error("Invalid call to evt.load: invalid middleware");
@@ -132,6 +141,14 @@ export function createFetchEvent(
         components.push(last.index);
       }
       return components;
+    },
+
+    get status() {
+      return status;
+    },
+
+    get headers() {
+      return headers;
     },
   };
 }

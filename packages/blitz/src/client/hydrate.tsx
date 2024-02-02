@@ -2,6 +2,7 @@ import { VNode, render } from "preact";
 import { RuntimeContext, createRuntime, runtimeLoad } from "./runtime.ts";
 import { SerializedRuntime } from "./components/router-head.tsx";
 import { ClientManifest } from "../build/manifest.ts";
+import { isDev } from "../utils/envvars.ts";
 
 export type Options = {
   manifest: ClientManifest;
@@ -12,7 +13,7 @@ export async function hydrate(vnode: VNode, { manifest }: Options) {
 
   // fix for https://github.com/vitejs/vite/issues/15765
   let injections: NodeListOf<HTMLStyleElement> | null = null;
-  if (import.meta.env.DEV)
+  if (isDev)
     injections = document.head.querySelectorAll("style[data-vite-dev-id]");
 
   render(
@@ -21,7 +22,7 @@ export async function hydrate(vnode: VNode, { manifest }: Options) {
     document.documentElement,
   );
 
-  if (import.meta.env.DEV && injections)
+  if (isDev && injections)
     injections.forEach((element) => document.head.appendChild(element));
 }
 
