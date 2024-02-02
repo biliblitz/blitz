@@ -16,9 +16,9 @@ export function RouterHead() {
 
 export type SerializedRuntime = {
   url: string;
+  graph: Graph;
   loaders: LoaderStore;
   components: number[];
-  graph: Graph;
 };
 
 function MetadataInjector() {
@@ -27,9 +27,9 @@ function MetadataInjector() {
   const serialized = useComputed(() => {
     const object: SerializedRuntime = {
       url: runtime.url.value.href,
+      graph: runtime.graph,
       loaders: runtime.loaders.value,
       components: runtime.components.value,
-      graph: runtime.graph,
     };
 
     return JSON.stringify(object).replaceAll("/", "\\/");

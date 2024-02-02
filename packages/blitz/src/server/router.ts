@@ -27,11 +27,10 @@ export function createRouter(
 
   return (path) => {
     if (path === "/") {
-      if (route.index === null) {
-        return null;
-      } else {
+      if (route.index !== null) {
         return { routes: [route], params: [] };
       }
+      return null;
     }
 
     const index = path.slice(1).indexOf("/") + 1;
@@ -87,7 +86,7 @@ export function createRouter(
 
 export function resolveRouter(directory: Directory): Router {
   return createRouter(
-    directory.route,
-    directory.children.map(([name, sub]) => [name, resolveRouter(sub)]),
+    directory[0],
+    directory[1].map(([name, sub]) => [name, resolveRouter(sub)]),
   );
 }

@@ -8,3 +8,13 @@ export const lcp = <T>(a: T[], b: T[]) => {
 };
 
 export const unique = <T>(t: T[]) => Array.from(new Set(t));
+
+export const same = <T>(a: T[], b: T[]) => {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+  return true;
+};

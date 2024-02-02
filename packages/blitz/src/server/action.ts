@@ -3,7 +3,7 @@ import { FetchEvent } from "./event.ts";
 import { useAction } from "../client/action.ts";
 
 export type ActionReturnValue = {} | null;
-export type ActionFunction<T extends ActionReturnValue> = (
+export type ActionFunction<T extends ActionReturnValue = ActionReturnValue> = (
   evt: FetchEvent,
 ) => T | Promise<T>;
 export interface Action<T extends ActionReturnValue = ActionReturnValue> {
@@ -11,10 +11,13 @@ export interface Action<T extends ActionReturnValue = ActionReturnValue> {
   _fn?: ActionFunction<T>;
   _ref?: string;
 }
-export type ActionHandler<T extends ActionReturnValue> = {
+export type ActionState = "idle" | "waiting" | "error" | "ok";
+export type ActionHandler<T extends ActionReturnValue = ActionReturnValue> = {
+  ref: string;
   data: ReadonlySignal<T | null>;
   error: ReadonlySignal<Error | null>;
-  submit(data: FormData): Promise<T>;
+  state: ReadonlySignal<ActionState>;
+  submit(data: FormData): Promise<void>;
 };
 
 /**
@@ -55,9 +58,11 @@ export type ActionHandler<T extends ActionReturnValue> = {
  * }
  * ```
  */
-export function action$<T extends ActionReturnValue>(fn: ActionFunction<T>) {
-  const handler = () => useAction(handler._ref);
+export function action$<T extends ActionReturnValue>(
+  fn: ActionFunction<T>,
+): Action<T> {
+  const handler = () => useAction<T>(handler._ref);
   handler._fn = fn;
   handler._ref = "";
-  return fn;
+  return handler;
 }

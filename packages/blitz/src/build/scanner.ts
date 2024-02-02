@@ -49,10 +49,7 @@ export type Route = {
   middleware: number | null;
 };
 
-export type Directory = {
-  route: Route;
-  children: [string, Directory][];
-};
+export type Directory = [Route, [string, Directory][]];
 
 export async function scanProjectStructure(entrance: string) {
   entrance = resolve(entrance);
@@ -63,27 +60,16 @@ export async function scanProjectStructure(entrance: string) {
   const componentPaths: string[] = [];
   const middlewarePaths: string[] = [];
 
-  function registerComponent(filePath?: string) {
-    if (!filePath) return null;
-    return componentPaths.push(filePath) - 1;
-  }
+  const registerLoader = (filePath?: string) =>
+    filePath ? loaderPaths.push(filePath) - 1 : null;
+  const registerAction = (filePath?: string) =>
+    filePath ? actionPaths.push(filePath) - 1 : null;
+  const registerComponent = (filePath?: string) =>
+    filePath ? componentPaths.push(filePath) - 1 : null;
+  const registerMiddleware = (filePath?: string) =>
+    filePath ? middlewarePaths.push(filePath) - 1 : null;
 
-  function registerMiddleware(filePath?: string) {
-    if (!filePath) return null;
-    return middlewarePaths.push(filePath) - 1;
-  }
-
-  function registerLoader(filePath?: string) {
-    if (!filePath) return null;
-    return loaderPaths.push(filePath) - 1;
-  }
-
-  function registerAction(filePath?: string) {
-    if (!filePath) return null;
-    return actionPaths.push(filePath) - 1;
-  }
-
-  async function scanDirectory(dirPath: string): Promise<Directory> {
+  const scan = async (dirPath: string): Promise<Directory> => {
     const filenames: string[] = [];
     const dirnames: string[] = [];
 
@@ -133,22 +119,17 @@ export async function scanProjectStructure(entrance: string) {
     const actions = registerAction(actionPaths.at(0));
     const middleware = registerMiddleware(middlewarePaths.at(0));
 
-    const directory: Directory = {
-      route: { index, error, layout, loaders, actions, middleware },
-      children: [],
-    };
+    const route: Route = { index, error, layout, loaders, actions, middleware };
+    const children: [string, Directory][] = [];
 
     for (const dirname of dirnames) {
-      directory.children.push([
-        dirname,
-        await scanDirectory(join(dirPath, dirname)),
-      ]);
+      children.push([dirname, await scan(join(dirPath, dirname))]);
     }
 
-    return directory;
-  }
+    return [route, children];
+  };
 
-  const directory = await scanDirectory(entrance);
+  const directory = await scan(entrance);
 
   return {
     directory,

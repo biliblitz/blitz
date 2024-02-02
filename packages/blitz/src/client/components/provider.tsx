@@ -22,7 +22,7 @@ export function BlitzCityProvider(props: ProviderProps) {
     // add popstate callback
     addEventListener("popstate", async (e) => {
       const state = e.state as HistoryState;
-      await render(state.components, state.loaders);
+      await render(state.loaders, state.components);
       scrollTo(state.position[0], state.position[1]);
     });
   }, []);
