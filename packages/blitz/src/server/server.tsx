@@ -12,15 +12,18 @@ export type ServerOptions = {
   manifest: ServerManifest;
 };
 
+export type ErrorResponse = { ok: "error"; error: string };
+export type RedirectResponse = { ok: "redirect"; redirect: string };
+
 export type ActionResponse<T = ActionReturnValue> =
-  | { ok: "data"; loaders: LoaderStore; components: number[]; action: T }
-  | { ok: "error"; error: string }
-  | { ok: "redirect"; redirect: string };
+  | { ok: "action"; loaders: LoaderStore; components: number[]; action: T }
+  | ErrorResponse
+  | RedirectResponse;
 
 export type LoaderResponse =
-  | { ok: "data"; loaders: LoaderStore; components: number[] }
-  | { ok: "error"; error: string }
-  | { ok: "redirect"; redirect: string };
+  | { ok: "loader"; loaders: LoaderStore; components: number[] }
+  | ErrorResponse
+  | RedirectResponse;
 
 export function createServer<T = void>(
   vnode: VNode,
@@ -40,41 +43,75 @@ export function createServer<T = void>(
 
       const event = createFetchEvent(manifest, req, resolve);
 
-      if (url.searchParams.has("_action")) {
-        const ref = url.searchParams.get("_action")!;
-        const action = await event.runAction(ref);
+      try {
+        if (url.searchParams.has("_action")) {
+          const ref = url.searchParams.get("_action")!;
+
+          const action = await event.runAction(ref);
+          const loaders = await event.runLoaders();
+          event.headers.set("Content-Type", "application/json");
+          return new Response(
+            JSON.stringify({
+              ok: "action",
+              action: action,
+              loaders: loaders,
+              components: event.components,
+            } satisfies ActionResponse),
+            { headers: event.headers },
+          );
+        }
+
         const loaders = await event.runLoaders();
         event.headers.set("Content-Type", "application/json");
         return new Response(
           JSON.stringify({
-            ok: "data",
+            ok: "loader",
             loaders: loaders,
             components: event.components,
-            action: action,
-          } as ActionResponse),
+          } satisfies LoaderResponse),
+          { headers: event.headers },
+        );
+      } catch (e) {
+        if (e instanceof URL) {
+          event.headers.set("Content-Type", "application/json");
+          return new Response(
+            JSON.stringify({
+              ok: "redirect",
+              redirect: e.href,
+            } satisfies RedirectResponse),
+            { headers: event.headers },
+          );
+        }
+
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        event.headers.set("Content-Type", "application/json");
+        return new Response(
+          JSON.stringify({
+            ok: "error",
+            error: errorMessage,
+          } satisfies ErrorResponse),
           { headers: event.headers },
         );
       }
-
-      const loaders = await event.runLoaders();
-      event.headers.set("Content-Type", "application/json");
-      return new Response(
-        JSON.stringify({
-          ok: "data",
-          loaders: loaders,
-          components: event.components,
-        } as LoaderResponse),
-        { headers: event.headers },
-      );
     }
 
     let resolve: ResolveResult | null = null;
 
-    if (!url.pathname.endsWith("/")) {
-      resolve = router(url.pathname + "/");
+    if (!url.pathname.endsWith("/") || url.pathname.includes("//")) {
+      let pathname = url.pathname;
+
+      if (!pathname.endsWith("/")) {
+        pathname += "/";
+      }
+      while (pathname.includes("//")) {
+        pathname = pathname.replaceAll("//", "/");
+      }
+
+      resolve = router(pathname);
+
       if (resolve !== null) {
         const redirect = new URL(url);
-        redirect.pathname += "/";
+        redirect.pathname = pathname;
         return Response.redirect(redirect.href, 301);
       }
     } else {
@@ -82,30 +119,51 @@ export function createServer<T = void>(
     }
 
     if (resolve === null) {
+      // TODO: error render
       return new Response("404 NOT FOUND", { status: 404 });
     }
 
     const event = createFetchEvent(manifest, req, resolve);
-    const loaders = await event.runLoaders();
-    const components = event.components;
 
-    const runtime = createRuntime(
-      manifest,
-      url,
-      manifest.graph,
-      loaders,
-      components,
-    );
+    try {
+      const loaders = await event.runLoaders();
+      const components = event.components;
 
-    const html = render(
-      <RuntimeContext.Provider value={runtime}>
-        {vnode}
-      </RuntimeContext.Provider>,
-    );
-    event.headers.set("Content-Type", "text/html");
-    return new Response("<!DOCTYPE html>" + html, {
-      headers: event.headers,
-      status: event.status,
-    });
+      const runtime = createRuntime(
+        manifest,
+        url,
+        manifest.graph,
+        loaders,
+        components,
+      );
+
+      const html = render(
+        <RuntimeContext.Provider value={runtime}>
+          {vnode}
+        </RuntimeContext.Provider>,
+      );
+      event.headers.set("Content-Type", "text/html");
+      return new Response("<!DOCTYPE html>" + html, {
+        status: event.status,
+        headers: event.headers,
+      });
+    } catch (e) {
+      if (e instanceof URL) {
+        event.headers.set("Location", e.href);
+        return new Response(null, { status: 302, headers: event.headers });
+      }
+
+      if (e instanceof Response) {
+        return e;
+      }
+
+      const error = e instanceof Error ? e : new Error(String(e));
+      console.log(error);
+      // TODO: error render
+      return new Response(error.message, {
+        status: 500,
+        headers: event.headers,
+      });
+    }
   };
 }

@@ -33,7 +33,7 @@ export function useAction<T extends ActionReturnValue>(
       const response = await fetch(dataUrl, { method: "POST", body: formData });
       const resp = (await response.json()) as ActionResponse<T>;
 
-      if (resp.ok === "data") {
+      if (resp.ok === "action") {
         batch(() => {
           state.value = "ok";
           data.value = resp.action;
@@ -45,6 +45,8 @@ export function useAction<T extends ActionReturnValue>(
         await navigate(resp.redirect);
       } else if (resp.ok === "error") {
         throw new Error(resp.error);
+      } else {
+        throw new Error("Invalid Response");
       }
     } catch (e) {
       batch(() => {

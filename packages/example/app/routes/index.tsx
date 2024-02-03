@@ -10,6 +10,8 @@ export default () => {
 
   const login = useLogin();
   const data = useComputed(() => JSON.stringify(login.data.value));
+  const error = useComputed(() => login.error.value?.message);
+  const state = useComputed(() => login.state.value);
 
   return (
     <div>
@@ -22,7 +24,9 @@ export default () => {
         <Link href="/foo/#middle">/foo/#middle</Link>
       </p>
       <Form action={login}>
+        <div>state = {state}</div>
         <div>data = {data}</div>
+        <div>error = {error}</div>
         <button>submit</button>
       </Form>
     </div>

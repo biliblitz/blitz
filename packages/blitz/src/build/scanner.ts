@@ -1,7 +1,6 @@
 import { extname, join, resolve } from "node:path";
 import { isJs, isJsOrMdx } from "../utils/ext.ts";
 import { readFile, readdir, stat } from "node:fs/promises";
-import { DuplicateError } from "../utils/errors.ts";
 import { init, parse } from "es-module-lexer";
 import { hashRef } from "../utils/crypto.ts";
 
@@ -99,17 +98,17 @@ export async function scanProjectStructure(entrance: string) {
 
     // Test conflit files
     if (indexPaths.length > 1)
-      throw new DuplicateError("index page", indexPaths[1]);
+      throw new Error(`Multiple index page found: ${indexPaths[1]}`);
     if (errorPaths.length > 1)
-      throw new DuplicateError("error page", indexPaths[1]);
+      throw new Error(`Multiple error page found: ${indexPaths[1]}`);
     if (layoutPaths.length > 1)
-      throw new DuplicateError("layout page", layoutPaths[1]);
+      throw new Error(`Multiple layout page found: ${layoutPaths[1]}`);
     if (loaderPaths.length > 1)
-      throw new DuplicateError("loaders", loaderPaths[1]);
+      throw new Error(`Multiple loader found: ${loaderPaths[1]}`);
     if (actionPaths.length > 1)
-      throw new DuplicateError("actions", actionPaths[1]);
+      throw new Error(`Multiple action found: ${actionPaths[1]}`);
     if (middlewarePaths.length > 1)
-      throw new DuplicateError("middleware", middlewarePaths[1]);
+      throw new Error(`Multiple middleware found: ${middlewarePaths[1]}`);
 
     // register everything
     const index = registerComponent(indexPaths.at(0));

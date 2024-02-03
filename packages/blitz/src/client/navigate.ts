@@ -80,7 +80,7 @@ export function useNavigate() {
       const response = await fetch(dataUrl);
       const data = (await response.json()) as LoaderResponse;
 
-      if (data.ok === "data") {
+      if (data.ok === "loader") {
         replaceState({ position: [scrollX, scrollY] });
         pushState(
           {
@@ -100,6 +100,8 @@ export function useNavigate() {
         await navigate(data.redirect);
       } else if (data.ok === "error") {
         throw new Error(data.error);
+      } else {
+        throw new Error(`Invalid Response`);
       }
     } catch (e) {
       console.error(`Failed to navigate to ${target.href}`);

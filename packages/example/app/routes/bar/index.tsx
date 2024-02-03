@@ -4,10 +4,7 @@ import { useComputed } from "@preact/signals";
 
 export default function () {
   const bar = useBarData();
-  const data = useComputed(() => {
-    console.log("running bar computed");
-    return bar.value.data;
-  });
+  const data = useComputed(() => bar.value.data);
 
   return (
     <div>

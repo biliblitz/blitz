@@ -12,10 +12,7 @@ mollit anim id est laborum.`;
 
 export default function () {
   const foo = useFooData();
-  const data = useComputed(() => {
-    console.log("running foo computed");
-    return foo.value.data;
-  });
+  const data = useComputed(() => foo.value.data);
 
   return (
     <div>
