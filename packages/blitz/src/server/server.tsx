@@ -32,7 +32,7 @@ export function createServer<T = void>(
   const router = resolveRouter(manifest.directory);
 
   return async (req) => {
-    console.log(`ssr running for ${req.url}`);
+    // console.log(`ssr running for ${req.url}`);
 
     const url = new URL(req.url);
 

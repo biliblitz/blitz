@@ -27,6 +27,10 @@
       "types": "./dist/types/node/index.d.ts",
       "import": "./dist/esm/node/index.mjs"
     },
+    "./adapters/static": {
+      "types": "./dist/types/adapters/static.d.ts",
+      "import": "./dist/esm/adapters/static.mjs"
+    },
     "./env": {
       "types": "./env.d.ts"
     }

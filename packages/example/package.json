@@ -5,8 +5,9 @@
   "private": true,
   "scripts": {
     "build": "npm run build:client && npm run build:server",
-    "build:client": "vite build --manifest --outDir dist/client",
-    "build:server": "vite build --ssr app/entry.server.tsx --outDir dist/server"
+    "build:client": "vite build --outDir dist/client --manifest",
+    "build:server": "vite build --outDir dist/server --ssr app/entry.server.tsx",
+    "build:static": "vite build --outDir dist/static --ssr -c adapters/static/vite.config.ts"
   },
   "keywords": [],
   "author": "",
