@@ -1,47 +1,39 @@
 import { ComponentType, createContext } from "preact";
 import { useContext } from "preact/hooks";
-import { ReadonlySignal, Signal, computed, signal } from "@preact/signals";
-import { LoaderStore, LoaderStoreMap } from "../server/event.ts";
+import { Signal, signal } from "@preact/signals";
+import { LoaderStore } from "../server/event.ts";
 import { ClientManifest } from "../build/manifest.ts";
 import { Graph } from "../build/graph.ts";
 import { unique } from "../utils/algorithms.ts";
 
 export type Runtime = {
-  url: Signal<URL>;
+  graph: Graph;
   loaders: Signal<LoaderStore>;
   manifest: ClientManifest;
-  components: Signal<number[]>;
-  graph: Graph;
+  location: Signal<URL>;
   preloads: Signal<number[]>;
-  loadersMap: ReadonlySignal<LoaderStoreMap>;
+  components: Signal<number[]>;
 };
 
 export function createRuntime(
   manifest: ClientManifest,
+  location: URL,
   graph: Graph,
-  url: URL,
   loaders: LoaderStore,
   components: number[],
 ): Runtime {
-  const url$ = signal(url);
-  const loaders$ = signal(loaders);
-  const components$ = signal(components);
-  const preloads = signal(
-    unique([
-      ...graph.entry,
-      ...components.flatMap((id) => graph.components[id]),
-    ]),
-  );
-  const loadersMap = computed(() => new Map(loaders$.value));
+  const preloads = unique([
+    ...graph.entry,
+    ...components.flatMap((id) => graph.components[id]),
+  ]);
 
   return {
-    url: url$,
-    loaders: loaders$,
-    manifest,
-    components: components$,
     graph,
-    preloads,
-    loadersMap,
+    manifest,
+    loaders: signal(loaders),
+    location: signal(location),
+    preloads: signal(preloads),
+    components: signal(components),
   };
 }
 

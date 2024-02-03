@@ -1,6 +1,6 @@
 import type { Middleware } from "./middleware.ts";
 import type { LoaderReturnValue } from "./loader.ts";
-import { ParamsMap, Router } from "./router.ts";
+import { ParamsMap, ResolveResult } from "./router.ts";
 import { ServerManifest } from "../build/manifest.ts";
 
 export type FetchEvent = {
@@ -43,16 +43,10 @@ export type FetchEvent = {
 
 export function createFetchEvent(
   manifest: ServerManifest,
-  router: Router,
   request: Request,
-  pathname?: string,
+  { params, routes }: ResolveResult,
 ) {
-  const url = new URL(request.url);
   const headers = new Headers();
-
-  const result = router(pathname || url.pathname);
-  if (result === null) throw new Error("404");
-  const { routes, params } = result;
 
   const store = new Map<string, any>();
   let status = 200;
@@ -154,4 +148,3 @@ export function createFetchEvent(
 }
 
 export type LoaderStore = [string, LoaderReturnValue][];
-export type LoaderStoreMap = Map<string, LoaderReturnValue>;

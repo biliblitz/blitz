@@ -18,14 +18,12 @@ export async function blitzCity(): Promise<Plugin> {
   let project: Project | null = null;
   async function getProject() {
     if (!project) {
-      project = await resolveProject(
-        await scanProjectStructure("./app/routes"),
-      );
+      const structure = await scanProjectStructure("./app/routes");
+      project = await resolveProject(structure);
     }
     return project;
   }
-  async function getEntries() {
-    const project = await getProject();
+  function getEntries(project: Project) {
     const cwd = process.cwd();
     const entry = "app/entry.client.tsx";
     const components = project.structure.componentPaths.map((path) =>
@@ -53,7 +51,7 @@ export async function blitzCity(): Promise<Plugin> {
 
         case resolve(manifestServer):
           const project = await getProject();
-          const { entry, components } = await getEntries();
+          const { entry, components } = getEntries(project);
           const graph = isDev
             ? await loadDevGraph(entry, components)
             : await loadClientGraph(entry, components);
@@ -83,12 +81,13 @@ export async function blitzCity(): Promise<Plugin> {
       if (env.command === "build") {
         // build client
         if (!config.build?.ssr) {
-          const { entry, components } = await getEntries();
+          const project = await getProject();
+          const entries = getEntries(project);
 
           return {
             build: {
               rollupOptions: {
-                input: [entry, ...components],
+                input: [entries.entry, ...entries.components],
                 output: {
                   entryFileNames: "build/p-[hash].js",
                   chunkFileNames: "build/p-[hash].js",
@@ -120,6 +119,10 @@ export async function blitzCity(): Promise<Plugin> {
           appType: "custom",
         };
       }
+    },
+
+    handleHotUpdate() {
+      project = null;
     },
 
     configureServer(vite) {

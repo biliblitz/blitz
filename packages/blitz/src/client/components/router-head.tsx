@@ -3,7 +3,7 @@ import { useRuntime } from "../runtime.ts";
 import { LoaderStore } from "../../server/event.ts";
 import { Graph } from "../../build/graph.ts";
 import { getLinkPreloadAs, isAsset, isCss, isJs } from "../../utils/ext.ts";
-import { isSSR } from "../../utils/envvars.ts";
+import { isSSR } from "../../utils/envs.ts";
 
 export function RouterHead() {
   return (
@@ -16,7 +16,6 @@ export function RouterHead() {
 }
 
 export type SerializedRuntime = {
-  url: string;
   graph: Graph;
   loaders: LoaderStore;
   components: number[];
@@ -27,7 +26,6 @@ function MetadataInjector() {
 
   const serialized = useComputed(() => {
     const object: SerializedRuntime = {
-      url: runtime.url.value.href,
       graph: runtime.graph,
       loaders: runtime.loaders.value,
       components: runtime.components.value,

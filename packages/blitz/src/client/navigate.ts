@@ -29,6 +29,7 @@ export function useRender() {
     // trigger actual update
     batch(() => {
       runtime.loaders.value = loaders;
+      runtime.location.value = new URL(location.href);
       runtime.components.value = components;
     });
 
@@ -74,32 +75,40 @@ export function useNavigate() {
 
     const dataUrl = new URL(target);
     dataUrl.pathname += "_data.json";
-    const response = await fetch(dataUrl);
-    const data = (await response.json()) as LoaderResponse;
 
-    if (data.ok === "data") {
-      replaceState({ position: [scrollX, scrollY] });
-      pushState(
-        {
-          loaders: data.loaders,
-          position: [0, 0],
-          components: data.components,
-        },
-        target,
-      );
-      await render(data.loaders, data.components);
-      if (target.hash) {
-        document
-          .getElementById(target.hash.slice(1))
-          ?.scrollIntoView({ behavior: "smooth" });
+    try {
+      const response = await fetch(dataUrl);
+      const data = (await response.json()) as LoaderResponse;
+
+      if (data.ok === "data") {
+        replaceState({ position: [scrollX, scrollY] });
+        pushState(
+          {
+            loaders: data.loaders,
+            position: [0, 0],
+            components: data.components,
+          },
+          target,
+        );
+        await render(data.loaders, data.components);
+        if (target.hash) {
+          document
+            .getElementById(target.hash.slice(1))
+            ?.scrollIntoView({ behavior: "smooth" });
+        }
+      } else if (data.ok === "redirect") {
+        await navigate(data.redirect);
+      } else if (data.ok === "error") {
+        throw new Error(data.error);
       }
-    } else if (data.ok === "redirect") {
-      await navigate(data.redirect);
+    } catch (e) {
+      console.error(`Failed to navigate to ${target.href}`);
+      console.error(e);
     }
   };
 }
 
 export function useLocation(): ReadonlySignal<URL> {
   const runtime = useRuntime();
-  return useComputed(() => new URL(runtime.url.value));
+  return useComputed(() => new URL(runtime.location.value));
 }

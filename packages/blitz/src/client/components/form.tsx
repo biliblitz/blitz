@@ -1,6 +1,5 @@
 import { JSX } from "preact";
 import { ActionHandler } from "../../server/action.ts";
-import { useLocation } from "../navigate.ts";
 
 type FormProps = Omit<JSX.HTMLAttributes<HTMLFormElement>, "action"> & {
   action: ActionHandler;
@@ -8,11 +7,10 @@ type FormProps = Omit<JSX.HTMLAttributes<HTMLFormElement>, "action"> & {
 
 export function Form(props: FormProps) {
   const { action, ...remains } = props;
-  const location = useLocation();
 
   return (
     <form
-      action={location.value.pathname + "?_action=" + action.ref}
+      action={"?_action=" + action.ref}
       method="POST"
       onSubmit={(e) => {
         e.preventDefault();

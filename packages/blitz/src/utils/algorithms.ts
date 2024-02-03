@@ -7,8 +7,10 @@ export const lcp = <T>(a: T[], b: T[]) => {
   return c;
 };
 
+/** unique array */
 export const unique = <T>(t: T[]) => Array.from(new Set(t));
 
+/** check if two array is === same */
 export const same = <T>(a: T[], b: T[]) => {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; ++i) {

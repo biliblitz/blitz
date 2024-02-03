@@ -1,4 +1,4 @@
-import { isDev } from "../../utils/envvars.ts";
+import { isDev } from "../../utils/envs.ts";
 import { useRuntime } from "../runtime.ts";
 import { Outlet, OutletContext } from "./outlet.tsx";
 
