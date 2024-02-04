@@ -4,14 +4,16 @@ import type {
   ActionReturnValue,
   ActionState,
 } from "../server/action.ts";
-import { useNavigate, useRender } from "./navigate.ts";
+import { useNavigate } from "./navigate.ts";
 import { ActionResponse } from "../server/server.tsx";
 import { replaceState } from "./history.ts";
+import { useRuntime } from "./runtime.ts";
+import { nextTick } from "../utils/algorithms.ts";
 
 export function useAction<T extends ActionReturnValue>(
   ref: string,
 ): ActionHandler<T> {
-  const render = useRender();
+  const runtime = useRuntime();
   const navigate = useNavigate();
 
   const state = useSignal<ActionState>("idle");
@@ -34,13 +36,23 @@ export function useAction<T extends ActionReturnValue>(
       const resp = (await response.json()) as ActionResponse<T>;
 
       if (resp.ok === "action") {
+        replaceState({
+          meta: resp.meta,
+          params: resp.params,
+          loaders: resp.loaders,
+        });
         batch(() => {
+          // action signals
           state.value = "ok";
           data.value = resp.action;
           error.value = null;
+          // runtime signals
+          runtime.meta.value = resp.meta;
+          runtime.params.value = resp.params;
+          runtime.loaders.value = resp.loaders;
+          runtime.location.value = new URL(location.href);
         });
-        replaceState({ loaders: resp.loaders });
-        await render(resp.loaders, resp.components);
+        await nextTick();
       } else if (resp.ok === "redirect") {
         await navigate(resp.redirect);
       } else if (resp.ok === "error") {

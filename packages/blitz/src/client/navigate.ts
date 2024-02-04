@@ -2,18 +2,20 @@ import { ReadonlySignal, batch, useComputed } from "@preact/signals";
 import { LoaderStore } from "../server/event.ts";
 import { pushState, replaceState, replaceURL } from "./history.ts";
 import { runtimePreload, runtimeLoad, useRuntime } from "./runtime.ts";
-import { lcp, same } from "../utils/algorithms.ts";
+import { lcp, nextTick } from "../utils/algorithms.ts";
 import { LoaderResponse } from "../server/server.tsx";
+import { Meta } from "../server/meta.ts";
+import { Params } from "../server/router.ts";
 
 export function useRender() {
   const runtime = useRuntime();
 
-  return async (loaders: LoaderStore, components?: number[]) => {
-    if (!components || same(runtime.components.value, components)) {
-      runtime.loaders.value = loaders;
-      return;
-    }
-
+  return async (
+    meta: Meta,
+    params: Params,
+    loaders: LoaderStore,
+    components: number[],
+  ) => {
     runtimePreload(runtime, components);
     await runtimeLoad(runtime, components);
 
@@ -23,18 +25,20 @@ export function useRender() {
     // remove old components
     runtime.components.value = lcp(runtime.components.value, components);
 
-    // wait a tick
-    await Promise.resolve();
+    // wait old components removed
+    await nextTick();
 
     // trigger actual update
     batch(() => {
+      runtime.meta.value = meta;
+      runtime.params.value = params;
       runtime.loaders.value = loaders;
       runtime.location.value = new URL(location.href);
       runtime.components.value = components;
     });
 
     // then wait another tick for dom update finish
-    await Promise.resolve();
+    await nextTick();
   };
 }
 
@@ -84,13 +88,15 @@ export function useNavigate() {
         replaceState({ position: [scrollX, scrollY] });
         pushState(
           {
+            meta: data.meta,
+            params: data.params,
             loaders: data.loaders,
             position: [0, 0],
             components: data.components,
           },
           target,
         );
-        await render(data.loaders, data.components);
+        await render(data.meta, data.params, data.loaders, data.components);
         if (target.hash) {
           document
             .getElementById(target.hash.slice(1))

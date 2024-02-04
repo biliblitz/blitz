@@ -1,5 +1,5 @@
 import { static$ } from "@biliblitz/blitz/server";
 
 export default static$(() => {
-  return ["2333", "114514", "1919810"];
+  return [2, 3, 5, 7, 11, 13, 17, 19].map((x) => x.toString());
 });

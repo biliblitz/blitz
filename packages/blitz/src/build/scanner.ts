@@ -15,6 +15,10 @@ function isNameOf(name: string, filename: string) {
   return getFilenameWithoutExt(filename) === name;
 }
 
+function isMeta(filename: string) {
+  return isJs(filename) && isNameOf("meta", filename);
+}
+
 function isIndex(filename: string) {
   return isJsOrMdx(filename) && isNameOf("index", filename);
 }
@@ -44,6 +48,7 @@ function isAction(filename: string) {
 }
 
 export type Route = {
+  meta: number | null;
   index: number | null;
   error: number | null;
   layout: number | null;
@@ -59,12 +64,15 @@ export async function scanProjectStructure(entrance: string) {
   entrance = resolve(entrance);
   // console.log(`start scanning from ${entrance}`);
 
+  const metaPaths: string[] = [];
   const staticPaths: string[] = [];
   const loaderPaths: string[] = [];
   const actionPaths: string[] = [];
   const componentPaths: string[] = [];
   const middlewarePaths: string[] = [];
 
+  const registerMeta = (filePath?: string) =>
+    filePath ? metaPaths.push(filePath) - 1 : null;
   const registerStatic = (filePath?: string) =>
     filePath ? staticPaths.push(filePath) - 1 : null;
   const registerLoader = (filePath?: string) =>
@@ -86,6 +94,7 @@ export async function scanProjectStructure(entrance: string) {
       if (stats.isDirectory()) dirnames.push(entry);
     }
 
+    const metaPaths: string[] = [];
     const indexPaths: string[] = [];
     const errorPaths: string[] = [];
     const layoutPaths: string[] = [];
@@ -97,6 +106,7 @@ export async function scanProjectStructure(entrance: string) {
     // collect every files
     for (const filename of filenames) {
       const filePath = join(dirPath, filename);
+      if (isMeta(filename)) metaPaths.push(filePath);
       if (isIndex(filename)) indexPaths.push(filePath);
       if (isError(filename)) errorPaths.push(filePath);
       if (isLayout(filename)) layoutPaths.push(filePath);
@@ -107,6 +117,8 @@ export async function scanProjectStructure(entrance: string) {
     }
 
     // Test conflit files
+    if (metaPaths.length > 1)
+      throw new Error(`Multiple meta found: ${metaPaths[1]}`);
     if (indexPaths.length > 1)
       throw new Error(`Multiple index page found: ${indexPaths[1]}`);
     if (errorPaths.length > 1)
@@ -123,6 +135,7 @@ export async function scanProjectStructure(entrance: string) {
       throw new Error(`Multiple middleware found: ${middlewarePaths[1]}`);
 
     // register everything
+    const meta = registerMeta(metaPaths.at(0));
     const index = registerComponent(indexPaths.at(0));
     const error = registerComponent(errorPaths.at(0));
     const layout = registerComponent(layoutPaths.at(0));
@@ -132,6 +145,7 @@ export async function scanProjectStructure(entrance: string) {
     const middleware = registerMiddleware(middlewarePaths.at(0));
 
     const route: Route = {
+      meta,
       index,
       error,
       layout,
@@ -153,6 +167,7 @@ export async function scanProjectStructure(entrance: string) {
 
   return {
     directory,
+    metaPaths,
     loaderPaths,
     actionPaths,
     staticPaths,

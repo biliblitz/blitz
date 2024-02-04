@@ -5,9 +5,13 @@ import { LoaderStore } from "../server/event.ts";
 import { ClientManifest } from "../build/manifest.ts";
 import { Graph } from "../build/graph.ts";
 import { unique } from "../utils/algorithms.ts";
+import { Meta } from "../server/meta.ts";
+import { Params } from "../server/router.ts";
 
 export type Runtime = {
+  meta: Signal<Meta>;
   graph: Graph;
+  params: Signal<Params>;
   loaders: Signal<LoaderStore>;
   manifest: ClientManifest;
   location: Signal<URL>;
@@ -18,7 +22,9 @@ export type Runtime = {
 export function createRuntime(
   manifest: ClientManifest,
   location: URL,
+  meta: Meta,
   graph: Graph,
+  params: Params,
   loaders: LoaderStore,
   components: number[],
 ): Runtime {
@@ -30,6 +36,8 @@ export function createRuntime(
   return {
     graph,
     manifest,
+    meta: signal(meta),
+    params: signal(params),
     loaders: signal(loaders),
     location: signal(location),
     preloads: signal(preloads),

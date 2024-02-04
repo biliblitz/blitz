@@ -20,3 +20,6 @@ export const same = <T>(a: T[], b: T[]) => {
   }
   return true;
 };
+
+export const nextTick = () =>
+  new Promise<void>((resolve) => setTimeout(resolve, 0));

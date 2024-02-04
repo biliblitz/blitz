@@ -4,9 +4,10 @@ import { render } from "preact-render-to-string";
 import { RuntimeContext, createRuntime } from "../client/runtime.ts";
 import { Handler } from "../node/index.ts";
 import { ServerManifest } from "../build/manifest.ts";
-import { ResolveResult, resolveRouter } from "./router.ts";
+import { Params, ResolveResult, resolveRouter } from "./router.ts";
 import { LoaderStore, createFetchEvent } from "./event.ts";
 import { ActionReturnValue } from "./action.ts";
+import { Meta } from "./meta.ts";
 
 export type ServerOptions = {
   manifest: ServerManifest;
@@ -16,12 +17,25 @@ export type ErrorResponse = { ok: "error"; error: string };
 export type RedirectResponse = { ok: "redirect"; redirect: string };
 
 export type ActionResponse<T = ActionReturnValue> =
-  | { ok: "action"; loaders: LoaderStore; components: number[]; action: T }
+  | {
+      ok: "action";
+      meta: Meta;
+      params: Params;
+      loaders: LoaderStore;
+      components: number[];
+      action: T;
+    }
   | ErrorResponse
   | RedirectResponse;
 
 export type LoaderResponse =
-  | { ok: "loader"; loaders: LoaderStore; components: number[] }
+  | {
+      ok: "loader";
+      meta: Meta;
+      params: Params;
+      loaders: LoaderStore;
+      components: number[];
+    }
   | ErrorResponse
   | RedirectResponse;
 
@@ -49,10 +63,13 @@ export function createServer<T = void>(
 
           const action = await event.runAction(ref);
           const loaders = await event.runLoaders();
+          const meta = await event.runMetas();
           event.headers.set("Content-Type", "application/json");
           return new Response(
             JSON.stringify({
               ok: "action",
+              meta: meta,
+              params: resolve.params,
               action: action,
               loaders: loaders,
               components: event.components,
@@ -62,10 +79,13 @@ export function createServer<T = void>(
         }
 
         const loaders = await event.runLoaders();
+        const meta = await event.runMetas();
         event.headers.set("Content-Type", "application/json");
         return new Response(
           JSON.stringify({
             ok: "loader",
+            meta: meta,
+            params: resolve.params,
             loaders: loaders,
             components: event.components,
           } satisfies LoaderResponse),
@@ -127,12 +147,15 @@ export function createServer<T = void>(
 
     try {
       const loaders = await event.runLoaders();
+      const meta = await event.runMetas();
       const components = event.components;
 
       const runtime = createRuntime(
         manifest,
         url,
+        meta,
         manifest.graph,
+        resolve.params,
         loaders,
         components,
       );

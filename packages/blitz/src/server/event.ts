@@ -1,7 +1,8 @@
 import type { Middleware } from "./middleware.ts";
-import type { LoaderReturnValue } from "./loader.ts";
+import type { Loader, LoaderReturnValue } from "./loader.ts";
 import { ParamsMap, ResolveResult } from "./router.ts";
 import { ServerManifest } from "../build/manifest.ts";
+import { createDefaultMeta, mergeMeta } from "./meta.ts";
 
 export type FetchEvent = {
   /**
@@ -38,7 +39,8 @@ export type FetchEvent = {
    *
    * Use it only if the middleware runs before this call.
    */
-  load<T>(middleware: Middleware<T>): T;
+  resolve<T>(reference: Middleware<T>): T;
+  resolve<T extends LoaderReturnValue>(reference: Loader<T>): T;
 };
 
 export function createFetchEvent(
@@ -58,14 +60,10 @@ export function createFetchEvent(
     status(value) {
       status = value;
     },
-    load(middleware) {
-      if (!middleware._ref) {
-        throw new Error("Invalid call to evt.load: invalid middleware");
-      }
-      if (!store.has(middleware._ref)) {
-        throw new Error("Invalid call to evt.load: middleware not run");
-      }
-      return store.get(middleware._ref);
+    resolve(reference: { _ref?: string }) {
+      if (!reference._ref || !store.has(reference._ref))
+        throw new Error("Invalid Middleware / Loader");
+      return store.get(reference._ref);
     },
   };
 
@@ -73,8 +71,27 @@ export function createFetchEvent(
     const data = await middleware(event);
     store.set(middleware._ref!, data);
   }
+  async function runLoader<T extends LoaderReturnValue>(loader: Loader<T>) {
+    const data = await loader._fn!(event);
+    store.set(loader._ref!, data);
+    return [loader._ref!, data] as [string, T];
+  }
 
   return {
+    async runMetas() {
+      const fns = routes
+        .map((route) => route.meta)
+        .filter((id): id is number => id !== null)
+        .map((id) => manifest.metas[id]);
+
+      const meta = createDefaultMeta();
+      for (const fn of fns) {
+        const update = await fn(event);
+        mergeMeta(meta, update);
+      }
+      return meta;
+    },
+
     async runLoaders() {
       const store = [] as LoaderStore;
 
@@ -88,7 +105,7 @@ export function createFetchEvent(
         if (route.loaders !== null) {
           const loaders = manifest.loaders[route.loaders];
           for (const loader of loaders) {
-            store.push([loader._ref!, await loader._fn!(event)]);
+            store.push(await runLoader(loader));
           }
         }
       }

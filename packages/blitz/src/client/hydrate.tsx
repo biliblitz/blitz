@@ -35,7 +35,9 @@ async function createClientRuntime(manifest: ClientManifest) {
   const runtime = createRuntime(
     manifest,
     new URL(location.href),
+    json.meta,
     json.graph,
+    json.params,
     json.loaders,
     json.components,
   );
