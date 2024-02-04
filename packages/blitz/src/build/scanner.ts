@@ -27,6 +27,10 @@ function isLayout(filename: string) {
   return isJsOrMdx(filename) && isNameOf("layout", filename);
 }
 
+function isStatic(filename: string) {
+  return isJs(filename) && isNameOf("static", filename);
+}
+
 function isMiddleware(filename: string) {
   return isJs(filename) && isNameOf("middleware", filename);
 }
@@ -43,6 +47,7 @@ export type Route = {
   index: number | null;
   error: number | null;
   layout: number | null;
+  statik: number | null;
   loaders: number | null;
   actions: number | null;
   middleware: number | null;
@@ -54,11 +59,14 @@ export async function scanProjectStructure(entrance: string) {
   entrance = resolve(entrance);
   // console.log(`start scanning from ${entrance}`);
 
+  const staticPaths: string[] = [];
   const loaderPaths: string[] = [];
   const actionPaths: string[] = [];
   const componentPaths: string[] = [];
   const middlewarePaths: string[] = [];
 
+  const registerStatic = (filePath?: string) =>
+    filePath ? staticPaths.push(filePath) - 1 : null;
   const registerLoader = (filePath?: string) =>
     filePath ? loaderPaths.push(filePath) - 1 : null;
   const registerAction = (filePath?: string) =>
@@ -81,6 +89,7 @@ export async function scanProjectStructure(entrance: string) {
     const indexPaths: string[] = [];
     const errorPaths: string[] = [];
     const layoutPaths: string[] = [];
+    const staticPaths: string[] = [];
     const loaderPaths: string[] = [];
     const actionPaths: string[] = [];
     const middlewarePaths: string[] = [];
@@ -91,6 +100,7 @@ export async function scanProjectStructure(entrance: string) {
       if (isIndex(filename)) indexPaths.push(filePath);
       if (isError(filename)) errorPaths.push(filePath);
       if (isLayout(filename)) layoutPaths.push(filePath);
+      if (isStatic(filename)) staticPaths.push(filePath);
       if (isLoader(filename)) loaderPaths.push(filePath);
       if (isAction(filename)) actionPaths.push(filePath);
       if (isMiddleware(filename)) middlewarePaths.push(filePath);
@@ -103,6 +113,8 @@ export async function scanProjectStructure(entrance: string) {
       throw new Error(`Multiple error page found: ${indexPaths[1]}`);
     if (layoutPaths.length > 1)
       throw new Error(`Multiple layout page found: ${layoutPaths[1]}`);
+    if (staticPaths.length > 1)
+      throw new Error(`Multiple static found: ${staticPaths[1]}`);
     if (loaderPaths.length > 1)
       throw new Error(`Multiple loader found: ${loaderPaths[1]}`);
     if (actionPaths.length > 1)
@@ -114,11 +126,20 @@ export async function scanProjectStructure(entrance: string) {
     const index = registerComponent(indexPaths.at(0));
     const error = registerComponent(errorPaths.at(0));
     const layout = registerComponent(layoutPaths.at(0));
+    const statik = registerStatic(staticPaths.at(0));
     const loaders = registerLoader(loaderPaths.at(0));
     const actions = registerAction(actionPaths.at(0));
     const middleware = registerMiddleware(middlewarePaths.at(0));
 
-    const route: Route = { index, error, layout, loaders, actions, middleware };
+    const route: Route = {
+      index,
+      error,
+      layout,
+      statik,
+      loaders,
+      actions,
+      middleware,
+    };
     const children: [string, Directory][] = [];
 
     for (const dirname of dirnames) {
@@ -134,6 +155,7 @@ export async function scanProjectStructure(entrance: string) {
     directory,
     loaderPaths,
     actionPaths,
+    staticPaths,
     componentPaths,
     middlewarePaths,
   };

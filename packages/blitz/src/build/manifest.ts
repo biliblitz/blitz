@@ -4,6 +4,7 @@ import { Action } from "../server/action.ts";
 import { Loader } from "../server/loader.ts";
 import { Middleware } from "../server/middleware.ts";
 import { Graph } from "./graph.ts";
+import { StaticFunction } from "../server/static.ts";
 
 export interface ClientManifest {
   components: ComponentType[];
@@ -13,6 +14,7 @@ export interface ServerManifest extends ClientManifest {
   actions: Action[][];
   loaders: Loader[][];
   middlewares: Middleware[];
+  statics: StaticFunction[];
   directory: Directory;
   graph: Graph;
 }
@@ -48,6 +50,9 @@ export function toServerManifestCode(project: Project, graph: Graph) {
     ...structure.middlewarePaths.map(
       (filePath, i) => `import m${i} from "${filePath}";`,
     ),
+    ...structure.staticPaths.map(
+      (filePath, i) => `import s${i} from "${filePath}";`,
+    ),
 
     // assign ref
     ...actions.flatMap((actions, i) =>
@@ -63,9 +68,10 @@ export function toServerManifestCode(project: Project, graph: Graph) {
     `const actions = [${actions.map((a, i) => `[${a.map((_, j) => `a${i}_${j}`).join(", ")}]`).join(", ")}];`,
     `const loaders = [${loaders.map((l, i) => `[${l.map((_, j) => `l${i}_${j}`).join(", ")}]`).join(", ")}];`,
     `const middlewares = [${middlewares.map((_, i) => `m${i}`).join(", ")}];`,
+    `const statics = [${structure.staticPaths.map((_, i) => `s${i}`).join(", ")}];`,
     `const directory = ${JSON.stringify(structure.directory)};`,
     `const graph = ${JSON.stringify(graph)};`,
-    `export const manifest = { components, actions, loaders, middlewares, directory, graph };`,
+    `export const manifest = { components, actions, loaders, statics, middlewares, directory, graph };`,
   ].join("\n");
 }
 

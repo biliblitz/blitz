@@ -6,6 +6,7 @@ import { Handler } from "../node/index.ts";
 import { writeFile, mkdir, unlink } from "node:fs/promises";
 import { Directory } from "../build/scanner.ts";
 import chalk from "chalk";
+import { StaticEnv } from "../server/static.ts";
 
 export type Options = {
   /** @example "https://yoursite.com" */
@@ -78,23 +79,36 @@ export async function generate(
   const outdir = "dist/static";
   const pathnames = [] as string[];
 
-  function dfs(current: string, [route, children]: Directory) {
+  const env: StaticEnv = { params: new Map() };
+  async function dfs(current: string, [route, children]: Directory) {
     if (route.index !== null) pathnames.push(current);
     for (const [dirname, child] of children) {
-      if (dirname === "[...]")
-        throw new Error("Dynamic route is not supported in static generation");
-      else if (dirname.startsWith("[") && dirname.endsWith("]"))
-        throw new Error("Dynamic route is not supported in static generation");
-      else if (dirname.startsWith("(") && dirname.endsWith(")"))
-        dfs(current, child);
-      else dfs(current + dirname + "/", child);
+      if (dirname.startsWith("[") && dirname.endsWith("]")) {
+        if (child[0].statik === null)
+          throw new Error(
+            `static.ts is missing for route "${current + dirname + "/"}"`,
+          );
+        const param = dirname === "[...]" ? "$" : dirname.slice(1, -1);
+        const statik = manifest.statics[child[0].statik];
+        const possibles = await statik(env);
+        for (const possible of possibles) {
+          env.params.set(param, possible);
+          await dfs(current + possible + "/", child);
+        }
+        env.params.delete(param);
+      } else if (dirname.startsWith("(") && dirname.endsWith(")")) {
+        await dfs(current, child);
+      } else {
+        await dfs(current + dirname + "/", child);
+      }
     }
   }
-  dfs("/", manifest.directory);
+  await dfs("/", manifest.directory);
 
   async function get(url: URL) {
     const request = new Request(url);
     const response = await server(request);
+    // handle redirect
     if ([301, 302, 307, 308].includes(response.status)) {
       const location = response.headers.get("Location");
       return new TextEncoder().encode(
