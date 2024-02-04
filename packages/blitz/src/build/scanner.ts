@@ -52,7 +52,7 @@ export type Directory = [Route, [string, Directory][]];
 
 export async function scanProjectStructure(entrance: string) {
   entrance = resolve(entrance);
-  console.log(`start scanning from ${entrance}`);
+  // console.log(`start scanning from ${entrance}`);
 
   const loaderPaths: string[] = [];
   const actionPaths: string[] = [];

@@ -1,7 +1,11 @@
 import { Plugin } from "vite";
 import { resolve, staticAdapterId } from "../build/vmod.ts";
 import { join } from "path";
-import { unlink } from "fs/promises";
+import { ServerManifest } from "../build/manifest.ts";
+import { Handler } from "../node/index.ts";
+import { writeFile, mkdir, unlink } from "node:fs/promises";
+import { Directory } from "../build/scanner.ts";
+import chalk from "chalk";
 
 export type Options = {
   /** @example "https://yoursite.com" */
@@ -56,42 +60,64 @@ export function staticAdapter(options: Options): Plugin {
 const staticAdapterEntryCode = (origin: string) => `
 import server from "./app/entry.static.tsx";
 import { manifest } from "blitz:manifest/server";
-import { writeFile, mkdir } from "node:fs/promises";
+import { generate } from "@biliblitz/blitz/adapters/static"
 
-const outdir = "dist/static";
-const origin = ${JSON.stringify(origin)};
-const pathnames = [];
-
-function dfs(current, [route, children]) {
-  if (route.index !== null)
-    pathnames.push(current);
-  for (const [dirname, child] of children) {
-    if (dirname === "[...]")
-      throw new Error("Dynamic route is not supported in static generation");
-    else if (dirname.startsWith("[") && dirname.endsWith("]"))
-      throw new Error("Dynamic route is not supported in static generation");
-    else if (dirname.startsWith("(") && dirname.endsWith(")"))
-      dfs(current, child);
-    else
-      dfs(current + dirname + "/", child);
-  }
-}
-dfs("/", manifest.directory);
-
-async function get(url) {
-  const request = new Request(url);
-  const response = await server(request);
-  const buffer = await response.arrayBuffer();
-  return new Uint8Array(buffer);
-}
-
-for (const pathname of pathnames) {
-  const dirname = outdir + pathname;
-  await mkdir(dirname, { recursive: true });
-  const index = await get(new URL(origin + pathname));
-  await writeFile(dirname + "index.html", index);
-  const json = await get(new URL(origin + pathname + "_data.json"));
-  await writeFile(dirname + "_data.json", json);
-  console.log(dirname + "index.html");
-}
+await generate(server, manifest, ${JSON.stringify(origin)});
 `;
+
+export async function generate(
+  server: Handler<{}>,
+  manifest: ServerManifest,
+  origin: string,
+) {
+  console.log("");
+  console.log(
+    `${chalk.cyan(`blitz v0.0.2`)} ${chalk.green("generating static pages...")}`,
+  );
+
+  const outdir = "dist/static";
+  const pathnames = [] as string[];
+
+  function dfs(current: string, [route, children]: Directory) {
+    if (route.index !== null) pathnames.push(current);
+    for (const [dirname, child] of children) {
+      if (dirname === "[...]")
+        throw new Error("Dynamic route is not supported in static generation");
+      else if (dirname.startsWith("[") && dirname.endsWith("]"))
+        throw new Error("Dynamic route is not supported in static generation");
+      else if (dirname.startsWith("(") && dirname.endsWith(")"))
+        dfs(current, child);
+      else dfs(current + dirname + "/", child);
+    }
+  }
+  dfs("/", manifest.directory);
+
+  async function get(url: URL) {
+    const request = new Request(url);
+    const response = await server(request);
+    if ([301, 302, 307, 308].includes(response.status)) {
+      const location = response.headers.get("Location");
+      return new TextEncoder().encode(
+        `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; URL=${location}" /></head><body>Redirecting to <a href="${location}">${location}</a></body></html>`,
+      );
+    }
+    const buffer = await response.arrayBuffer();
+    return new Uint8Array(buffer);
+  }
+
+  const start = Date.now();
+  for (const pathname of pathnames) {
+    const dirname = outdir + pathname;
+    await mkdir(dirname, { recursive: true });
+    const index = await get(new URL(origin + pathname));
+    await writeFile(dirname + "index.html", index);
+    const json = await get(new URL(origin + pathname + "_data.json"));
+    await writeFile(dirname + "_data.json", json);
+    console.log(chalk.gray(dirname) + chalk.white("index.html"));
+  }
+  const end = Date.now();
+
+  console.log(
+    chalk.green(`✓ generated ${pathnames.length} pages in ${end - start}ms.`),
+  );
+}
