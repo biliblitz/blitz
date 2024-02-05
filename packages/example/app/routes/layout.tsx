@@ -1,5 +1,5 @@
 import { Outlet } from "@biliblitz/blitz";
-import { action$, loader$, meta$ } from "@biliblitz/blitz/server";
+import { meta$, action$ } from "@biliblitz/blitz/server";
 
 import "./bbb.css";
 
@@ -14,10 +14,6 @@ export const useLogin = action$(async () => {
   }
 
   return { ok: Math.random() };
-});
-
-export const useUsername = loader$(() => {
-  return { username: `alice ${Math.random()}` };
 });
 
 export const meta = meta$((evt) => {

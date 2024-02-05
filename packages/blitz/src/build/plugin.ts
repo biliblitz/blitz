@@ -1,5 +1,4 @@
 import type { Plugin } from "vite";
-import path from "node:path";
 import { resolve, manifestClient, manifestServer } from "./vmod.ts";
 import { getRequestListener } from "@hono/node-server";
 import { Project, resolveProject, scanProjectStructure } from "./scanner.ts";
@@ -26,9 +25,9 @@ export async function blitzCity(): Promise<Plugin> {
   function getEntries(project: Project) {
     const cwd = process.cwd();
     const entry = "app/entry.client.tsx";
-    const components = project.structure.componentPaths
-      .map((path) => relative(cwd, path))
-      .map((path) => `${path}?no-blitz`);
+    const components = project.structure.componentPaths.map((path) =>
+      relative(cwd, path),
+    );
     return { entry, components };
   }
 
@@ -42,13 +41,9 @@ export async function blitzCity(): Promise<Plugin> {
         case manifestServer:
           return resolve(manifestServer);
       }
-
-      if (id.endsWith("?no-blitz")) {
-        return path.resolve(id.slice(0, -9)) + "?no-blitz";
-      }
     },
 
-    async load(id, options) {
+    async load(id) {
       switch (id) {
         case resolve(manifestClient):
           return toClientManifestCode(await getProject());
@@ -61,7 +56,9 @@ export async function blitzCity(): Promise<Plugin> {
             : await loadClientGraph(entry, components);
           return toServerManifestCode(project, graph);
       }
+    },
 
+    async transform(code, id, options) {
       // replace action/loader in browser
       if (!options?.ssr) {
         const project = await getProject();
@@ -69,16 +66,14 @@ export async function blitzCity(): Promise<Plugin> {
         const index = project.structure.componentPaths.indexOf(id);
         if (index > -1) {
           return toClientComponentCode(
+            code,
             project.actions[index],
             project.loaders[index],
           );
         }
-
-        if (project.structure.middlewarePaths.includes(id)) {
-          console.warn(`Warning: ${id} should not be imported in web`);
-          return `export {};`;
-        }
       }
+
+      return null;
     },
 
     async config(config, env) {

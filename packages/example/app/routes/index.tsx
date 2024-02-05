@@ -1,6 +1,11 @@
 import { Form, Link } from "@biliblitz/blitz";
+import { loader$ } from "@biliblitz/blitz/server";
 import { useComputed, useSignal } from "@preact/signals";
-import { useLogin, useUsername } from "./layout.tsx";
+import { useLogin } from "./layout.tsx";
+
+export const useUsername = loader$(() => {
+  return { username: `alice ${Math.random()}` };
+});
 
 export default () => {
   const user = useUsername();

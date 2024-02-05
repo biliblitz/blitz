@@ -6,6 +6,7 @@ import { Middleware } from "../server/middleware.ts";
 import { Graph } from "./graph.ts";
 import { StaticFunction } from "../server/static.ts";
 import { MetaFunction } from "../server/meta.ts";
+import { removeExports } from "./remove-exports.ts";
 
 export interface ClientManifest {
   components: ComponentType[];
@@ -86,16 +87,26 @@ export function toServerManifestCode(project: Project, graph: Graph) {
 }
 
 export function toClientComponentCode(
+  source: string,
   actions: ActionMeta,
   loaders: LoaderMeta,
 ) {
-  return [
-    `import { useAction, useLoader } from "@biliblitz/blitz";`,
+  const remove = removeExports(source, [
+    ...actions.map(({ name }) => name),
+    ...loaders.map(({ name }) => name),
+  ]);
+
+  const imports = [
+    `import { useAction as $blitz$useAction, useLoader as $blitz$useLoader } from "@biliblitz/blitz";`,
     ...actions.map(
-      ({ name, ref }) => `export const ${name} = () => useAction("${ref}");`,
+      (action) =>
+        `export const ${action.name} = () => $blitz$useAction("${action.ref}");`,
     ),
     ...loaders.map(
-      ({ name, ref }) => `export const ${name} = () => useLoader("${ref}");`,
+      (loader) =>
+        `export const ${loader.name} = () => $blitz$useLoader("${loader.ref}");`,
     ),
   ].join("\n");
+
+  return imports + remove;
 }
