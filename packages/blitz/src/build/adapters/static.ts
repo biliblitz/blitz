@@ -1,12 +1,12 @@
 import { Plugin } from "vite";
-import { resolve, staticAdapterId } from "../build/vmod.ts";
+import { resolve, staticAdapterId } from "../../build/vmod.ts";
 import { join } from "path";
-import { ServerManifest } from "../build/manifest.ts";
-import { Handler } from "../node/index.ts";
+import { ServerManifest } from "../../build/manifest.ts";
+import { Handler } from "../../node/index.ts";
 import { writeFile, mkdir, unlink } from "node:fs/promises";
-import { Directory } from "../build/scanner.ts";
+import { Directory } from "../../build/scanner.ts";
 import chalk from "chalk";
-import { StaticEnv } from "../server/static.ts";
+import { StaticEnv } from "../../server/static.ts";
 
 export type Options = {
   /** @example "https://yoursite.com" */
@@ -61,7 +61,7 @@ export function staticAdapter(options: Options): Plugin {
 const staticAdapterEntryCode = (origin: string) => `
 import server from "./app/entry.static.tsx";
 import { manifest } from "blitz:manifest/server";
-import { generate } from "@biliblitz/blitz/adapters/static"
+import { generate } from "@biliblitz/blitz/vite/adapters/static";
 
 await generate(server, manifest, ${JSON.stringify(origin)});
 `;
@@ -114,6 +114,10 @@ export async function generate(
       return new TextEncoder().encode(
         `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; URL=${location}" /></head><body>Redirecting to <a href="${location}">${location}</a></body></html>`,
       );
+    }
+    // handle server explosion
+    if (response.status >= 500) {
+      throw new Error("Server exploded, stopping...");
     }
     const buffer = await response.arrayBuffer();
     return new Uint8Array(buffer);

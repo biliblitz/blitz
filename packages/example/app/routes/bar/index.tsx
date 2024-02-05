@@ -1,6 +1,10 @@
 import { Link } from "@biliblitz/blitz";
-import { useBarData } from "./loader.ts";
+import { loader$ } from "@biliblitz/blitz/server";
 import { useComputed } from "@preact/signals";
+
+export const useBarData = loader$(() => {
+  return { data: `Bar loader: ${Math.random()}` };
+});
 
 export default function () {
   const bar = useBarData();

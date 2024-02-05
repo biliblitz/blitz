@@ -1,10 +1,7 @@
 import { extname, join, resolve } from "node:path";
-import { isJs, isJsOrMdx } from "../utils/ext.ts";
+import { isJs, isJsOrMdx, isMdx } from "../utils/ext.ts";
 import { readFile, readdir, stat } from "node:fs/promises";
-import { init, parse } from "es-module-lexer";
 import { hashRef } from "../utils/crypto.ts";
-
-await init;
 
 function getFilenameWithoutExt(filename: string) {
   const ext = extname(filename);
@@ -13,10 +10,6 @@ function getFilenameWithoutExt(filename: string) {
 
 function isNameOf(name: string, filename: string) {
   return getFilenameWithoutExt(filename) === name;
-}
-
-function isMeta(filename: string) {
-  return isJs(filename) && isNameOf("meta", filename);
 }
 
 function isIndex(filename: string) {
@@ -39,22 +32,11 @@ function isMiddleware(filename: string) {
   return isJs(filename) && isNameOf("middleware", filename);
 }
 
-function isLoader(filename: string) {
-  return isJs(filename) && isNameOf("loader", filename);
-}
-
-function isAction(filename: string) {
-  return isJs(filename) && isNameOf("action", filename);
-}
-
 export type Route = {
-  meta: number | null;
   index: number | null;
   error: number | null;
   layout: number | null;
   statik: number | null;
-  loaders: number | null;
-  actions: number | null;
   middleware: number | null;
 };
 
@@ -64,21 +46,12 @@ export async function scanProjectStructure(entrance: string) {
   entrance = resolve(entrance);
   // console.log(`start scanning from ${entrance}`);
 
-  const metaPaths: string[] = [];
   const staticPaths: string[] = [];
-  const loaderPaths: string[] = [];
-  const actionPaths: string[] = [];
   const componentPaths: string[] = [];
   const middlewarePaths: string[] = [];
 
-  const registerMeta = (filePath?: string) =>
-    filePath ? metaPaths.push(filePath) - 1 : null;
   const registerStatic = (filePath?: string) =>
     filePath ? staticPaths.push(filePath) - 1 : null;
-  const registerLoader = (filePath?: string) =>
-    filePath ? loaderPaths.push(filePath) - 1 : null;
-  const registerAction = (filePath?: string) =>
-    filePath ? actionPaths.push(filePath) - 1 : null;
   const registerComponent = (filePath?: string) =>
     filePath ? componentPaths.push(filePath) - 1 : null;
   const registerMiddleware = (filePath?: string) =>
@@ -94,64 +67,46 @@ export async function scanProjectStructure(entrance: string) {
       if (stats.isDirectory()) dirnames.push(entry);
     }
 
-    const metaPaths: string[] = [];
     const indexPaths: string[] = [];
     const errorPaths: string[] = [];
     const layoutPaths: string[] = [];
     const staticPaths: string[] = [];
-    const loaderPaths: string[] = [];
-    const actionPaths: string[] = [];
     const middlewarePaths: string[] = [];
 
     // collect every files
     for (const filename of filenames) {
       const filePath = join(dirPath, filename);
-      if (isMeta(filename)) metaPaths.push(filePath);
       if (isIndex(filename)) indexPaths.push(filePath);
       if (isError(filename)) errorPaths.push(filePath);
       if (isLayout(filename)) layoutPaths.push(filePath);
       if (isStatic(filename)) staticPaths.push(filePath);
-      if (isLoader(filename)) loaderPaths.push(filePath);
-      if (isAction(filename)) actionPaths.push(filePath);
       if (isMiddleware(filename)) middlewarePaths.push(filePath);
     }
 
     // Test conflit files
-    if (metaPaths.length > 1)
-      throw new Error(`Multiple meta found: ${metaPaths[1]}`);
     if (indexPaths.length > 1)
       throw new Error(`Multiple index page found: ${indexPaths[1]}`);
     if (errorPaths.length > 1)
-      throw new Error(`Multiple error page found: ${indexPaths[1]}`);
+      throw new Error(`Multiple error page found: ${errorPaths[1]}`);
     if (layoutPaths.length > 1)
       throw new Error(`Multiple layout page found: ${layoutPaths[1]}`);
     if (staticPaths.length > 1)
       throw new Error(`Multiple static found: ${staticPaths[1]}`);
-    if (loaderPaths.length > 1)
-      throw new Error(`Multiple loader found: ${loaderPaths[1]}`);
-    if (actionPaths.length > 1)
-      throw new Error(`Multiple action found: ${actionPaths[1]}`);
     if (middlewarePaths.length > 1)
       throw new Error(`Multiple middleware found: ${middlewarePaths[1]}`);
 
     // register everything
-    const meta = registerMeta(metaPaths.at(0));
     const index = registerComponent(indexPaths.at(0));
     const error = registerComponent(errorPaths.at(0));
     const layout = registerComponent(layoutPaths.at(0));
     const statik = registerStatic(staticPaths.at(0));
-    const loaders = registerLoader(loaderPaths.at(0));
-    const actions = registerAction(actionPaths.at(0));
     const middleware = registerMiddleware(middlewarePaths.at(0));
 
     const route: Route = {
-      meta,
       index,
       error,
       layout,
       statik,
-      loaders,
-      actions,
       middleware,
     };
     const children: [string, Directory][] = [];
@@ -167,9 +122,6 @@ export async function scanProjectStructure(entrance: string) {
 
   return {
     directory,
-    metaPaths,
-    loaderPaths,
-    actionPaths,
     staticPaths,
     componentPaths,
     middlewarePaths,
@@ -178,62 +130,58 @@ export async function scanProjectStructure(entrance: string) {
 
 export type ProjectStructure = Awaited<ReturnType<typeof scanProjectStructure>>;
 
+const actionRegExp =
+  /\bexport\s+(?:const|let|var)\s+([a-zA-Z0-9_\$]+)\s*=\s*action\$/g;
 export async function parseAction(actionPath: string, index: number) {
   const source = await readFile(actionPath, "utf8");
-  const [_, exports] = parse(source);
-  if (!exports.length) {
-    throw new Error(`No action export in ${actionPath}`);
-  }
+  const matches = [...source.matchAll(actionRegExp)].map((match) => match[1]);
   return await Promise.all(
-    exports
-      .map((e) => e.n)
-      .map(async (name) => ({
-        name: name,
-        ref: await hashRef(`action-${index}-${name}`),
-      })),
+    matches.map(async (name) => ({
+      name: name,
+      ref: await hashRef(`action-${index}-${name}`),
+    })),
   );
 }
 
 export type ActionMeta = Awaited<ReturnType<typeof parseAction>>;
 
+const loaderRegExp =
+  /\bexport\s+(?:const|let|var)\s+([a-zA-Z0-9_\$]+)\s*=\s*loader\$/g;
 export async function parseLoader(loaderPath: string, index: number) {
   const source = await readFile(loaderPath, "utf8");
-  const [_, exports] = parse(source);
-  if (!exports.length) {
-    throw new Error(`No loader export in ${loaderPath}`);
-  }
+  const matches = [...source.matchAll(loaderRegExp)].map((match) => match[1]);
   return await Promise.all(
-    exports
-      .map((e) => e.n)
-      .map(async (name) => ({
-        name: name,
-        ref: await hashRef(`loader-${index}-${name}`),
-      })),
+    matches.map(async (name) => ({
+      name: name,
+      ref: await hashRef(`loader-${index}-${name}`),
+    })),
   );
 }
 
 export type LoaderMeta = Awaited<ReturnType<typeof parseLoader>>;
 
-export async function parseMiddleware(middlewarePath: string, index: number) {
-  const source = await readFile(middlewarePath, "utf8");
-  const [_, exports] = parse(source);
-  const middleware = exports.find((e) => e.n === "default");
-  if (!middleware) {
-    throw new Error(`No default export in ${middlewarePath}`);
-  }
+export async function parseMiddleware(_: string, index: number) {
   return { ref: await hashRef(`middleware-${index}`) };
 }
 
 export type MiddlewareMeta = Awaited<ReturnType<typeof parseMiddleware>>;
 
+const metaRegExp = /\nexport\s+(?:const|let|var)\s+meta\s*=/;
+export async function parseMeta(metaPath: string) {
+  if (isMdx(metaPath)) return true;
+  const source = await readFile(metaPath, "utf8");
+  return metaRegExp.test(source);
+}
+
 export async function resolveProject(structure: ProjectStructure) {
   return {
     structure,
-    actions: await Promise.all(structure.actionPaths.map(parseAction)),
-    loaders: await Promise.all(structure.loaderPaths.map(parseLoader)),
+    actions: await Promise.all(structure.componentPaths.map(parseAction)),
+    loaders: await Promise.all(structure.componentPaths.map(parseLoader)),
     middlewares: await Promise.all(
       structure.middlewarePaths.map(parseMiddleware),
     ),
+    metas: await Promise.all(structure.componentPaths.map(parseMeta)),
   };
 }
 

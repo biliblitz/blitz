@@ -2,7 +2,7 @@ import type { Middleware } from "./middleware.ts";
 import type { Loader, LoaderReturnValue } from "./loader.ts";
 import { ParamsMap, ResolveResult } from "./router.ts";
 import { ServerManifest } from "../build/manifest.ts";
-import { createDefaultMeta, mergeMeta } from "./meta.ts";
+import { MetaFunction, createDefaultMeta, mergeMeta } from "./meta.ts";
 
 export type FetchEvent = {
   /**
@@ -77,17 +77,20 @@ export function createFetchEvent(
     return [loader._ref!, data] as [string, T];
   }
 
+  const last = routes[routes.length - 1];
+  const components = routes
+    .map((route) => route.layout)
+    .concat(last.index)
+    .filter((id): id is number => id !== null);
+
   return {
     async runMetas() {
-      const fns = routes
-        .map((route) => route.meta)
-        .filter((id): id is number => id !== null)
-        .map((id) => manifest.metas[id]);
-
+      const fns = components
+        .map((id) => manifest.metas[id])
+        .filter((x): x is MetaFunction => x !== null);
       const meta = createDefaultMeta();
       for (const fn of fns) {
-        const update = await fn(event);
-        mergeMeta(meta, update);
+        mergeMeta(meta, await fn(event));
       }
       return meta;
     },
@@ -101,39 +104,35 @@ export function createFetchEvent(
         }
       }
 
-      for (const route of routes) {
-        if (route.loaders !== null) {
-          const loaders = manifest.loaders[route.loaders];
-          for (const loader of loaders) {
-            store.push(await runLoader(loader));
-          }
-        }
+      const loaders = components.flatMap((id) => manifest.loaders[id]);
+      for (const loader of loaders) {
+        store.push(await runLoader(loader));
       }
 
       return store;
     },
 
     async runAction(ref: string) {
-      const found = routes.some(
-        (route) =>
-          route.actions !== null &&
-          manifest.actions[route.actions].some((action) => action._ref === ref),
-      );
+      const found = components
+        .flatMap((id) => manifest.actions[id])
+        .some((action) => action._ref === ref);
 
       if (!found) {
         throw new Error("Action not found");
       }
 
       for (const route of routes) {
-        if (route.middleware !== null) {
+        if (route.middleware !== null)
           await runMiddleware(manifest.middlewares[route.middleware]);
-        }
-        if (route.actions !== null) {
-          const actions = manifest.actions[route.actions];
+        if (route.layout !== null) {
+          const actions = manifest.actions[route.layout];
           const action = actions.find((action) => action._ref === ref);
-          if (action) {
-            return await action._fn!(event);
-          }
+          if (action) return await action._fn!(event);
+        }
+        if (route.index !== null) {
+          const actions = manifest.actions[route.index];
+          const action = actions.find((action) => action._ref === ref);
+          if (action) return await action._fn!(event);
         }
       }
 
@@ -141,16 +140,6 @@ export function createFetchEvent(
     },
 
     get components() {
-      const components = [] as number[];
-      for (const route of routes) {
-        if (route.layout !== null) {
-          components.push(route.layout);
-        }
-      }
-      const last = routes.at(-1);
-      if (last && last.index !== null) {
-        components.push(last.index);
-      }
       return components;
     },
 

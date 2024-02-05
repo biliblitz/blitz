@@ -12,13 +12,13 @@ export interface ClientManifest {
 }
 
 export interface ServerManifest extends ClientManifest {
+  graph: Graph;
+  metas: (MetaFunction | null)[];
   actions: Action[][];
   loaders: Loader[][];
-  middlewares: Middleware[];
   statics: StaticFunction[];
-  metas: MetaFunction[];
   directory: Directory;
-  graph: Graph;
+  middlewares: Middleware[];
 }
 
 export function toClientManifestCode({ structure }: Project) {
@@ -31,7 +31,7 @@ export function toClientManifestCode({ structure }: Project) {
 }
 
 export function toServerManifestCode(project: Project, graph: Graph) {
-  const { structure, actions, loaders, middlewares } = project;
+  const { structure, actions, loaders, middlewares, metas } = project;
 
   return [
     ...structure.componentPaths.map(
@@ -41,22 +41,26 @@ export function toServerManifestCode(project: Project, graph: Graph) {
       (actions, i) =>
         `import { ${actions
           .map(({ name }, j) => `${name} as a${i}_${j}`)
-          .join(", ")} } from "${structure.actionPaths[i]}";`,
+          .join(", ")} } from "${structure.componentPaths[i]}";`,
     ),
     ...loaders.map(
       (loaders, i) =>
         `import { ${loaders
           .map(({ name }, j) => `${name} as l${i}_${j}`)
-          .join(", ")} } from "${structure.loaderPaths[i]}";`,
+          .join(", ")} } from "${structure.componentPaths[i]}";`,
     ),
+    ...metas
+      .map((hasMeta, i) =>
+        hasMeta
+          ? `import { meta as t${i} } from "${structure.componentPaths[i]}";`
+          : null,
+      )
+      .filter((s) => s !== null),
     ...structure.middlewarePaths.map(
       (filePath, i) => `import m${i} from "${filePath}";`,
     ),
     ...structure.staticPaths.map(
       (filePath, i) => `import s${i} from "${filePath}";`,
-    ),
-    ...structure.metaPaths.map(
-      (filePath, i) => `import t${i} from "${filePath}";`,
     ),
 
     // assign ref
@@ -69,30 +73,27 @@ export function toServerManifestCode(project: Project, graph: Graph) {
     ...middlewares.map(({ ref }, i) => `m${i}._ref = "${ref}";`),
 
     // export
-    `const components = [${structure.componentPaths.map((_, i) => `c${i}`).join(", ")}];`,
+    `const graph = ${JSON.stringify(graph)};`,
+    `const metas = [${structure.componentPaths.map((_, i) => (metas[i] ? `t${i}` : "null")).join(", ")}];`,
     `const actions = [${actions.map((a, i) => `[${a.map((_, j) => `a${i}_${j}`).join(", ")}]`).join(", ")}];`,
     `const loaders = [${loaders.map((l, i) => `[${l.map((_, j) => `l${i}_${j}`).join(", ")}]`).join(", ")}];`,
-    `const middlewares = [${middlewares.map((_, i) => `m${i}`).join(", ")}];`,
-    `const metas = [${structure.metaPaths.map((_, i) => `t${i}`).join(", ")}];`,
     `const statics = [${structure.staticPaths.map((_, i) => `s${i}`).join(", ")}];`,
     `const directory = ${JSON.stringify(structure.directory)};`,
-    `const graph = ${JSON.stringify(graph)};`,
-    `export const manifest = { components, actions, loaders, statics, middlewares, directory, graph, metas };`,
+    `const components = [${structure.componentPaths.map((_, i) => `c${i}`).join(", ")}];`,
+    `const middlewares = [${middlewares.map((_, i) => `m${i}`).join(", ")}];`,
+    `export const manifest = { graph, metas, actions, loaders, statics, directory, components, middlewares };`,
   ].join("\n");
 }
 
-export function toClientActionCode(actions: ActionMeta) {
+export function toClientComponentCode(
+  actions: ActionMeta,
+  loaders: LoaderMeta,
+) {
   return [
-    `import { useAction } from "@biliblitz/blitz";`,
+    `import { useAction, useLoader } from "@biliblitz/blitz";`,
     ...actions.map(
       ({ name, ref }) => `export const ${name} = () => useAction("${ref}");`,
     ),
-  ].join("\n");
-}
-
-export function toClientLoaderCode(loaders: LoaderMeta) {
-  return [
-    `import { useLoader } from "@biliblitz/blitz";`,
     ...loaders.map(
       ({ name, ref }) => `export const ${name} = () => useLoader("${ref}");`,
     ),

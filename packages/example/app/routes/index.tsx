@@ -1,7 +1,6 @@
 import { Form, Link } from "@biliblitz/blitz";
-import { useUsername } from "./loader.ts";
 import { useComputed, useSignal } from "@preact/signals";
-import { useLogin } from "./action.ts";
+import { useLogin, useUsername } from "./layout.tsx";
 
 export default () => {
   const user = useUsername();

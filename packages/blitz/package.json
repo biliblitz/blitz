@@ -23,13 +23,13 @@
       "types": "./dist/types/build/index.d.ts",
       "import": "./dist/esm/build/index.mjs"
     },
+    "./vite/adapters/static": {
+      "types": "./dist/types/build/adapters/static.d.ts",
+      "import": "./dist/esm/build/adapters/static.mjs"
+    },
     "./node": {
       "types": "./dist/types/node/index.d.ts",
       "import": "./dist/esm/node/index.mjs"
-    },
-    "./adapters/static": {
-      "types": "./dist/types/adapters/static.d.ts",
-      "import": "./dist/esm/adapters/static.mjs"
     },
     "./env": {
       "types": "./env.d.ts"

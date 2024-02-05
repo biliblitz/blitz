@@ -7,9 +7,9 @@ export function useLoader<T extends LoaderReturnValue>(
 ): LoaderHandler<T> {
   const runtime = useRuntime();
   return useComputed(() => {
-    const loaders = runtime.loaders.value.find(([name]) => name === ref);
+    const loaders = runtime.loaders.value.find((item) => item[0] === ref);
     if (!loaders) {
-      throw new Error(`Loader not found: ${ref}`);
+      throw new Error(`Loader not found: "${ref}"`);
     }
     return loaders[1] as T;
   });

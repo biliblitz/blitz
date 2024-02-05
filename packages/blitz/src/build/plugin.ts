@@ -1,10 +1,10 @@
 import type { Plugin } from "vite";
+import path from "node:path";
 import { resolve, manifestClient, manifestServer } from "./vmod.ts";
 import { getRequestListener } from "@hono/node-server";
 import { Project, resolveProject, scanProjectStructure } from "./scanner.ts";
 import {
-  toClientActionCode,
-  toClientLoaderCode,
+  toClientComponentCode,
   toClientManifestCode,
   toServerManifestCode,
 } from "./manifest.ts";
@@ -26,9 +26,9 @@ export async function blitzCity(): Promise<Plugin> {
   function getEntries(project: Project) {
     const cwd = process.cwd();
     const entry = "app/entry.client.tsx";
-    const components = project.structure.componentPaths.map((path) =>
-      relative(cwd, path),
-    );
+    const components = project.structure.componentPaths
+      .map((path) => relative(cwd, path))
+      .map((path) => `${path}?no-blitz`);
     return { entry, components };
   }
 
@@ -41,6 +41,10 @@ export async function blitzCity(): Promise<Plugin> {
           return resolve(manifestClient);
         case manifestServer:
           return resolve(manifestServer);
+      }
+
+      if (id.endsWith("?no-blitz")) {
+        return path.resolve(id.slice(0, -9)) + "?no-blitz";
       }
     },
 
@@ -62,16 +66,16 @@ export async function blitzCity(): Promise<Plugin> {
       if (!options?.ssr) {
         const project = await getProject();
 
-        const actionIndex = project.structure.actionPaths.indexOf(id);
-        if (actionIndex > -1)
-          return toClientActionCode(project.actions[actionIndex]);
-
-        const loaderIndex = project.structure.loaderPaths.indexOf(id);
-        if (loaderIndex > -1)
-          return toClientLoaderCode(project.loaders[loaderIndex]);
+        const index = project.structure.componentPaths.indexOf(id);
+        if (index > -1) {
+          return toClientComponentCode(
+            project.actions[index],
+            project.loaders[index],
+          );
+        }
 
         if (project.structure.middlewarePaths.includes(id)) {
-          console.warn(`Warning: ${id} should be imported in web`);
+          console.warn(`Warning: ${id} should not be imported in web`);
           return `export {};`;
         }
       }
@@ -135,8 +139,6 @@ export async function blitzCity(): Promise<Plugin> {
               vite.moduleGraph.invalidateModule(node);
             }
           }
-
-          console.log("middleware", req.url);
 
           const module = await vite.ssrLoadModule("./app/entry.dev.tsx");
 
