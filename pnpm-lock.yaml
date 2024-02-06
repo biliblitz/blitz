@@ -17,6 +17,37 @@ importers:
         specifier: ^2.9.0
         version: 2.9.0
 
+  example:
+    dependencies:
+      "@biliblitz/blitz":
+        specifier: ^0.0.2
+        version: link:../packages/blitz
+      "@hono/node-server":
+        specifier: ^1.5.0
+        version: 1.5.0
+      "@preact/preset-vite":
+        specifier: ^2.8.1
+        version: 2.8.1(@babel/core@7.23.9)(preact@10.19.3)(vite@5.0.12)
+      "@preact/signals":
+        specifier: ^1.2.2
+        version: 1.2.2(preact@10.19.3)
+      preact:
+        specifier: ^10.19.3
+        version: 10.19.3
+      preact-render-to-string:
+        specifier: ^6.3.1
+        version: 6.3.1(preact@10.19.3)
+    devDependencies:
+      "@biliblitz/vite":
+        specifier: ^0.0.2
+        version: link:../packages/vite
+      "@types/node":
+        specifier: ^20.9.0
+        version: 20.11.9
+      vite:
+        specifier: ^5.0.12
+        version: 5.0.12(@types/node@20.11.9)
+
   packages/blitz:
     dependencies:
       "@preact/signals":
@@ -44,37 +75,6 @@ importers:
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
-      vite:
-        specifier: ^5.0.12
-        version: 5.0.12(@types/node@20.11.9)
-
-  packages/example:
-    dependencies:
-      "@biliblitz/blitz":
-        specifier: ^0.0.2
-        version: link:../blitz
-      "@hono/node-server":
-        specifier: ^1.5.0
-        version: 1.5.0
-      "@preact/preset-vite":
-        specifier: ^2.8.1
-        version: 2.8.1(@babel/core@7.23.9)(preact@10.19.3)(vite@5.0.12)
-      "@preact/signals":
-        specifier: ^1.2.2
-        version: 1.2.2(preact@10.19.3)
-      preact:
-        specifier: ^10.19.3
-        version: 10.19.3
-      preact-render-to-string:
-        specifier: ^6.3.1
-        version: 6.3.1(preact@10.19.3)
-    devDependencies:
-      "@biliblitz/vite":
-        specifier: ^0.0.2
-        version: link:../vite
-      "@types/node":
-        specifier: ^20.9.0
-        version: 20.11.9
       vite:
         specifier: ^5.0.12
         version: 5.0.12(@types/node@20.11.9)
