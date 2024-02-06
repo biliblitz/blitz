@@ -124,6 +124,7 @@ export type ProjectStructure = Awaited<ReturnType<typeof scanProjectStructure>>;
 const actionRegExp =
   /\bexport\s+(?:const|let|var)\s+([a-zA-Z0-9_\$]+)\s*=\s*action\$/g;
 export async function parseAction(actionPath: string, index: number) {
+  if (isMdx(actionPath)) return [];
   const source = await readFile(actionPath, "utf8");
   const matches = [...source.matchAll(actionRegExp)].map((match) => match[1]);
   return await Promise.all(
@@ -139,6 +140,7 @@ export type ActionMeta = Awaited<ReturnType<typeof parseAction>>;
 const loaderRegExp =
   /\bexport\s+(?:const|let|var)\s+([a-zA-Z0-9_\$]+)\s*=\s*loader\$/g;
 export async function parseLoader(loaderPath: string, index: number) {
+  if (isMdx(loaderPath)) return [];
   const source = await readFile(loaderPath, "utf8");
   const matches = [...source.matchAll(loaderRegExp)].map((match) => match[1]);
   return await Promise.all(
