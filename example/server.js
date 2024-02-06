@@ -1,6 +1,7 @@
 import { serveStatic } from "@biliblitz/node-server";
 import { chain, when, startsWith } from "@biliblitz/node-server/tools";
 import { serve } from "@hono/node-server";
+
 import server from "./dist/server/entry.server.js";
 
 const assets = serveStatic({ root: "./dist/client/" });
