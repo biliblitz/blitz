@@ -15,5 +15,5 @@
     "skipDefaultLibCheck": true,
     "resolveJsonModule": true,
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "test.js"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
 }

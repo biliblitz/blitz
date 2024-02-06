@@ -71,3 +71,7 @@ export function or<T>(...conditions: Condition<T>[]): Condition<T> {
     return false;
   };
 }
+
+export function not<T>(condition: Condition<T>): Condition<T> {
+  return async (req, t) => !(await condition(req, t));
+}

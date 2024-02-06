@@ -14,7 +14,7 @@ export function blitzMdx(options?: CompileOptions): Plugin {
         const buffer = await readFile(id, "utf8");
         const source = new VFile(buffer);
 
-        matter(source);
+        matter(source, { strip: true });
         const frontmatter = source.data.matter || {};
 
         const mdx = await compile(
