@@ -1,7 +1,7 @@
 import { VNode, render } from "preact";
 import { RuntimeContext, createRuntime, runtimeLoad } from "./runtime.ts";
 import { SerializedRuntime } from "./components/router-head.tsx";
-import { ClientManifest } from "../build/manifest.ts";
+import { ClientManifest } from "../server/build.ts";
 import { isDev } from "../utils/envs.ts";
 
 export type Options = {

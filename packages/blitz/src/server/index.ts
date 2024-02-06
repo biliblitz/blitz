@@ -5,3 +5,17 @@ export { static$ } from "./static.ts";
 export { middleware$ } from "./middleware.ts";
 
 export { createServer } from "./server.tsx";
+
+export type { Action } from "./action.ts";
+export type { Loader } from "./loader.ts";
+export type { Middleware } from "./middleware.ts";
+export type { MetaFunction } from "./meta.ts";
+export type { StaticFunction } from "./static.ts";
+
+export type {
+  ClientManifest,
+  ServerManifest,
+  Graph,
+  Route,
+  Directory,
+} from "./build.ts";

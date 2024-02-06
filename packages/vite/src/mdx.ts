@@ -1,5 +1,5 @@
 import { Plugin } from "vite";
-import { isMdx } from "../utils/ext.ts";
+import { isMdx } from "./utils/ext.ts";
 import { CompileOptions, compile } from "@mdx-js/mdx";
 import { VFile } from "vfile";
 import { matter } from "vfile-matter";

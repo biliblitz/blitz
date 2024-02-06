@@ -1,7 +1,8 @@
 import { extname, join, resolve } from "node:path";
-import { isJs, isJsOrMdx, isMdx } from "../utils/ext.ts";
+import { isJs, isJsOrMdx, isMdx } from "./utils/ext.ts";
 import { readFile, readdir, stat } from "node:fs/promises";
-import { hashRef } from "../utils/crypto.ts";
+import { hashRef } from "./utils/crypto.ts";
+import { Directory, Route } from "@biliblitz/blitz/server";
 
 function getFilenameWithoutExt(filename: string) {
   const ext = extname(filename);
@@ -31,16 +32,6 @@ function isStatic(filename: string) {
 function isMiddleware(filename: string) {
   return isJs(filename) && isNameOf("middleware", filename);
 }
-
-export type Route = {
-  index: number | null;
-  error: number | null;
-  layout: number | null;
-  statik: number | null;
-  middleware: number | null;
-};
-
-export type Directory = [Route, [string, Directory][]];
 
 export async function scanProjectStructure(entrance: string) {
   entrance = resolve(entrance);
@@ -115,7 +106,7 @@ export async function scanProjectStructure(entrance: string) {
       children.push([dirname, await scan(join(dirPath, dirname))]);
     }
 
-    return [route, children];
+    return { route, children };
   };
 
   const directory = await scan(entrance);

@@ -3,7 +3,7 @@ import { render } from "preact-render-to-string";
 
 import { RuntimeContext, createRuntime } from "../client/runtime.ts";
 import { Handler } from "../node/index.ts";
-import { ServerManifest } from "../build/manifest.ts";
+import { ServerManifest } from "./build.ts";
 import { Params, ResolveResult, resolveRouter } from "./router.ts";
 import { LoaderStore, createFetchEvent } from "./event.ts";
 import { ActionReturnValue } from "./action.ts";

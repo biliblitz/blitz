@@ -1,7 +1,7 @@
 import { useComputed } from "@preact/signals";
 import { useRuntime } from "../runtime.ts";
 import { LoaderStore } from "../../server/event.ts";
-import { Graph } from "../../build/graph.ts";
+import { Graph } from "../../server/build.ts";
 import { getLinkPreloadAs, isAsset, isCss, isJs } from "../../utils/ext.ts";
 import { isSSR } from "../../utils/envs.ts";
 import { Meta } from "../../server/meta.ts";

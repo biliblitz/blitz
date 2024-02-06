@@ -1,7 +1,7 @@
 import type { Middleware } from "./middleware.ts";
 import type { Loader, LoaderReturnValue } from "./loader.ts";
 import { ParamsMap, ResolveResult } from "./router.ts";
-import { ServerManifest } from "../build/manifest.ts";
+import { ServerManifest } from "./build.ts";
 import { MetaFunction, createDefaultMeta, mergeMeta } from "./meta.ts";
 
 export type FetchEvent = {

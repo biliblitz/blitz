@@ -1,12 +1,9 @@
 import { Plugin } from "vite";
-import { resolve, staticAdapterId } from "../../build/vmod.ts";
+import { resolve, staticAdapterId } from "../vmod.ts";
 import { join } from "path";
-import { ServerManifest } from "../../build/manifest.ts";
-import { Handler } from "../../node/index.ts";
+import { ServerManifest, Directory } from "@biliblitz/blitz/server";
 import { writeFile, mkdir, unlink } from "node:fs/promises";
-import { Directory } from "../../build/scanner.ts";
 import chalk from "chalk";
-import { StaticEnv } from "../../server/static.ts";
 
 export type Options = {
   /** @example "https://yoursite.com" */
@@ -61,13 +58,13 @@ export function staticAdapter(options: Options): Plugin {
 const staticAdapterEntryCode = (origin: string) => `
 import server from "./app/entry.static.tsx";
 import { manifest } from "blitz:manifest/server";
-import { generate } from "@biliblitz/blitz/vite/adapters/static";
+import { generate } from "@biliblitz/vite/adapters/static";
 
 await generate(server, manifest, ${JSON.stringify(origin)});
 `;
 
 export async function generate(
-  server: Handler<{}>,
+  server: (req: Request) => Response | Promise<Response>,
   manifest: ServerManifest,
   origin: string,
 ) {
@@ -79,17 +76,17 @@ export async function generate(
   const outdir = "dist/static";
   const pathnames = [] as string[];
 
-  const env: StaticEnv = { params: new Map() };
-  async function dfs(current: string, [route, children]: Directory) {
+  const env = { params: new Map() };
+  async function dfs(current: string, { route, children }: Directory) {
     if (route.index !== null) pathnames.push(current);
     for (const [dirname, child] of children) {
       if (dirname.startsWith("[") && dirname.endsWith("]")) {
-        if (child[0].statik === null)
+        if (child.route.statik === null)
           throw new Error(
             `static.ts is missing for route "${current + dirname + "/"}"`,
           );
         const param = dirname === "[...]" ? "$" : dirname.slice(1, -1);
-        const statik = manifest.statics[child[0].statik];
+        const statik = manifest.statics[child.route.statik];
         const possibles = await statik(env);
         for (const possible of possibles) {
           env.params.set(param, possible);

@@ -1,26 +1,6 @@
-import { ComponentType } from "preact";
-import { ActionMeta, Directory, LoaderMeta, Project } from "./scanner.ts";
-import { Action } from "../server/action.ts";
-import { Loader } from "../server/loader.ts";
-import { Middleware } from "../server/middleware.ts";
-import { Graph } from "./graph.ts";
-import { StaticFunction } from "../server/static.ts";
-import { MetaFunction } from "../server/meta.ts";
+import { ActionMeta, LoaderMeta, Project } from "./scanner.ts";
 import { removeExports } from "./remove-exports.ts";
-
-export interface ClientManifest {
-  components: ComponentType[];
-}
-
-export interface ServerManifest extends ClientManifest {
-  graph: Graph;
-  metas: (MetaFunction | null)[];
-  actions: Action[][];
-  loaders: Loader[][];
-  statics: StaticFunction[];
-  directory: Directory;
-  middlewares: Middleware[];
-}
+import { Graph } from "@biliblitz/blitz/server";
 
 export function toClientManifestCode({ structure }: Project) {
   return [
