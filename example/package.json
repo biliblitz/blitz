@@ -13,7 +13,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@biliblitz/blitz": "^0.0.2",
+    "@biliblitz/blitz": "^0.0.3",
+    "@biliblitz/node-server": "^0.0.3",
     "@hono/node-server": "^1.5.0",
     "@preact/preset-vite": "^2.8.1",
     "@preact/signals": "^1.2.2",
@@ -21,7 +22,7 @@
     "preact-render-to-string": "^6.3.1"
   },
   "devDependencies": {
-    "@biliblitz/vite": "^0.0.2",
+    "@biliblitz/vite": "^0.0.3",
     "@types/node": "^20.9.0",
     "vite": "^5.0.12"
   }

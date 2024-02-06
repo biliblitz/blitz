@@ -2,12 +2,13 @@ import { VNode } from "preact";
 import { render } from "preact-render-to-string";
 
 import { RuntimeContext, createRuntime } from "../client/runtime.ts";
-import { Handler } from "../node/index.ts";
 import { ServerManifest } from "./build.ts";
 import { Params, ResolveResult, resolveRouter } from "./router.ts";
 import { LoaderStore, createFetchEvent } from "./event.ts";
 import { ActionReturnValue } from "./action.ts";
 import { Meta } from "./meta.ts";
+
+export type Server<T> = (req: Request, t?: T) => Promise<Response>;
 
 export type ServerOptions = {
   manifest: ServerManifest;
@@ -42,7 +43,7 @@ export type LoaderResponse =
 export function createServer<T = void>(
   vnode: VNode,
   { manifest }: ServerOptions,
-): Handler<T> {
+): Server<T> {
   const router = resolveRouter(manifest.directory);
 
   return async (req) => {

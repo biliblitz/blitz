@@ -1,8 +1,5 @@
-export type Handler<T> = (req: Request, t?: T) => Response | Promise<Response>;
-export type HandlerMiddle<T> = (
-  req: Request,
-  t?: T,
-) => null | Response | Promise<null | Response>;
+import { HandlerMiddle } from "./index.ts";
+
 export type Condition<T> = (req: Request, t?: T) => boolean | Promise<boolean>;
 export type Method =
   | "GET"
@@ -74,5 +71,3 @@ export function or<T>(...conditions: Condition<T>[]): Condition<T> {
     return false;
   };
 }
-
-export { serveStatic } from "./serve-static.ts";

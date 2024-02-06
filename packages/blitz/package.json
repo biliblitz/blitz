@@ -1,6 +1,6 @@
 {
   "name": "@biliblitz/blitz",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A blitzing minimal backend-framework for Preact",
   "type": "module",
   "files": [
@@ -19,10 +19,6 @@
       "types": "./dist/types/server/index.d.ts",
       "import": "./dist/esm/server/index.mjs"
     },
-    "./node": {
-      "types": "./dist/types/node/index.d.ts",
-      "import": "./dist/esm/node/index.mjs"
-    },
     "./env": {
       "types": "./env.d.ts"
     }
@@ -38,13 +34,11 @@
     "preact-render-to-string": "^6"
   },
   "devDependencies": {
-    "@types/node": "^20.8.10",
+    "@types/node": "^20.11.16",
     "esbuild": "^0.19.5",
     "tiny-glob": "^0.2.9",
     "typescript": "^5.2.2",
     "vite": "^5.0.12"
   },
-  "dependencies": {
-    "hono": "^3.12.11"
-  }
+  "dependencies": {}
 }

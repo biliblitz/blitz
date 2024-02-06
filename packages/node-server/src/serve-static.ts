@@ -1,14 +1,14 @@
 import { ReadStream, createReadStream } from "fs";
-import { getMimeType } from "hono/utils/mime";
+import { join, relative } from "node:path/posix";
 import { HandlerMiddle } from "./index.ts";
-import { join } from "node:path/posix";
 import { access, constants, lstat } from "fs/promises";
+import { getMimeType } from "./mime.ts";
 
 export type ServeStaticOptions = {
-  /** @default "./" */
+  /** @default "." */
   root?: string;
   /** @default "index.html" */
-  index?: string;
+  index?: string | false;
 };
 
 const createStreamBody = (stream: ReadStream) => {
@@ -26,17 +26,23 @@ const createStreamBody = (stream: ReadStream) => {
 export const serveStatic = <T>(
   options: ServeStaticOptions,
 ): HandlerMiddle<T> => {
-  const root = options.root || ".";
-  const index = options.index || "index.html";
+  const root = join(options.root || ".", ".");
+  const index = options.index ?? "index.html";
+  const hasIndex = typeof index === "string";
 
   return async (req) => {
     const url = new URL(req.url);
-    const filename = decodeURIComponent(url.pathname);
+    const pathname = decodeURIComponent(url.pathname);
 
-    // TODO: security test here
-    let path = join(root, filename);
-    if (path.endsWith("/")) path += index;
-    path = `./${path}`;
+    let path = join(root, pathname);
+    if (hasIndex && path.endsWith("/")) path += index;
+
+    // TODO: add some tests here
+    // security check
+    const rel = relative(root, path);
+    if (!rel || rel.startsWith("..")) {
+      return null;
+    }
 
     try {
       await access(path, constants.R_OK);
@@ -46,7 +52,7 @@ export const serveStatic = <T>(
 
     const headers = new Headers();
 
-    const mimeType = getMimeType(path);
+    const mimeType = getMimeType(path) || "application/octet-stream";
     if (mimeType) {
       headers.append("Content-Type", mimeType);
     }
