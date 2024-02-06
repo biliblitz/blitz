@@ -1,13 +1,13 @@
 import type { Plugin } from "vite";
+import { relative } from "node:path";
 import { resolve, manifestClient, manifestServer } from "./vmod.ts";
 import { getRequestListener } from "@hono/node-server";
 import { Project, resolveProject, scanProjectStructure } from "./scanner.ts";
 import {
-  removeClientServerExports,
   toClientManifestCode,
   toServerManifestCode,
+  removeClientServerExports,
 } from "./manifest.ts";
-import { relative } from "node:path";
 import { loadClientGraph, loadDevGraph } from "./graph.ts";
 
 export async function blitz(): Promise<Plugin> {

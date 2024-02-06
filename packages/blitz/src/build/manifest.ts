@@ -98,17 +98,28 @@ export function removeClientServerExports(
     ...(hasMeta ? ["meta"] : []),
   ]);
 
-  const imports = [
-    `import { useAction as $blitz$useAction, useLoader as $blitz$useLoader } from "@biliblitz/blitz";`,
+  const imports: string[] = [];
+
+  if (actions.length > 0)
+    imports.push(
+      `import { useAction as $blitz$useAction } from "@biliblitz/blitz";`,
+    );
+  if (loaders.length > 0)
+    imports.push(
+      `import { useLoader as $blitz$useLoader } from "@biliblitz/blitz";`,
+    );
+  imports.push(
     ...actions.map(
       (action) =>
         `export const ${action.name} = () => $blitz$useAction("${action.ref}");`,
     ),
+  );
+  imports.push(
     ...loaders.map(
       (loader) =>
         `export const ${loader.name} = () => $blitz$useLoader("${loader.ref}");`,
     ),
-  ].join("\n");
+  );
 
-  return imports + remove;
+  return imports.join("\n") + remove;
 }
