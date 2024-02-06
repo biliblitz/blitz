@@ -86,14 +86,16 @@ export function toServerManifestCode(project: Project, graph: Graph) {
   ].join("\n");
 }
 
-export function toClientComponentCode(
+export function removeClientServerExports(
   source: string,
   actions: ActionMeta,
   loaders: LoaderMeta,
+  hasMeta: boolean,
 ) {
   const remove = removeExports(source, [
     ...actions.map(({ name }) => name),
     ...loaders.map(({ name }) => name),
+    ...(hasMeta ? ["meta"] : []),
   ]);
 
   const imports = [

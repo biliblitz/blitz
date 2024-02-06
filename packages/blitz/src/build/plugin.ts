@@ -3,14 +3,14 @@ import { resolve, manifestClient, manifestServer } from "./vmod.ts";
 import { getRequestListener } from "@hono/node-server";
 import { Project, resolveProject, scanProjectStructure } from "./scanner.ts";
 import {
-  toClientComponentCode,
+  removeClientServerExports,
   toClientManifestCode,
   toServerManifestCode,
 } from "./manifest.ts";
 import { relative } from "node:path";
 import { loadClientGraph, loadDevGraph } from "./graph.ts";
 
-export async function blitzCity(): Promise<Plugin> {
+export async function blitz(): Promise<Plugin> {
   const vmods = [manifestClient, manifestServer];
   let isDev = false;
 
@@ -32,7 +32,7 @@ export async function blitzCity(): Promise<Plugin> {
   }
 
   return {
-    name: "blitz-city",
+    name: "blitz",
 
     resolveId(id) {
       switch (id) {
@@ -65,10 +65,11 @@ export async function blitzCity(): Promise<Plugin> {
 
         const index = project.structure.componentPaths.indexOf(id);
         if (index > -1) {
-          return toClientComponentCode(
+          return removeClientServerExports(
             code,
             project.actions[index],
             project.loaders[index],
+            project.metas[index],
           );
         }
       }

@@ -1,1 +1,1 @@
-export { blitzCity } from "./plugin.ts";
+export { blitz } from "./plugin.ts";
