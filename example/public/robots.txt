@@ -1,2 +1,2 @@
-User-agent: baiduspider
-Disallow: /
+User-agent: *
+Sitemap: https://example.com/sitemap.xml

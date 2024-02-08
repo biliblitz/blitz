@@ -4,6 +4,7 @@ import { join } from "path";
 import { ServerManifest, Directory } from "@biliblitz/blitz/server";
 import { writeFile, mkdir, unlink } from "node:fs/promises";
 import chalk from "chalk";
+import { cp } from "fs/promises";
 
 export type Options = {
   /** @example "https://yoursite.com" */
@@ -43,6 +44,7 @@ export function staticAdapter(options: Options): Plugin {
               entryFileNames: "_server.js",
             },
           },
+          copyPublicDir: true,
         },
       };
     },
@@ -135,4 +137,18 @@ export async function generate(
   console.log(
     chalk.green(`✓ generated ${pathnames.length} pages in ${end - start}ms.`),
   );
+
+  // sitemaps
+
+  const sitemap = [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+    ...pathnames.map(
+      (pathname) => `<url><loc>${origin}${pathname}</loc></url>`,
+    ),
+    `</urlset>`,
+  ].join("\n");
+  await writeFile(join(outdir, "sitemap.xml"), sitemap);
+
+  await cp("dist/client/build", "dist/static/build", { recursive: true });
 }
