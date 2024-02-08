@@ -50,6 +50,9 @@ importers:
       vite:
         specifier: ^5.0.12
         version: 5.0.12(@types/node@20.11.9)
+      vite-tsconfig-paths:
+        specifier: ^4.3.1
+        version: 4.3.1(vite@5.0.12)
 
   packages/blitz:
     dependencies:
@@ -1371,7 +1374,6 @@ packages:
         optional: true
     dependencies:
       ms: 2.1.2
-    dev: false
 
   /decode-named-character-reference@1.0.2:
     resolution:
@@ -2448,7 +2450,6 @@ packages:
       {
         integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==,
       }
-    dev: false
 
   /nanoid@3.3.7:
     resolution:
@@ -2895,6 +2896,20 @@ packages:
       }
     dev: false
 
+  /tsconfck@3.0.2:
+    resolution:
+      {
+        integrity: sha512-6lWtFjwuhS3XI4HsX4Zg0izOI3FU/AI9EGVlPEUMDIhvLPMD4wkiof0WCoDgW7qY+Dy198g4d9miAqUHWHFH6Q==,
+      }
+    engines: { node: ^18 || >=20 }
+    hasBin: true
+    peerDependencies:
+      typescript: ^5.0.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dev: true
+
   /tslib@2.6.2:
     resolution:
       {
@@ -3043,6 +3058,26 @@ packages:
       unist-util-stringify-position: 4.0.0
       vfile-message: 4.0.2
     dev: false
+
+  /vite-tsconfig-paths@4.3.1(vite@5.0.12):
+    resolution:
+      {
+        integrity: sha512-cfgJwcGOsIxXOLU/nELPny2/LUD/lcf1IbfyeKTv2bsupVbTH/xpFtdQlBmIP1GEK2CjjLxYhFfB+QODFAx5aw==,
+      }
+    peerDependencies:
+      vite: "*"
+    peerDependenciesMeta:
+      vite:
+        optional: true
+    dependencies:
+      debug: 4.3.4
+      globrex: 0.1.2
+      tsconfck: 3.0.2
+      vite: 5.0.12(@types/node@20.11.9)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+    dev: true
 
   /vite@5.0.12(@types/node@20.11.16):
     resolution:
