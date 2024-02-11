@@ -8,6 +8,9 @@
     "env.d.ts",
     "README.md"
   ],
+  "repository": {
+    "url": "https://github.com/biliblitz/blitz"
+  },
   "types": "./dist/types/client/index.d.ts",
   "module": "./dist/esm/client/index.mjs",
   "exports": {
@@ -39,6 +42,5 @@
     "tiny-glob": "^0.2.9",
     "typescript": "^5.2.2",
     "vite": "^5.0.12"
-  },
-  "dependencies": {}
+  }
 }

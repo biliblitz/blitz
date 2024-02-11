@@ -7,6 +7,9 @@
     "dist",
     "README.md"
   ],
+  "repository": {
+    "url": "https://github.com/biliblitz/blitz"
+  },
   "types": "./dist/types/index.d.ts",
   "module": "./dist/esm/index.mjs",
   "exports": {
