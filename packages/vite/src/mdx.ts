@@ -5,6 +5,11 @@ import { VFile } from "vfile";
 import { matter } from "vfile-matter";
 import { readFile } from "fs/promises";
 
+type FrontMatter = {
+  title?: string;
+  description?: string;
+};
+
 export function blitzMdx(options?: CompileOptions): Plugin {
   return {
     name: "blitz-mdx",
@@ -28,8 +33,12 @@ export function blitzMdx(options?: CompileOptions): Plugin {
   };
 }
 
-function toMetaCode(frontmatter: {}) {
-  return `export const meta = () => {
-    return ${JSON.stringify(frontmatter)};
-  }`;
+function toMetaCode(frontmatter: FrontMatter) {
+  return [
+    `const title = ${JSON.stringify(frontmatter.title || null)};`,
+    `const description = ${JSON.stringify(frontmatter.description || null)};`,
+    `export const meta = () => {
+      return ${JSON.stringify(frontmatter)};
+    }`,
+  ].join("\n");
 }
