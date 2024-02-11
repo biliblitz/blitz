@@ -1,4 +1,3 @@
-import { useComputed } from "@preact/signals";
 import { useRuntime } from "../runtime.ts";
 import { LoaderStore } from "../../server/event.ts";
 import { Graph } from "../../server/build.ts";
@@ -6,6 +5,7 @@ import { getLinkPreloadAs, isAsset, isCss, isJs } from "../../utils/ext.ts";
 import { isSSR } from "../../utils/envs.ts";
 import { Meta } from "../../server/meta.ts";
 import { Params } from "../../server/router.ts";
+import { useMemo } from "preact/hooks";
 
 export function RouterHead() {
   return (
@@ -28,23 +28,23 @@ export type SerializedRuntime = {
 function MetadataInjector() {
   const runtime = useRuntime();
 
-  const serialized = useComputed(() => {
+  const serialized = useMemo(() => {
     const object: SerializedRuntime = {
-      meta: runtime.meta.value,
+      meta: runtime.meta,
       graph: runtime.graph,
-      params: runtime.params.value,
-      loaders: runtime.loaders.value,
-      components: runtime.components.value,
+      params: runtime.params,
+      loaders: runtime.loaders,
+      components: runtime.components,
     };
 
     return JSON.stringify(object).replaceAll("/", "\\/");
-  });
+  }, [runtime]);
 
   return (
     <script
       type="application/json"
       data-blitz-metadata
-      dangerouslySetInnerHTML={{ __html: serialized.value }}
+      dangerouslySetInnerHTML={{ __html: serialized }}
     />
   );
 }
@@ -54,7 +54,7 @@ function PreloadHeads() {
 
   return (
     <>
-      {runtime.preloads.value.map((id) => {
+      {runtime.preloads.map((id) => {
         const href = "/" + runtime.graph.assets[id];
         if (isJs(href)) return <link rel="modulepreload" href={href} />;
         if (isCss(href)) return <link rel="stylesheet" href={href} />;
@@ -67,18 +67,17 @@ function PreloadHeads() {
 
 function DocumentHead() {
   const runtime = useRuntime();
-  const meta = runtime.meta.value;
 
   return (
     <>
-      <title>{meta.title}</title>
-      {meta.description && (
-        <meta name="description" content={meta.description} />
+      <title>{runtime.meta.title}</title>
+      {runtime.meta.description && (
+        <meta name="description" content={runtime.meta.description} />
       )}
-      {meta.meta.map((props, index) => (
+      {runtime.meta.meta.map((props, index) => (
         <meta {...props} key={index} />
       ))}
-      {meta.link.map((props, index) => (
+      {runtime.meta.link.map((props, index) => (
         <link {...props} key={index} />
       ))}
     </>

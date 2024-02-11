@@ -1,7 +1,8 @@
 import { Form, Link } from "@biliblitz/blitz";
 import { loader$ } from "@biliblitz/blitz/server";
-import { useComputed, useSignal } from "@preact/signals";
+import { useSignal } from "@preact/signals";
 import { useLogin } from "./layout.tsx";
+import { useMemo } from "preact/hooks";
 
 export const useUsername = loader$(() => {
   return { username: `alice ${Math.random()}` };
@@ -9,13 +10,13 @@ export const useUsername = loader$(() => {
 
 export default () => {
   const user = useUsername();
-  const username = useComputed(() => user.value.username);
+  const username = useMemo(() => user.username, [user]);
   const count = useSignal(0);
 
   const login = useLogin();
-  const data = useComputed(() => JSON.stringify(login.data.value));
-  const error = useComputed(() => login.error.value?.message);
-  const state = useComputed(() => login.state.value);
+  const data = useMemo(() => JSON.stringify(login.state.data), [login.state]);
+  const error = useMemo(() => login.state.error?.message, [login.state]);
+  const state = useMemo(() => login.state.state, [login.state]);
 
   return (
     <div>

@@ -32,7 +32,6 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@preact/signals": "^1",
     "preact": "^10",
     "preact-render-to-string": "^6"
   },

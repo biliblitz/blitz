@@ -1,45 +1,50 @@
-import { ReadonlySignal, batch, useComputed } from "@preact/signals";
 import { LoaderStore } from "../server/event.ts";
 import { pushState, replaceState, replaceURL } from "./history.ts";
-import { runtimePreload, runtimeLoad, useRuntime } from "./runtime.ts";
-import { lcp, nextTick } from "../utils/algorithms.ts";
+import { runtimeLoad, useRuntime, useSetRuntime } from "./runtime.ts";
+import { nextTick, unique } from "../utils/algorithms.ts";
 import { LoaderResponse } from "../server/server.tsx";
 import { Meta } from "../server/meta.ts";
 import { Params } from "../server/router.ts";
+import { useCallback, useMemo } from "preact/hooks";
 
 export function useRender() {
   const runtime = useRuntime();
+  const setRuntime = useSetRuntime();
 
-  return async (
-    meta: Meta,
-    params: Params,
-    loaders: LoaderStore,
-    components: number[],
-  ) => {
-    runtimePreload(runtime, components);
-    await runtimeLoad(runtime, components);
+  return useCallback(
+    async (
+      meta: Meta,
+      params: Params,
+      loaders: LoaderStore,
+      components: number[],
+    ) => {
+      // preload components
+      setRuntime((runtime) => ({
+        ...runtime,
+        preloads: unique([
+          ...runtime.preloads,
+          ...components.flatMap((id) => runtime.graph.components[id]),
+        ]),
+      }));
 
-    // FIXME: here we update the signal twice, which may cause some unexpected behavoir during updating.
-    // However, this looks fine for me all the time.
+      // async load modules
+      await runtimeLoad(runtime, components);
 
-    // remove old components
-    runtime.components.value = lcp(runtime.components.value, components);
+      // apply new values
+      setRuntime((runtime) => ({
+        ...runtime,
+        meta,
+        params,
+        loaders,
+        location: new URL(location.href),
+        components,
+      }));
 
-    // wait old components removed
-    await nextTick();
-
-    // trigger actual update
-    batch(() => {
-      runtime.meta.value = meta;
-      runtime.params.value = params;
-      runtime.loaders.value = loaders;
-      runtime.location.value = new URL(location.href);
-      runtime.components.value = components;
-    });
-
-    // then wait another tick for dom update finish
-    await nextTick();
-  };
+      // then wait another tick for dom update finish
+      await nextTick();
+    },
+    [runtime, setRuntime],
+  );
 }
 
 export function useNavigate() {
@@ -116,7 +121,7 @@ export function useNavigate() {
   };
 }
 
-export function useLocation(): ReadonlySignal<URL> {
+export function useLocation(): URL {
   const runtime = useRuntime();
-  return useComputed(() => new URL(runtime.location.value));
+  return useMemo(() => new URL(runtime.location), [runtime]);
 }

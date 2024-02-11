@@ -1,4 +1,3 @@
-import { ReadonlySignal } from "@preact/signals";
 import { useLoader } from "../client/loader.ts";
 import { FetchEvent } from "./event.ts";
 
@@ -11,7 +10,7 @@ export interface Loader<T extends LoaderReturnValue = LoaderReturnValue> {
   _fn?: LoaderFunction<T>;
   _ref?: string;
 }
-export type LoaderHandler<T extends LoaderReturnValue> = ReadonlySignal<T>;
+export type LoaderHandler<T extends LoaderReturnValue> = T;
 
 /**
  * Perform data-query for frontend

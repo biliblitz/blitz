@@ -32,17 +32,19 @@ export function useHistoryRestore() {
   const runtime = useRuntime();
   const render = useRender();
 
+  // listen runtime update
   useEffect(() => {
-    // initialize
     replaceState({
-      meta: runtime.meta.value,
-      params: runtime.params.value,
-      loaders: Array.from(runtime.loaders.value),
-      position: [0, 0],
-      components: runtime.components.value,
+      meta: runtime.meta,
+      params: runtime.params,
+      loaders: runtime.loaders,
+      position: [scrollX, scrollY],
+      components: runtime.components,
     });
+  }, [runtime]);
 
-    // add popstate callback
+  // add popstate callback
+  useEffect(() => {
     addEventListener("popstate", async (e) => {
       const state = e.state as HistoryState;
       await render(state.meta, state.params, state.loaders, state.components);

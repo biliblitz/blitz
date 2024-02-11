@@ -1,4 +1,3 @@
-import { ReadonlySignal } from "@preact/signals";
 import { FetchEvent } from "./event.ts";
 import { useAction } from "../client/action.ts";
 
@@ -11,12 +10,14 @@ export interface Action<T extends ActionReturnValue = ActionReturnValue> {
   _fn?: ActionFunction<T>;
   _ref?: string;
 }
-export type ActionState = "idle" | "waiting" | "error" | "ok";
+export type ActionState<T> =
+  | { state: "idle"; data: null; error: null }
+  | { state: "waiting"; data: null; error: null }
+  | { state: "ok"; data: T; error: null }
+  | { state: "error"; data: null; error: Error };
 export type ActionHandler<T extends ActionReturnValue = ActionReturnValue> = {
   ref: string;
-  data: ReadonlySignal<T | null>;
-  error: ReadonlySignal<Error | null>;
-  state: ReadonlySignal<ActionState>;
+  state: ActionState<T>;
   submit(data: FormData): Promise<void>;
 };
 

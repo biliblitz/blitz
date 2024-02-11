@@ -1,6 +1,5 @@
 import { Link } from "@biliblitz/blitz";
 import { loader$ } from "@biliblitz/blitz/server";
-import { useComputed } from "@preact/signals";
 
 export const useFooData = loader$(() => {
   return { data: `Foo loader: ${Math.random()}` };
@@ -18,7 +17,6 @@ mollit anim id est laborum.
 
 export default function () {
   const foo = useFooData();
-  const data = useComputed(() => foo.value.data);
 
   return (
     <div>
@@ -32,7 +30,7 @@ export default function () {
         <Link href="/">Home</Link>
       </p>
 
-      <i>{data}</i>
+      <i>{foo.data}</i>
       <p>{text}</p>
       <p>{text}</p>
       <p>{text}</p>

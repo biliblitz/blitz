@@ -7,7 +7,7 @@ export function RouterOutlet() {
 
   return (
     <>
-      <OutletContext.Provider value={runtime.components.value}>
+      <OutletContext.Provider value={runtime.components}>
         <Outlet />
       </OutletContext.Provider>
       <EntryPoint />

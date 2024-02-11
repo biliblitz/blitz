@@ -56,9 +56,6 @@ importers:
 
   packages/blitz:
     dependencies:
-      "@preact/signals":
-        specifier: ^1
-        version: 1.2.2(preact@10.19.3)
       preact:
         specifier: ^10
         version: 10.19.3

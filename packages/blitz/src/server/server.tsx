@@ -1,7 +1,7 @@
 import { VNode } from "preact";
 import { render } from "preact-render-to-string";
 
-import { RuntimeContext, createRuntime } from "../client/runtime.ts";
+import { RuntimeProvider, createRuntime } from "../client/runtime.ts";
 import { ServerManifest } from "./build.ts";
 import { Params, ResolveResult, resolveRouter } from "./router.ts";
 import { LoaderStore, createFetchEvent } from "./event.ts";
@@ -152,19 +152,17 @@ export function createServer<T = void>(
       const components = event.components;
 
       const runtime = createRuntime(
-        manifest,
-        url,
         meta,
         manifest.graph,
         resolve.params,
         loaders,
+        manifest,
+        url,
         components,
       );
 
       const html = render(
-        <RuntimeContext.Provider value={runtime}>
-          {vnode}
-        </RuntimeContext.Provider>,
+        <RuntimeProvider value={runtime}>{vnode}</RuntimeProvider>,
       );
       event.headers.set("Content-Type", "text/html");
       return new Response("<!DOCTYPE html>" + html, {

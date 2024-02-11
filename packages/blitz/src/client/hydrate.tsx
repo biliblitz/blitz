@@ -1,5 +1,5 @@
 import { VNode, render } from "preact";
-import { RuntimeContext, createRuntime, runtimeLoad } from "./runtime.ts";
+import { RuntimeProvider, createRuntime, runtimeLoad } from "./runtime.ts";
 import { SerializedRuntime } from "./components/router-head.tsx";
 import { ClientManifest } from "../server/build.ts";
 import { isDev } from "../utils/envs.ts";
@@ -17,7 +17,7 @@ export async function hydrate(vnode: VNode, { manifest }: Options) {
     injections = document.head.querySelectorAll("style[data-vite-dev-id]");
 
   render(
-    <RuntimeContext.Provider value={runtime}>{vnode}</RuntimeContext.Provider>,
+    <RuntimeProvider value={runtime}>{vnode}</RuntimeProvider>,
     document,
     document.documentElement,
   );
@@ -33,12 +33,12 @@ async function createClientRuntime(manifest: ClientManifest) {
   const json = JSON.parse(element.textContent) as SerializedRuntime;
 
   const runtime = createRuntime(
-    manifest,
-    new URL(location.href),
     json.meta,
     json.graph,
     json.params,
     json.loaders,
+    manifest,
+    new URL(location.href),
     json.components,
   );
   await runtimeLoad(runtime, json.components);
