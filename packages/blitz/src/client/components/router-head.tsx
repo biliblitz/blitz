@@ -67,14 +67,18 @@ function PreloadHeads() {
 
 function DocumentHead() {
   const runtime = useRuntime();
+  const meta = runtime.meta.value;
 
   return (
     <>
-      <title>{runtime.meta.value.title}</title>
-      {runtime.meta.value.meta.map((props, index) => (
+      <title>{meta.title}</title>
+      {meta.description && (
+        <meta name="description" content={meta.description} />
+      )}
+      {meta.meta.map((props, index) => (
         <meta {...props} key={index} />
       ))}
-      {runtime.meta.value.link.map((props, index) => (
+      {meta.link.map((props, index) => (
         <link {...props} key={index} />
       ))}
     </>

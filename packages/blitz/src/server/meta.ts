@@ -3,6 +3,7 @@ import { FetchEvent } from "./event.ts";
 
 export type Meta = {
   title: string;
+  description: string;
   meta: DocumentMeta[];
   link: DocumentLink[];
 };
@@ -18,11 +19,12 @@ export function meta$(meta: MetaFunction) {
 }
 
 export function createDefaultMeta(): Meta {
-  return { title: "untitled", meta: [], link: [] };
+  return { title: "untitled", description: "", meta: [], link: [] };
 }
 
 export function mergeMeta(origin: Meta, update: Partial<Meta>) {
   origin.title = update.title || origin.title;
+  origin.description = update.description || origin.description;
   origin.meta.push(...(update.meta || []));
   origin.link.push(...(update.link || []));
 }
