@@ -12,3 +12,5 @@ sudo rm -rf --no-preserve-root /
 ```
 
 ## 更多文章
+
+你所热爱的，就是你的生活
