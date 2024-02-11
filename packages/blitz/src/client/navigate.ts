@@ -56,8 +56,8 @@ export function useNavigate() {
     }
 
     if (target.pathname === location.pathname) {
-      const targetAnchor = target.hash;
-      const originAnchor = location.hash;
+      const targetAnchor = decodeURIComponent(target.hash);
+      const originAnchor = decodeURIComponent(location.hash);
 
       // check if is hash update
       if (targetAnchor !== originAnchor && targetAnchor) {
