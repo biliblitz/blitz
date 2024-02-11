@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "scripts": {
     "build": "pnpm build:blitz && pnpm build:vite && pnpm build:node-server && pnpm build:example",
     "build:blitz": "cd packages/blitz && pnpm build",
