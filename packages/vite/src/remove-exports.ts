@@ -55,6 +55,10 @@ export const removeExports = (
   source: string,
   exportsToRemove: string[],
 ): string => {
+  if (!exportsToRemove.length) {
+    return source;
+  }
+
   let document = parse(source, { sourceType: "module" });
   let generateCode = () => generate(document).code;
 

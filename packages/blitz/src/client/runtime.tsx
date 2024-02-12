@@ -8,6 +8,7 @@ import { Params } from "../server/router.ts";
 
 export type Runtime = {
   meta: Meta;
+  base: string;
   graph: Graph;
   params: Params;
   loaders: LoaderStore;
@@ -19,6 +20,7 @@ export type Runtime = {
 
 export function createRuntime(
   meta: Meta,
+  base: string,
   graph: Graph,
   params: Params,
   loaders: LoaderStore,
@@ -33,6 +35,7 @@ export function createRuntime(
 
   return {
     meta,
+    base,
     graph,
     params,
     loaders,
@@ -44,12 +47,12 @@ export function createRuntime(
 }
 
 export async function runtimeLoad(runtime: Runtime, components: number[]) {
-  const { manifest, graph } = runtime;
+  const { manifest, graph, base } = runtime;
   await Promise.all(
     components
       .filter((id) => !manifest.components[id])
       .map(async (id) => {
-        const path = "/" + graph.assets[graph.components[id][0]];
+        const path = base + graph.assets[graph.components[id][0]];
         const component = (await import(/* @vite-ignore */ path).then(
           (module) => module.default,
         )) as ComponentType;

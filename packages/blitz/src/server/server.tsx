@@ -51,8 +51,17 @@ export function createServer<T = void>(
 
     const url = new URL(req.url);
 
-    if (url.pathname.endsWith("/_data.json")) {
-      const resolve = router(url.pathname.slice(0, -10));
+    // if request is out of server
+    if (!url.pathname.startsWith(manifest.base))
+      // return new Response("418 I'm a teapot", { status: 418 });
+      return new Response(`url = ${url.href}, base = ${manifest.base}`, {
+        status: 418,
+      });
+
+    let pathname = url.pathname.slice(manifest.base.length - 1);
+
+    if (pathname.endsWith("/_data.json")) {
+      const resolve = router(pathname.slice(0, -10));
       if (resolve === null)
         return new Response("404 NOT FOUND", { status: 404 });
 
@@ -118,9 +127,7 @@ export function createServer<T = void>(
 
     let resolve: ResolveResult | null = null;
 
-    if (!url.pathname.endsWith("/") || url.pathname.includes("//")) {
-      let pathname = url.pathname;
-
+    if (!pathname.endsWith("/") || pathname.includes("//")) {
       if (!pathname.endsWith("/")) {
         pathname += "/";
       }
@@ -132,11 +139,11 @@ export function createServer<T = void>(
 
       if (resolve !== null) {
         const redirect = new URL(url);
-        redirect.pathname = pathname;
-        return Response.redirect(redirect.href, 301);
+        redirect.pathname = manifest.base + pathname.slice(1);
+        return Response.redirect(redirect.href, 308);
       }
     } else {
-      resolve = router(url.pathname);
+      resolve = router(pathname);
     }
 
     if (resolve === null) {
@@ -153,6 +160,7 @@ export function createServer<T = void>(
 
       const runtime = createRuntime(
         meta,
+        manifest.base,
         manifest.graph,
         resolve.params,
         loaders,

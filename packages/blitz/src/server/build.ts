@@ -16,6 +16,7 @@ export interface ClientManifest {
 }
 
 export interface ServerManifest extends ClientManifest {
+  base: string;
   graph: Graph;
   metas: (MetaFunction | null)[];
   actions: Action[][];

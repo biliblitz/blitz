@@ -23,15 +23,10 @@ export function chain<T>(...handlers: HandlerMiddle<T>[]): HandlerMiddle<T> {
 
 export function when<T>(
   condition: Condition<T>,
-  branchTrue: HandlerMiddle<T>,
-  branchFalse?: HandlerMiddle<T>,
+  then: HandlerMiddle<T>,
 ): HandlerMiddle<T> {
   return async (req, t) =>
-    (await condition(req, t))
-      ? await branchTrue(req, t)
-      : branchFalse
-        ? await branchFalse(req, t)
-        : null;
+    (await condition(req, t)) ? await then(req, t) : null;
 }
 
 export function startsWith<T>(prefix: string): Condition<T> {

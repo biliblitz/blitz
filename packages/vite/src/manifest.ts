@@ -11,7 +11,11 @@ export function toClientManifestCode({ structure }: Project) {
   ].join("\n");
 }
 
-export function toServerManifestCode(project: Project, graph: Graph) {
+export function toServerManifestCode(
+  project: Project,
+  graph: Graph,
+  base: string,
+) {
   const { structure, actions, loaders, middlewares, metas } = project;
 
   return [
@@ -54,6 +58,7 @@ export function toServerManifestCode(project: Project, graph: Graph) {
     ...middlewares.map(({ ref }, i) => `m${i}._ref = "${ref}";`),
 
     // export
+    `const base = ${JSON.stringify(base)};`,
     `const graph = ${JSON.stringify(graph)};`,
     `const metas = [${structure.componentPaths.map((_, i) => (metas[i] ? `t${i}` : "null")).join(", ")}];`,
     `const actions = [${actions.map((a, i) => `[${a.map((_, j) => `a${i}_${j}`).join(", ")}]`).join(", ")}];`,
@@ -62,7 +67,7 @@ export function toServerManifestCode(project: Project, graph: Graph) {
     `const directory = ${JSON.stringify(structure.directory)};`,
     `const components = [${structure.componentPaths.map((_, i) => `c${i}`).join(", ")}];`,
     `const middlewares = [${middlewares.map((_, i) => `m${i}`).join(", ")}];`,
-    `export const manifest = { graph, metas, actions, loaders, statics, directory, components, middlewares };`,
+    `export const manifest = { base, graph, metas, actions, loaders, statics, directory, components, middlewares };`,
   ].join("\n");
 }
 
@@ -80,14 +85,16 @@ export function removeClientServerExports(
 
   const imports: string[] = [];
 
-  if (actions.length > 0)
+  if (actions.length > 0) {
     imports.push(
       `import { useAction as $blitz$useAction } from "@biliblitz/blitz";`,
     );
-  if (loaders.length > 0)
+  }
+  if (loaders.length > 0) {
     imports.push(
       `import { useLoader as $blitz$useLoader } from "@biliblitz/blitz";`,
     );
+  }
   imports.push(
     ...actions.map(
       (action) =>

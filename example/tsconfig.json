@@ -16,5 +16,11 @@
       "~/*": ["./app/*"],
     },
   },
-  "include": ["app", "adapters", "vite.config.ts", "server.js"],
+  "include": [
+    "app",
+    "adapters",
+    "vite.config.ts",
+    "server.js",
+    "server-static.js",
+  ],
 }

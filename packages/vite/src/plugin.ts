@@ -31,6 +31,8 @@ export async function blitz(): Promise<Plugin> {
     return { entry, components };
   }
 
+  let base = "/";
+
   return {
     name: "blitz",
 
@@ -54,7 +56,7 @@ export async function blitz(): Promise<Plugin> {
           const graph = isDev
             ? await loadDevGraph(entry, components)
             : await loadClientGraph(entry, components);
-          return toServerManifestCode(project, graph);
+          return toServerManifestCode(project, graph, base);
       }
     },
 
@@ -121,6 +123,10 @@ export async function blitz(): Promise<Plugin> {
           appType: "custom",
         };
       }
+    },
+
+    configResolved(config) {
+      base = config.base;
     },
 
     handleHotUpdate() {

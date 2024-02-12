@@ -34,6 +34,7 @@ async function createClientRuntime(manifest: ClientManifest) {
 
   const runtime = createRuntime(
     json.meta,
+    json.base,
     json.graph,
     json.params,
     json.loaders,

@@ -27,7 +27,7 @@ function EntryPoint() {
   }
 
   const runtime = useRuntime();
-  const src = "/" + runtime.graph.assets[runtime.graph.entry[0]];
+  const src = runtime.base + runtime.graph.assets[runtime.graph.entry[0]];
 
   return <script type="module" src={src} />;
 }

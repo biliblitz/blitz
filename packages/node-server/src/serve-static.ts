@@ -9,6 +9,8 @@ export type ServeStaticOptions = {
   root?: string;
   /** @default "index.html" */
   index?: string | false;
+  /** @default "/" */
+  base?: string;
 };
 
 const createStreamBody = (stream: ReadStream) => {
@@ -28,14 +30,22 @@ export const serveStatic = <T>(
 ): HandlerMiddle<T> => {
   const root = join(options.root || ".", ".");
   const index = options.index ?? "index.html";
+  const base = options.base || "/";
   const hasIndex = typeof index === "string";
 
   return async (req) => {
     const url = new URL(req.url);
-    const pathname = decodeURIComponent(url.pathname);
+    let pathname = url.pathname;
+
+    if (!pathname.startsWith(base)) {
+      return null;
+    }
+    pathname = decodeURIComponent(pathname.slice(base.length - 1));
 
     let path = join(root, pathname);
-    if (hasIndex && path.endsWith("/")) path += index;
+    if (hasIndex && path.endsWith("/")) {
+      path += index;
+    }
 
     // TODO: add some tests here
     // security check
@@ -50,14 +60,25 @@ export const serveStatic = <T>(
       return null;
     }
 
+    const stat = await lstat(path);
+
+    if (stat.isDirectory()) {
+      if (!pathname.endsWith("/")) {
+        url.pathname += "/";
+        return Response.redirect(url, 308);
+      }
+      // when visit /foo/ and /foo/index.html is a directory
+      // we have no idea how to handle it, just passing it.
+      return null;
+    }
+
     const headers = new Headers();
 
-    const mimeType = getMimeType(path) || "application/octet-stream";
+    const mimeType = getMimeType(path);
     if (mimeType) {
       headers.append("Content-Type", mimeType);
     }
 
-    const stat = await lstat(path);
     const size = stat.size;
 
     if (req.method === "HEAD") {

@@ -19,6 +19,7 @@ export function RouterHead() {
 
 export type SerializedRuntime = {
   meta: Meta;
+  base: string;
   graph: Graph;
   params: Params;
   loaders: LoaderStore;
@@ -31,6 +32,7 @@ function MetadataInjector() {
   const serialized = useMemo(() => {
     const object: SerializedRuntime = {
       meta: runtime.meta,
+      base: runtime.base,
       graph: runtime.graph,
       params: runtime.params,
       loaders: runtime.loaders,
@@ -55,7 +57,7 @@ function PreloadHeads() {
   return (
     <>
       {runtime.preloads.map((id) => {
-        const href = "/" + runtime.graph.assets[id];
+        const href = runtime.base + runtime.graph.assets[id];
         if (isJs(href)) return <link rel="modulepreload" href={href} />;
         if (isCss(href)) return <link rel="stylesheet" href={href} />;
         if (isAsset(href))

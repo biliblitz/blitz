@@ -48,6 +48,7 @@ export function staticAdapter(options: Options): Plugin {
         },
       };
     },
+
     async closeBundle() {
       const cwd = process.cwd();
       const filePath = join(cwd, "dist/static/_server.js");
@@ -72,7 +73,7 @@ export async function generate(
 ) {
   console.log("");
   console.log(
-    `${chalk.cyan(`blitz v0.0.2`)} ${chalk.green("generating static pages...")}`,
+    `${chalk.cyan(`blitz`)} ${chalk.green("generating static pages...")}`,
   );
 
   const outdir = "dist/static";
@@ -102,7 +103,7 @@ export async function generate(
       }
     }
   }
-  await dfs("/", manifest.directory);
+  await dfs("", manifest.directory);
 
   async function get(url: URL) {
     const request = new Request(url);
@@ -124,11 +125,13 @@ export async function generate(
 
   const start = Date.now();
   for (const pathname of pathnames) {
-    const dirname = outdir + pathname;
+    const dirname = outdir + "/" + pathname;
     await mkdir(dirname, { recursive: true });
-    const index = await get(new URL(origin + pathname));
+    const index = await get(new URL(origin + manifest.base + pathname));
     await writeFile(dirname + "index.html", index);
-    const json = await get(new URL(origin + pathname + "_data.json"));
+    const json = await get(
+      new URL(origin + manifest.base + pathname + "_data.json"),
+    );
     await writeFile(dirname + "_data.json", json);
     console.log(chalk.gray(dirname) + chalk.white("index.html"));
   }
@@ -150,5 +153,11 @@ export async function generate(
   ].join("\n");
   await writeFile(join(outdir, "sitemap.xml"), sitemap);
 
+  // copy assets
+
   await cp("dist/client/build", "dist/static/build", { recursive: true });
+
+  // service worker
+
+  // TODO
 }
