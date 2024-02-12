@@ -45,10 +45,22 @@ export function useHistoryRestore() {
 
   // add popstate callback
   useEffect(() => {
-    addEventListener("popstate", async (e) => {
+    async function popstate(e: PopStateEvent) {
       const state = e.state as HistoryState;
       await render(state.meta, state.params, state.loaders, state.components);
       scrollTo(state.position[0], state.position[1]);
-    });
+    }
+
+    function scroll() {
+      replaceState({ position: [scrollX, scrollY] });
+    }
+
+    addEventListener("popstate", popstate);
+    addEventListener("scroll", scroll);
+
+    return () => {
+      removeEventListener("popstate", popstate);
+      removeEventListener("scroll", scroll);
+    };
   }, []);
 }
