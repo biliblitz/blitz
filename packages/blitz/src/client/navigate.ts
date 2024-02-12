@@ -106,6 +106,8 @@ export function useNavigate() {
           document
             .getElementById(target.hash.slice(1))
             ?.scrollIntoView({ behavior: "smooth" });
+        } else {
+          scrollTo(0, 0);
         }
       } else if (data.ok === "redirect") {
         await navigate(data.redirect);
