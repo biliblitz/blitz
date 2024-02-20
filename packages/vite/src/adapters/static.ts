@@ -11,7 +11,7 @@ export type Options = {
   origin: string;
 };
 
-const originRegex = /^https?:\/\/(?:[a-zA-Z0-9\-]+\.)*[a-zA-Z0-9\-]+$/;
+const originRegex = /^https?:\/\/(?:[a-z0-9\-]+\.)*[a-z0-9\-]+$/;
 
 export function staticAdapter(options: Options): Plugin {
   if (!originRegex.test(options.origin))

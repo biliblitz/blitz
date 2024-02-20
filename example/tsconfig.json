@@ -3,7 +3,7 @@
     "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "lib": ["ESNext", "DOM"],
+    "lib": ["ESNext", "DOM", "WebWorker"],
     "noEmit": true,
     "strict": true,
     "allowJs": true,
