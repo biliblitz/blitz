@@ -116,7 +116,6 @@ export async function blitz(): Promise<Plugin> {
                 preserveEntrySignatures: "allow-extension",
               },
               copyPublicDir: false,
-              // minify: false,
             },
           };
         }
@@ -127,8 +126,12 @@ export async function blitz(): Promise<Plugin> {
             build: {
               rollupOptions: {
                 external: [/^@biliblitz\//],
+                output: {
+                  assetFileNames: "build/assets/[hash].[ext]",
+                },
               },
               copyPublicDir: false,
+              cssMinify: true,
             },
           };
         }
