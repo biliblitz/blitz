@@ -2,17 +2,17 @@ import type { Plugin } from "vite";
 import { relative } from "node:path";
 import {
   resolve,
+  manifestAssets,
   manifestClient,
   manifestServer,
-  manifestAssets,
 } from "./vmod.ts";
 import { getRequestListener } from "@hono/node-server";
 import { Project, resolveProject, scanProjectStructure } from "./scanner.ts";
 import {
+  toAssetsManifestCode,
   toClientManifestCode,
   toServerManifestCode,
   removeClientServerExports,
-  toAssetsManifestCode,
 } from "./manifest.ts";
 import { loadClientGraph, loadDevGraph } from "./graph.ts";
 

@@ -27,7 +27,7 @@ export const useUsername = loader$(async (evt: FetchEvent) => {
 // 前端渲染部分
 export default () => {
   // 引用钩子函数获取 loader 在服务端运行的结果
-  const username = useUsername(); // ReadonlySignal<{ username: string }>
+  const username = useUsername(); // { username: string }
 
   return <div>Hello {username.value.username}!</div>;
 };

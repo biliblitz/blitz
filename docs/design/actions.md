@@ -43,18 +43,22 @@ export default () => {
 
 ## API
 
-### `ActionHandler<T>.state: ReadonlySignal<ActionState>`
+### `ActionHandler<T>.state: ActionState`
 
-是 `"idle"`, `"waiting"`, `"error"`, `"ok"` 中的一个。
-
-### `ActionHandler<T>.data: ReadonlySignal<T | null>`
-
-存放 Action 数据，仅当 `.state` 为 `"ok"` 的时候有值，其余情况为 `null`。
-
-### `ActionHandler<T>.error: ReadonlySignal<Error | null>`
-
-存放 Error 对象，仅当 `.state` 为 `"error"` 的时候有值，其余情况为 `null`。
+获取 Action 实例当前的状态和数据。
 
 ### `ActionHandler<T>.submit(data: FormData): Promise<void>`
 
-手动发起一次 POST 请求，使用 `Form` 可以自动化提交的行为。该 Promise 会在请求处理结束之后返回。
+手动发起一次 POST 请求，使用 [`Form`](./form.md) 可以自动化提交的行为。该 Promise 会在请求处理结束之后返回。
+
+### `ActionState.state: "idle" | "waiting" | "error" | "ok"`
+
+表示 Action 实例当前的状态。
+
+### `ActionState.data: T | null`
+
+存放 Action 数据，仅当 `.state` 为 `"ok"` 的时候有值，其余情况为 `null`。
+
+### `ActionState.error: Error | null`
+
+存放 Error 对象，仅当 `.state` 为 `"error"` 的时候有值，其余情况为 `null`。
