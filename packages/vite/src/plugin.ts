@@ -1,12 +1,18 @@
 import type { Plugin } from "vite";
 import { relative } from "node:path";
-import { resolve, manifestClient, manifestServer } from "./vmod.ts";
+import {
+  resolve,
+  manifestClient,
+  manifestServer,
+  manifestAssets,
+} from "./vmod.ts";
 import { getRequestListener } from "@hono/node-server";
 import { Project, resolveProject, scanProjectStructure } from "./scanner.ts";
 import {
   toClientManifestCode,
   toServerManifestCode,
   removeClientServerExports,
+  toAssetsManifestCode,
 } from "./manifest.ts";
 import { loadClientGraph, loadDevGraph } from "./graph.ts";
 
@@ -42,6 +48,8 @@ export async function blitz(): Promise<Plugin> {
           return resolve(manifestClient);
         case manifestServer:
           return resolve(manifestServer);
+        case manifestAssets:
+          return resolve(manifestAssets);
       }
     },
 
@@ -50,13 +58,23 @@ export async function blitz(): Promise<Plugin> {
         case resolve(manifestClient):
           return toClientManifestCode(await getProject());
 
-        case resolve(manifestServer):
+        case resolve(manifestServer): {
           const project = await getProject();
           const { entry, components } = getEntries(project);
           const graph = isDev
             ? await loadDevGraph(entry, components)
             : await loadClientGraph(entry, components);
           return toServerManifestCode(project, graph, base);
+        }
+
+        case resolve(manifestAssets): {
+          const project = await getProject();
+          const { entry, components } = getEntries(project);
+          const graph = isDev
+            ? await loadDevGraph(entry, components)
+            : await loadClientGraph(entry, components);
+          return toAssetsManifestCode(graph, base);
+        }
       }
     },
 

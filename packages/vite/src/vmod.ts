@@ -4,5 +4,6 @@ export const url = (id: string) => `/@id/__x00__${id}`;
 
 export const manifestClient = id("manifest/client");
 export const manifestServer = id("manifest/server");
+export const manifestAssets = id("manifest/assets");
 
 export const staticAdapterId = id("static-adapter");

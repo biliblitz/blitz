@@ -110,3 +110,9 @@ export function removeClientServerExports(
 
   return imports.join("\n") + remove;
 }
+
+export function toAssetsManifestCode(graph: Graph, base: string) {
+  return `export default [${graph.assets
+    .map((asset) => JSON.stringify(base + asset))
+    .join(", ")}];`;
+}
