@@ -8,6 +8,7 @@ export { Outlet } from "./components/outlet.tsx";
 export { useAction } from "./action.ts";
 export { useLoader } from "./loader.ts";
 export { useNavigate } from "./navigate.ts";
+export { useParam, useCatchParam } from "./params.ts";
 export { useActionEffect } from "./components/form.tsx";
 
 export { hydrate } from "./hydrate.tsx";
