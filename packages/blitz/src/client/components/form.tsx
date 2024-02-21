@@ -37,24 +37,22 @@ export function Form<T extends ActionReturnValue>(props: FormProps<T>) {
   );
 }
 
-export function useActionSuccess<T extends ActionReturnValue>(
-  effect: (data: T) => void | (() => void),
-  action: ActionHandler<T>,
-) {
-  useEffect(() => {
-    if (action.state.state === "ok") {
-      return effect(action.state.data);
-    }
-  }, [action.state]);
-}
+type ActionEffect<T extends ActionReturnValue> = {
+  action: ActionHandler<T>;
+  success?: (data: T) => void | (() => void);
+  error?: (error: Error) => void | (() => void);
+};
 
-export function useActionError<T extends ActionReturnValue>(
-  effect: (data: Error) => void | (() => void),
-  action: ActionHandler<T>,
-) {
+export function useActionEffect<T extends ActionReturnValue>({
+  action,
+  success,
+  error,
+}: ActionEffect<T>) {
   useEffect(() => {
-    if (action.state.state === "error") {
-      return effect(action.state.error);
+    if (action.state.state === "ok" && success) {
+      return success(action.state.data);
+    } else if (action.state.state === "error" && error) {
+      return error(action.state.error);
     }
   }, [action.state]);
 }

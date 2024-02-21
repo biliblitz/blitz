@@ -1,4 +1,4 @@
-import { Form, useActionError, useActionSuccess } from "@biliblitz/blitz";
+import { Form, useActionEffect } from "@biliblitz/blitz";
 import { action$ } from "@biliblitz/blitz/server";
 import { useEffect, useRef } from "preact/hooks";
 
@@ -25,38 +25,39 @@ export default () => {
       console.log(`ok: "${action.state.data.ok}" from useEffect`);
     }
   }, [action.state]);
-  // 或者使用包装的钩子函数
-  useActionSuccess((data) => {
-    console.log(`ok: "${data.ok}" from useActionSuccess`);
-  }, action);
 
-  // 同样的失败钩子
+  // 注册失败回调
   useEffect(() => {
     if (action.state.state === "error") {
       console.log(`error: "${action.state.error.message}" from useEffect`);
     }
   }, [action.state]);
+
   // 或者使用包装的钩子函数
-  useActionError((error) => {
-    console.log(`error: "${error.message}" from useActionError`);
-  }, action);
+  useActionEffect({
+    action,
+    success(data) {
+      console.log(`ok: "${data.ok}" from useActionEffect`);
+    },
+    error(error) {
+      console.log(`error: "${error.message}" from useActionEffect`);
+    },
+  });
 
   // 如果你想要成功之后重置 form
   const form = useRef<HTMLFormElement>(null);
-  useActionSuccess(() => {
-    form.current?.reset();
-  }, action);
+  useActionEffect({ action, success: () => form.current?.reset() });
 
   return (
     <Form
       action={action}
       // 或者直接写在这里
       onSuccess={(data) => {
-        console.log(`ok: "${data.ok}" from onSuccess`);
+        console.log(`ok: "${data.ok}" from <Form />`);
       }}
       // 同样的失败回调
       onError={(error) => {
-        console.log(`error: "${error.message}" from onError`);
+        console.log(`error: "${error.message}" from <Form />`);
       }}
     >
       <button name="mode" value="throw">
