@@ -1,6 +1,6 @@
 {
   "name": "@biliblitz/node-server",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A blitzing minimal backend-framework for Preact (node-server)",
   "type": "module",
   "files": [
