@@ -147,7 +147,8 @@ export async function generate(
     `<?xml version="1.0" encoding="UTF-8"?>`,
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
     ...pathnames.map(
-      (pathname) => `<url><loc>${origin}${pathname}</loc></url>`,
+      (pathname) =>
+        `<url><loc>${origin}${manifest.base}${pathname}</loc></url>`,
     ),
     `</urlset>`,
   ].join("\n");
