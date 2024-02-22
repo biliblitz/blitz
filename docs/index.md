@@ -4,9 +4,14 @@
 
 如果您熟悉 Remix，或者是 Qwik City，那么您就会感觉像在家里。
 
-## 开始
+## 其他教程
 
-```bash
-# 删除你的操作系统
-sudo rm -rf --no-preserve-root /
-```
+- [开始](./tutorial/start.md)
+- [Markdown & MDX](./tutorial/mdx.md)
+
+## 设计说明
+
+- [Action](./design/actions.md)
+- [Loader](./design/loaders.md)
+- [Form](./design/form.md)
+- [FetchEvent](./design/event.md)
