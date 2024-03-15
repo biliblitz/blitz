@@ -3,9 +3,11 @@ import { render } from "preact-render-to-string";
 
 import { Runtime, RuntimeProvider } from "../client/runtime.ts";
 import { ServerManifest } from "./build.ts";
-import { createRouter } from "./router.ts";
+import { ErrorResponse, RedirectResponse, createRouter } from "./router.ts";
 import { FetchEvent, createFetchEvent } from "./event.ts";
 import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
+import { RedirectException } from "./exception.ts";
 
 export type Server<T> = (req: Request, t?: T) => Promise<Response>;
 
@@ -40,6 +42,33 @@ export function createServer(vnode: VNode, { manifest }: ServerOptions) {
 
   const route = createRouter(manifest.directory);
   app.route("/", route);
+
+  app.onError(async (err, c) => {
+    const isDataRequest = c.req.path.endsWith("/_data.json");
+
+    if (err instanceof RedirectException) {
+      const res = err.getResponse(c.req.url);
+      if (isDataRequest) {
+        return c.json<RedirectResponse>({
+          ok: "redirect",
+          redirect: res.headers.get("Location")!,
+        });
+      }
+      return res;
+    }
+
+    const res =
+      err instanceof HTTPException
+        ? err.getResponse()
+        : new Response(err.message, { status: 500 });
+    if (isDataRequest) {
+      return c.json<ErrorResponse>({
+        ok: "error",
+        error: await res.text(),
+      });
+    }
+    return res;
+  });
 
   return app;
 }

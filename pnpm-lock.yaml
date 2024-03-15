@@ -34,6 +34,9 @@ importers:
       "@preact/signals":
         specifier: ^1.2.2
         version: 1.2.2(preact@10.19.3)
+      hono:
+        specifier: ^4.1.0
+        version: 4.1.0
       preact:
         specifier: ^10.19.3
         version: 10.19.3

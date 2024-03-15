@@ -46,7 +46,7 @@ export function createRouter({ route, children }: Directory) {
   });
 
   // resolve to current route
-  if (route.index) {
+  if (typeof route.index === "number") {
     app.get("/", async (c) => {
       const event = c.get("event");
       await event.runLayer(route.index);

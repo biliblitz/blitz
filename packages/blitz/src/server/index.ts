@@ -6,6 +6,8 @@ export { middleware$ } from "./middleware.ts";
 
 export { createServer } from "./server.tsx";
 
+export { HTTPException, RedirectException } from "./exception.ts";
+
 export type { Action } from "./action.ts";
 export type { Loader } from "./loader.ts";
 export type { Middleware } from "./middleware.ts";
