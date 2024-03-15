@@ -29,7 +29,8 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "vite": ">=5"
+    "vite": ">=5",
+    "hono": "^4"
   },
   "devDependencies": {
     "@types/node": "^20.11.16",

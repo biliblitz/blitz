@@ -1,7 +1,7 @@
 import { ComponentChildren, ComponentType, createContext } from "preact";
 import { StateUpdater, useContext, useState } from "preact/hooks";
-import { LoaderStore } from "../server/event.ts";
-import { ClientManifest, Graph } from "../server/build.ts";
+import { FetchEvent, LoaderStore } from "../server/event.ts";
+import { ClientManifest, Graph, ServerManifest } from "../server/build.ts";
 import { unique } from "../utils/algorithms.ts";
 import { Meta } from "../server/meta.ts";
 import { Params } from "../server/router.ts";
@@ -44,6 +44,22 @@ export function createRuntime(
     preloads,
     components,
   };
+}
+
+export function createServerRuntime(
+  manifest: ServerManifest,
+  event: FetchEvent,
+) {
+  return createRuntime(
+    event.metas,
+    manifest.base,
+    manifest.graph,
+    event.params,
+    event.loaders,
+    manifest,
+    event.url,
+    event.components,
+  );
 }
 
 export async function runtimeLoad(runtime: Runtime, components: number[]) {

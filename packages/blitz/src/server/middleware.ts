@@ -1,7 +1,7 @@
-import { FetchEvent } from "./event.ts";
+import { Context } from "hono";
 
 export interface Middleware<T = void> {
-  (evt: FetchEvent): T | Promise<T>;
+  (c: Context): T | Promise<T>;
   _ref?: string;
 }
 

@@ -1,8 +1,8 @@
 import { loader$ } from "@biliblitz/blitz/server";
 
-export const useFuckLocker = loader$((evt) => {
+export const useFuckLocker = loader$((c) => {
   const target = Math.random() < 0.5 ? "/foo" : "/bar";
-  throw new URL(target, evt.request.url);
+  throw new URL(target, c.req.url);
 });
 
 export default () => {

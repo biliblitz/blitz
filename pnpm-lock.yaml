@@ -56,6 +56,9 @@ importers:
 
   packages/blitz:
     dependencies:
+      hono:
+        specifier: ^4
+        version: 4.1.0
       preact:
         specifier: ^10
         version: 10.19.3
@@ -82,8 +85,8 @@ importers:
   packages/node-server:
     dependencies:
       hono:
-        specifier: ^3.12.11
-        version: 3.12.11
+        specifier: ^4
+        version: 4.1.0
     devDependencies:
       "@types/node":
         specifier: ^20.11.16
@@ -127,6 +130,9 @@ importers:
       chalk:
         specifier: ^5.3.0
         version: 5.3.0
+      hono:
+        specifier: ^4
+        version: 4.1.0
       vfile:
         specifier: ^6.0.1
         version: 6.0.1
@@ -1743,10 +1749,10 @@ packages:
     hasBin: true
     dev: false
 
-  /hono@3.12.11:
+  /hono@4.1.0:
     resolution:
       {
-        integrity: sha512-LSpxVgIMR3UzyFiXZaPvqBUGqyOKG0LMZqgMn2RXz9f+YAdkHSfFQQX0dtU72fPm5GnEMh5AYXs0ek5NYgMOmA==,
+        integrity: sha512-9no6DCHb4ijB1tWdFXU6JnrnFgzwVZ1cnIcS1BjAFnMcjbtBTOMsQrDrPH3GXbkNEEEkj8kWqcYBy8Qc0bBkJQ==,
       }
     engines: { node: ">=16.0.0" }
     dev: false

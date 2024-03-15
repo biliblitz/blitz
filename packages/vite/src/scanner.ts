@@ -90,14 +90,14 @@ export async function scanProjectStructure(entrance: string) {
     const index = registerComponent(indexPaths.at(0));
     const error = registerComponent(errorPaths.at(0));
     const layout = registerComponent(layoutPaths.at(0));
-    const statik = registerStatic(staticPaths.at(0));
+    const static1 = registerStatic(staticPaths.at(0));
     const middleware = registerMiddleware(middlewarePaths.at(0));
 
     const route: Route = {
       index,
       error,
       layout,
-      statik,
+      static: static1,
       middleware,
     };
     const children: [string, Directory][] = [];

@@ -1,8 +1,8 @@
 import { useParam } from "@biliblitz/blitz";
 import { meta$ } from "@biliblitz/blitz/server";
 
-export const meta = meta$((evt) => {
-  const param = evt.params.get("param")!;
+export const meta = meta$((c) => {
+  const param = c.req.param("param")!;
   return { title: `Param - ${param}` };
 });
 

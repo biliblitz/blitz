@@ -1,92 +1,104 @@
-import type { Directory, Route } from "./build.ts";
+import { Hono } from "hono";
+import type { Directory } from "./build.ts";
+import { ActionReturnValue } from "./action.ts";
+import { Meta } from "./meta.ts";
+import { LoaderReturnValue } from "./loader.ts";
 
 export type Params = [string, string][];
-export type ParamsMap = Map<string, string>;
-export type ResolveResult = {
-  routes: Route[];
-  params: Params;
-};
-export type Router = (pathname: string) => ResolveResult | null;
+export type LoaderStore = [string, LoaderReturnValue][];
 
-export function createRouter(
-  route: Route,
-  subroutes: [string, Router][],
-): Router {
-  const fakes = new Array<Router>();
-  const params = new Map<string, Router>();
-  const catches = new Array<Router>();
-  const matches = new Map<string, Router>();
+export type ErrorResponse = { ok: "error"; error: string };
+export type RedirectResponse = { ok: "redirect"; redirect: string };
 
-  for (const [dir, res] of subroutes) {
-    if (dir === "[...]") catches.push(res);
-    else if (dir.startsWith("[") && dir.endsWith("]"))
-      params.set(dir.slice(1, -1), res);
-    else if (dir.startsWith("(") && dir.endsWith(")")) fakes.push(res);
-    else matches.set(dir, res);
+export type ActionResponse<T = ActionReturnValue> =
+  | {
+      ok: "action";
+      meta: Meta;
+      params: Params;
+      loaders: LoaderStore;
+      components: number[];
+      action: T;
+    }
+  | ErrorResponse
+  | RedirectResponse;
+
+export type LoaderResponse =
+  | {
+      ok: "loader";
+      meta: Meta;
+      params: Params;
+      loaders: LoaderStore;
+      components: number[];
+    }
+  | ErrorResponse
+  | RedirectResponse;
+
+export function createRouter({ route, children }: Directory) {
+  const app = new Hono();
+
+  // middleware
+  app.get("*", async (c, next) => {
+    const event = c.get("event");
+    await event.runMiddleware(route.middleware);
+    await event.runLayer(route.layout);
+
+    await next();
+  });
+
+  // resolve to current route
+  if (route.index) {
+    app.get("/", async (c) => {
+      const event = c.get("event");
+      await event.runLayer(route.index);
+
+      return await c.render(event.runtime);
+    });
+
+    app.get("/_data.json", async (c) => {
+      const event = c.get("event");
+      await event.runLayer(route.index);
+
+      return c.json<LoaderResponse>({
+        ok: "loader",
+        meta: event.metas,
+        params: event.params,
+        loaders: event.loaders,
+        components: event.components,
+      });
+    });
   }
 
-  return (path) => {
-    if (path === "/") {
-      if (route.index !== null) {
-        return { routes: [route], params: [] };
-      }
-      return null;
+  const catches = [] as [string, Directory][];
+  const params = [] as [string, Directory][];
+  const fakes = [] as [string, Directory][];
+  const matches = [] as [string, Directory][];
+
+  for (const [dirname, child] of children) {
+    if (dirname === "[...]") {
+      catches.push([dirname, child]);
+    } else if (dirname.startsWith("[") && dirname.endsWith("]")) {
+      params.push([dirname, child]);
+    } else if (dirname.startsWith("[") && dirname.endsWith("]")) {
+      fakes.push([dirname, child]);
+    } else {
+      matches.push([dirname, child]);
     }
+  }
 
-    const index = path.slice(1).indexOf("/") + 1;
-    const segment = path.slice(1, index);
-    const remains = path.slice(index);
+  for (const [dirname, child] of matches) {
+    app.route(`/${dirname}/`, createRouter(child));
+  }
+  for (const [_, child] of fakes) {
+    app.route("/", createRouter(child));
+  }
+  for (const [dirname, child] of params) {
+    const name = dirname.slice(1, -1);
+    app.route(`/:${name}/`, createRouter(child));
+  }
+  // FIXME: untested
+  for (const [_, child] of catches) {
+    app.route("/:_{^.+$}/", createRouter(child));
+  }
 
-    // path    = '/foo/bar/'
-    // segment = 'foo'
-    // remains = '/bar/'
-
-    let ret: ResolveResult | null = null;
-
-    // handle matches
-    if (ret === null) {
-      const resolve = matches.get(segment);
-      if (resolve) {
-        ret = resolve(remains);
-      }
-    }
-
-    // handle fakes
-    if (ret === null) {
-      for (const resolve of fakes) {
-        ret = resolve(path);
-        if (ret) break;
-      }
-    }
-
-    // handle params
-    if (ret === null) {
-      for (const [param, resolve] of params.entries()) {
-        ret = resolve(remains);
-        ret?.params.push([param, segment]);
-        if (ret) break;
-      }
-    }
-
-    // handle catches
-    if (ret === null) {
-      for (const resolve of catches) {
-        ret = resolve("/");
-        ret?.params.push(["$", path.slice(1, -1)]);
-        if (ret) break;
-      }
-    }
-
-    // append route into routes
-    ret?.routes.unshift(route);
-
-    return ret;
-  };
-}
-
-export function resolveRouter(directory: Directory): Router {
-  return createRouter(
-    directory.route,
-    directory.children.map(([name, sub]) => [name, resolveRouter(sub)]),
-  );
+  return app;
 }

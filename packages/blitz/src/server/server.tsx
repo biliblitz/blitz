@@ -1,12 +1,11 @@
 import { VNode } from "preact";
 import { render } from "preact-render-to-string";
 
-import { RuntimeProvider, createRuntime } from "../client/runtime.ts";
+import { Runtime, RuntimeProvider } from "../client/runtime.ts";
 import { ServerManifest } from "./build.ts";
-import { Params, ResolveResult, resolveRouter } from "./router.ts";
-import { LoaderStore, createFetchEvent } from "./event.ts";
-import { ActionReturnValue } from "./action.ts";
-import { Meta } from "./meta.ts";
+import { createRouter } from "./router.ts";
+import { FetchEvent, createFetchEvent } from "./event.ts";
+import { Hono } from "hono";
 
 export type Server<T> = (req: Request, t?: T) => Promise<Response>;
 
@@ -14,186 +13,33 @@ export type ServerOptions = {
   manifest: ServerManifest;
 };
 
-export type ErrorResponse = { ok: "error"; error: string };
-export type RedirectResponse = { ok: "redirect"; redirect: string };
+declare module "hono" {
+  interface ContextRenderer {
+    (runtime: Runtime): Promise<Response>;
+  }
 
-export type ActionResponse<T = ActionReturnValue> =
-  | {
-      ok: "action";
-      meta: Meta;
-      params: Params;
-      loaders: LoaderStore;
-      components: number[];
-      action: T;
-    }
-  | ErrorResponse
-  | RedirectResponse;
+  interface ContextVariableMap {
+    event: FetchEvent;
+  }
+}
 
-export type LoaderResponse =
-  | {
-      ok: "loader";
-      meta: Meta;
-      params: Params;
-      loaders: LoaderStore;
-      components: number[];
-    }
-  | ErrorResponse
-  | RedirectResponse;
+export function createServer(vnode: VNode, { manifest }: ServerOptions) {
+  const app = new Hono().basePath(manifest.base);
 
-export function createServer<T = void>(
-  vnode: VNode,
-  { manifest }: ServerOptions,
-): Server<T> {
-  const router = resolveRouter(manifest.directory);
-
-  return async (req) => {
-    // console.log(`ssr running for ${req.url}`);
-
-    const url = new URL(req.url);
-
-    // if request is out of server
-    if (!url.pathname.startsWith(manifest.base))
-      // return new Response("418 I'm a teapot", { status: 418 });
-      return new Response(`url = ${url.href}, base = ${manifest.base}`, {
-        status: 418,
-      });
-
-    let pathname = url.pathname.slice(manifest.base.length - 1);
-
-    if (pathname.endsWith("/_data.json")) {
-      const resolve = router(pathname.slice(0, -10));
-      if (resolve === null)
-        return new Response("404 NOT FOUND", { status: 404 });
-
-      const event = createFetchEvent(manifest, req, resolve);
-
-      try {
-        if (url.searchParams.has("_action")) {
-          const ref = url.searchParams.get("_action")!;
-
-          const action = await event.runAction(ref);
-          const loaders = await event.runLoaders();
-          const meta = await event.runMetas();
-          event.headers.set("Content-Type", "application/json");
-          return new Response(
-            JSON.stringify({
-              ok: "action",
-              meta: meta,
-              params: resolve.params,
-              action: action,
-              loaders: loaders,
-              components: event.components,
-            } satisfies ActionResponse),
-            { headers: event.headers },
-          );
-        }
-
-        const loaders = await event.runLoaders();
-        const meta = await event.runMetas();
-        event.headers.set("Content-Type", "application/json");
-        return new Response(
-          JSON.stringify({
-            ok: "loader",
-            meta: meta,
-            params: resolve.params,
-            loaders: loaders,
-            components: event.components,
-          } satisfies LoaderResponse),
-          { headers: event.headers },
-        );
-      } catch (e) {
-        if (e instanceof URL) {
-          event.headers.set("Content-Type", "application/json");
-          return new Response(
-            JSON.stringify({
-              ok: "redirect",
-              redirect: e.href,
-            } satisfies RedirectResponse),
-            { headers: event.headers },
-          );
-        }
-
-        const errorMessage = e instanceof Error ? e.message : String(e);
-        event.headers.set("Content-Type", "application/json");
-        return new Response(
-          JSON.stringify({
-            ok: "error",
-            error: errorMessage,
-          } satisfies ErrorResponse),
-          { headers: event.headers },
-        );
-      }
-    }
-
-    let resolve: ResolveResult | null = null;
-
-    if (!pathname.endsWith("/") || pathname.includes("//")) {
-      if (!pathname.endsWith("/")) {
-        pathname += "/";
-      }
-      while (pathname.includes("//")) {
-        pathname = pathname.replaceAll("//", "/");
-      }
-
-      resolve = router(pathname);
-
-      if (resolve !== null) {
-        const redirect = new URL(url);
-        redirect.pathname = manifest.base + pathname.slice(1);
-        return Response.redirect(redirect.href, 308);
-      }
-    } else {
-      resolve = router(pathname);
-    }
-
-    if (resolve === null) {
-      // TODO: error render
-      return new Response("404 NOT FOUND", { status: 404 });
-    }
-
-    const event = createFetchEvent(manifest, req, resolve);
-
-    try {
-      const loaders = await event.runLoaders();
-      const meta = await event.runMetas();
-      const components = event.components;
-
-      const runtime = createRuntime(
-        meta,
-        manifest.base,
-        manifest.graph,
-        resolve.params,
-        loaders,
-        manifest,
-        url,
-        components,
-      );
-
+  app.use(async (c, next) => {
+    c.setRenderer(async (runtime) => {
       const html = render(
         <RuntimeProvider value={runtime}>{vnode}</RuntimeProvider>,
       );
-      event.headers.set("Content-Type", "text/html");
-      return new Response("<!DOCTYPE html>" + html, {
-        status: event.status,
-        headers: event.headers,
-      });
-    } catch (e) {
-      if (e instanceof URL) {
-        event.headers.set("Location", e.href);
-        return new Response(null, { status: 302, headers: event.headers });
-      }
+      return c.html("<!DOCTYPE html>" + html);
+    });
+    c.set("event", createFetchEvent(c, manifest));
 
-      if (e instanceof Response) {
-        return e;
-      }
+    await next();
+  });
 
-      const error = e instanceof Error ? e : new Error(String(e));
-      console.log(error);
-      // TODO: error render
-      return new Response(error.message, {
-        status: 500,
-        headers: event.headers,
-      });
-    }
-  };
+  const route = createRouter(manifest.directory);
+  app.route("/", route);
+
+  return app;
 }

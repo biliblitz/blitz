@@ -2,7 +2,7 @@ import { LoaderStore } from "../server/event.ts";
 import { pushState, replaceState, replaceURL } from "./history.ts";
 import { runtimeLoad, useRuntime, useSetRuntime } from "./runtime.ts";
 import { nextTick, unique } from "../utils/algorithms.ts";
-import { LoaderResponse } from "../server/server.tsx";
+import { LoaderResponse } from "../server/router.ts";
 import { Meta } from "../server/meta.ts";
 import { Params } from "../server/router.ts";
 import { useCallback, useMemo } from "preact/hooks";

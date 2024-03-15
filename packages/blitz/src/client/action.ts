@@ -4,7 +4,7 @@ import type {
   ActionState,
 } from "../server/action.ts";
 import { useNavigate } from "./navigate.ts";
-import { ActionResponse } from "../server/server.tsx";
+import { ActionResponse } from "../server/router.ts";
 import { useSetRuntime } from "./runtime.ts";
 import { nextTick } from "../utils/algorithms.ts";
 import { useState } from "preact/hooks";

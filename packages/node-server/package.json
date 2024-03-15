@@ -28,13 +28,13 @@
     "build": "rm -rf dist && tsc --build && node build.js"
   },
   "license": "MIT",
+  "peerDependencies": {
+    "hono": "^4"
+  },
   "devDependencies": {
     "@types/node": "^20.11.16",
     "esbuild": "^0.19.5",
     "tiny-glob": "^0.2.9",
     "typescript": "^5.2.2"
-  },
-  "dependencies": {
-    "hono": "^3.12.11"
   }
 }

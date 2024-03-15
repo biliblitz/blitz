@@ -33,6 +33,7 @@
   },
   "license": "MIT",
   "peerDependencies": {
+    "hono": "^4",
     "preact": "^10",
     "preact-render-to-string": "^6"
   },

@@ -1,9 +1,9 @@
+import { Context } from "hono";
 import { useLoader } from "../client/loader.ts";
-import { FetchEvent } from "./event.ts";
 
 export type LoaderReturnValue = {} | null;
 export type LoaderFunction<T extends LoaderReturnValue = LoaderReturnValue> = (
-  evt: FetchEvent,
+  c: Context,
 ) => T | Promise<T>;
 export interface Loader<T extends LoaderReturnValue = LoaderReturnValue> {
   (): LoaderHandler<T>;

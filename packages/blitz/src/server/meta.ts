@@ -1,5 +1,5 @@
 import { JSX } from "preact/jsx-runtime";
-import { FetchEvent } from "./event.ts";
+import { Context } from "hono";
 
 export type Meta = {
   title: string;
@@ -8,7 +8,7 @@ export type Meta = {
   link: DocumentLink[];
 };
 export type MetaFunction = (
-  evt: FetchEvent,
+  c: Context,
 ) => Partial<Meta> | Promise<Partial<Meta>>;
 
 export type DocumentMeta = JSX.HTMLAttributes<HTMLMetaElement>;

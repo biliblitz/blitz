@@ -30,7 +30,7 @@ export type Route = {
   index: number | null;
   error: number | null;
   layout: number | null;
-  statik: number | null;
+  static: number | null;
   middleware: number | null;
 };
 

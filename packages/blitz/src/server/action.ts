@@ -1,9 +1,9 @@
-import { FetchEvent } from "./event.ts";
 import { useAction } from "../client/action.ts";
+import { Context } from "hono";
 
 export type ActionReturnValue = {} | null;
 export type ActionFunction<T extends ActionReturnValue = ActionReturnValue> = (
-  evt: FetchEvent,
+  c: Context,
 ) => T | Promise<T>;
 export interface Action<T extends ActionReturnValue = ActionReturnValue> {
   (): ActionHandler<T>;

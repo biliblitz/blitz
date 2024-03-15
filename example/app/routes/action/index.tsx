@@ -2,13 +2,13 @@ import { Form, useActionEffect } from "@biliblitz/blitz";
 import { action$ } from "@biliblitz/blitz/server";
 import { useEffect, useRef } from "preact/hooks";
 
-export const useRandom = action$(async (evt) => {
-  const formData = await evt.request.formData();
+export const useRandom = action$(async (c) => {
+  const formData = await c.req.formData();
   const mode = formData.get("mode");
 
   switch (mode) {
     case "redirect":
-      throw new URL("/", evt.request.url);
+      throw new URL("/", c.req.url);
     case "throw":
       throw new Error("error from server");
     default:
