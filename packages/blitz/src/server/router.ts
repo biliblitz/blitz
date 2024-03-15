@@ -78,7 +78,7 @@ export function createRouter({ route, children }: Directory) {
       catches.push([dirname, child]);
     } else if (dirname.startsWith("[") && dirname.endsWith("]")) {
       params.push([dirname, child]);
-    } else if (dirname.startsWith("[") && dirname.endsWith("]")) {
+    } else if (dirname.startsWith("(") && dirname.endsWith(")")) {
       fakes.push([dirname, child]);
     } else {
       matches.push([dirname, child]);

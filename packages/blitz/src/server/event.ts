@@ -1,7 +1,6 @@
 import type { Loader, LoaderReturnValue } from "./loader.ts";
 import { Context } from "hono";
-import { MetaFunction, createDefaultMeta, mergeMeta } from "./meta.ts";
-import { Params } from "./router.ts";
+import { MetaFunction, createDefaultMeta, updateMeta } from "./meta.ts";
 import { ServerManifest } from "./build.ts";
 import { createServerRuntime } from "../client/runtime.tsx";
 
@@ -16,7 +15,6 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
   const loaderStore = new Map<string, LoaderReturnValue>();
   const metas = createDefaultMeta();
   const components = [] as number[];
-  const params = [] as Params;
 
   return {
     async runMiddleware(id: number | null) {
@@ -43,7 +41,7 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
       const meta = manifest.metas[id];
       if (meta) {
         const update = await meta(context);
-        mergeMeta(metas, update);
+        updateMeta(metas, update);
       }
     },
 
@@ -54,10 +52,6 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
       await this.runMeta(id);
 
       components.push(id);
-    },
-
-    appendParam(key: string, value: string) {
-      params.push([key, value]);
     },
 
     get loaders() {
@@ -73,7 +67,7 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
     },
 
     get params() {
-      return params;
+      return Object.entries(context.req.param());
     },
 
     get url() {

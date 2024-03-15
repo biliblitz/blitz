@@ -22,7 +22,7 @@ export function createDefaultMeta(): Meta {
   return { title: "untitled", description: "", meta: [], link: [] };
 }
 
-export function mergeMeta(origin: Meta, update: Partial<Meta>) {
+export function updateMeta(origin: Meta, update: Partial<Meta>) {
   origin.title = update.title || origin.title;
   origin.description = update.description || origin.description;
   origin.meta.push(...(update.meta || []));
