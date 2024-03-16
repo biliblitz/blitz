@@ -3,6 +3,7 @@ import type { Directory } from "./build.ts";
 import { ActionReturnValue } from "./action.ts";
 import { Meta } from "./meta.ts";
 import { LoaderReturnValue } from "./loader.ts";
+import { HTTPException } from "hono/http-exception";
 
 export type Params = [string, string][];
 export type LoaderStore = [string, LoaderReturnValue][];
@@ -13,10 +14,10 @@ export type RedirectResponse = { ok: "redirect"; redirect: string };
 export type ActionResponse<T = ActionReturnValue> =
   | {
       ok: "action";
-      meta: Meta;
-      params: Params;
-      loaders: LoaderStore;
-      components: number[];
+      // meta: Meta;
+      // params: Params;
+      // loaders: LoaderStore;
+      // components: number[];
       action: T;
     }
   | ErrorResponse
@@ -50,6 +51,13 @@ export function createRouter({ route, children }: Directory) {
     await next();
   });
 
+  // middleware for running action
+  app.post(async (c, next) => {
+    const event = c.get("event");
+    event.registerLayerActions(route.layout);
+    await next();
+  });
+
   // resolve to current route
   if (typeof route.index === "number") {
     app.get("/", async (c) => {
@@ -67,6 +75,31 @@ export function createRouter({ route, children }: Directory) {
         params: event.params,
         loaders: event.loaders,
         components: event.components,
+      });
+    });
+
+    app.post("/_data.json", async (c) => {
+      const event = c.get("event");
+      event.registerLayerActions(route.index);
+
+      const ref = c.req.query("_action");
+      if (!ref) {
+        throw new HTTPException(400, {
+          message: "No `_action` in search params",
+        });
+      }
+
+      const action = event.findAction(ref);
+      if (!action) {
+        throw new HTTPException(400, {
+          message: "Action not found",
+        });
+      }
+
+      const res = await event.runAction(action);
+      return c.json<ActionResponse>({
+        ok: "action",
+        action: res,
       });
     });
   }

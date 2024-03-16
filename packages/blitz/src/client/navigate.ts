@@ -2,10 +2,10 @@ import { LoaderStore } from "../server/event.ts";
 import { pushState, replaceState, replaceURL } from "./history.ts";
 import { runtimeLoad, useRuntime, useSetRuntime } from "./runtime.ts";
 import { nextTick, unique } from "../utils/algorithms.ts";
-import { LoaderResponse } from "../server/router.ts";
 import { Meta } from "../server/meta.ts";
 import { Params } from "../server/router.ts";
 import { useCallback, useMemo } from "preact/hooks";
+import { fetchLoaders } from "./loader.ts";
 
 export function useRender() {
   const runtime = useRuntime();
@@ -60,7 +60,10 @@ export function useNavigate() {
       return;
     }
 
-    if (target.pathname === location.pathname) {
+    if (
+      target.pathname === location.pathname &&
+      target.search === location.search
+    ) {
       const targetAnchor = decodeURIComponent(target.hash);
       const originAnchor = decodeURIComponent(location.hash);
 
@@ -82,37 +85,33 @@ export function useNavigate() {
       target.pathname += "/";
     }
 
-    const dataUrl = new URL(target);
-    dataUrl.pathname += "_data.json";
-
     try {
-      const response = await fetch(dataUrl);
-      const data = (await response.json()) as LoaderResponse;
+      const resp = await fetchLoaders(target);
 
-      if (data.ok === "loader") {
+      if (resp.ok === "loader") {
         replaceState({ position: [scrollX, scrollY] });
         pushState(
           {
-            meta: data.meta,
-            params: data.params,
-            loaders: data.loaders,
+            meta: resp.meta,
+            params: resp.params,
+            loaders: resp.loaders,
             position: [0, 0],
-            components: data.components,
+            components: resp.components,
           },
           target,
         );
-        await render(data.meta, data.params, data.loaders, data.components);
+        await render(resp.meta, resp.params, resp.loaders, resp.components);
         if (target.hash) {
           document
-            .getElementById(target.hash.slice(1))
+            .getElementById(decodeURIComponent(target.hash.slice(1)))
             ?.scrollIntoView({ behavior: "smooth" });
         } else {
           scrollTo(0, 0);
         }
-      } else if (data.ok === "redirect") {
-        await navigate(data.redirect);
-      } else if (data.ok === "error") {
-        throw new Error(data.error);
+      } else if (resp.ok === "redirect") {
+        await navigate(resp.redirect);
+      } else if (resp.ok === "error") {
+        throw new Error(resp.error);
       } else {
         throw new Error(`Invalid Response`);
       }

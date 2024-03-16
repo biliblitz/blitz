@@ -16,10 +16,10 @@ export function Form<T extends ActionReturnValue>(props: FormProps<T>) {
 
   // register callbacks
   useEffect(() => {
-    if (action.state.state === "ok" && onSuccess) {
-      onSuccess(action.state.data);
+    if (action.state.state === "ok") {
+      onSuccess?.(action.state.data);
     } else if (action.state.state === "error" && onError) {
-      onError(action.state.error);
+      onError?.(action.state.error);
     }
   }, [action.state]);
 

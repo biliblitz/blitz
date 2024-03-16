@@ -3,6 +3,7 @@ import { Context } from "hono";
 import { MetaFunction, createDefaultMeta, updateMeta } from "./meta.ts";
 import { ServerManifest } from "./build.ts";
 import { createServerRuntime } from "../client/runtime.tsx";
+import { Action, ActionReturnValue } from "./action.ts";
 
 export type Layer = {
   loaders: Loader[];
@@ -15,6 +16,7 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
   const loaderStore = new Map<string, LoaderReturnValue>();
   const metas = createDefaultMeta();
   const components = [] as number[];
+  const actions = new Map<string, Action>();
 
   return {
     async runMiddleware(id: number | null) {
@@ -45,6 +47,13 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
       }
     },
 
+    registerLayerActions(id: number | null) {
+      if (id === null) return;
+      for (const action of manifest.actions[id]) {
+        actions.set(action._ref!, action);
+      }
+    },
+
     async runLayer(id: number | null) {
       if (id === null) return;
 
@@ -52,6 +61,14 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
       await this.runMeta(id);
 
       components.push(id);
+    },
+
+    async runAction<T extends ActionReturnValue>(action: Action<T>) {
+      return await action._fn!(context);
+    },
+
+    findAction<T extends ActionReturnValue>(ref: string) {
+      return actions.get(ref) as Action<T> | undefined;
     },
 
     get loaders() {

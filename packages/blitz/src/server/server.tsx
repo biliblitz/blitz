@@ -37,6 +37,7 @@ export function createServer(vnode: VNode, { manifest }: ServerOptions) {
     await next();
   });
 
+  // redirect tailing slash
   app.use(async (c, next) => {
     if (!c.req.path.endsWith("/_data.json") && !c.req.path.endsWith("/")) {
       const url = new URL(c.req.url);
