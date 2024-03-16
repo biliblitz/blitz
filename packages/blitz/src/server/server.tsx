@@ -47,27 +47,45 @@ export function createServer(vnode: VNode, { manifest }: ServerOptions) {
     const isDataRequest = c.req.path.endsWith("/_data.json");
 
     if (err instanceof RedirectException) {
-      const res = err.getResponse(c.req.url);
+      const target =
+        typeof err.target === "string"
+          ? new URL(err.target, c.req.url)
+          : err.target;
+
       if (isDataRequest) {
         return c.json<RedirectResponse>({
           ok: "redirect",
-          redirect: res.headers.get("Location")!,
+          redirect: target.href,
         });
       }
-      return res;
+
+      return c.redirect(target.href, err.status);
     }
 
-    const res =
-      err instanceof HTTPException
-        ? err.getResponse()
-        : new Response(err.message, { status: 500 });
+    if (err instanceof HTTPException && err.res) {
+      if (isDataRequest) {
+        return c.json<ErrorResponse>({
+          ok: "error",
+          error: await err.res.text(),
+          status: err.res.status,
+        });
+      }
+      // TODO: render error page
+      return err.res;
+    }
+
+    const message = err.message;
+    const status = err instanceof HTTPException ? err.status : 500;
+
     if (isDataRequest) {
       return c.json<ErrorResponse>({
         ok: "error",
-        error: await res.text(),
+        error: message,
+        status,
       });
     }
-    return res;
+    // TODO: render error page
+    return c.body(message, status);
   });
 
   return app;

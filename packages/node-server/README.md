@@ -2,6 +2,8 @@
 
 This package provides a static assets server.
 
+**DEPRECATED: please use @hono/node-server directly**
+
 ```js
 import { serveStatic } from "@biliblitz/node-server";
 

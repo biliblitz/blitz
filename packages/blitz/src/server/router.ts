@@ -7,7 +7,7 @@ import { LoaderReturnValue } from "./loader.ts";
 export type Params = [string, string][];
 export type LoaderStore = [string, LoaderReturnValue][];
 
-export type ErrorResponse = { ok: "error"; error: string };
+export type ErrorResponse = { ok: "error"; error: string; status: number };
 export type RedirectResponse = { ok: "redirect"; redirect: string };
 
 export type ActionResponse<T = ActionReturnValue> =

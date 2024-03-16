@@ -1,24 +1,15 @@
 import { HTTPException } from "hono/http-exception";
+import { RedirectStatusCode } from "hono/utils/http-status";
 
 export class RedirectException extends Error {
-  constructor(
-    public target: string | URL,
-    public status: 301 | 302 | 307 | 308 = 307,
-  ) {
-    super();
-  }
+  readonly target: string | URL;
+  readonly status: RedirectStatusCode;
 
-  getResponse(base: string): Response {
-    const url =
-      typeof this.target === "string"
-        ? new URL(this.target, base)
-        : this.target;
-    return new Response(null, {
-      status: this.status,
-      headers: {
-        Location: url.href,
-      },
-    });
+  constructor(target: string | URL, status: RedirectStatusCode = 307) {
+    super();
+
+    this.target = target;
+    this.status = status;
   }
 }
 
