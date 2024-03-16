@@ -1,13 +1,17 @@
-import { serveStatic } from "@biliblitz/node-server";
-import { chain, startsWith, when } from "@biliblitz/node-server/tools";
+import { Hono } from "hono";
 import { serve } from "@hono/node-server";
+import { serveStatic } from "@hono/node-server/serve-static";
 
-const sttsrv = serveStatic({ root: "./dist/static/", base: "/base/" });
-const fetch = chain(
-  when(startsWith("/base/"), sttsrv),
-  () => new Response(null, { status: 418 }),
+const app = new Hono();
+
+app.use(
+  "/base/*",
+  serveStatic({
+    root: "./dist/static/",
+    rewriteRequestPath: (path) => path.slice(5),
+  }),
 );
 
-serve({ fetch }, (info) => {
+serve(app, (info) => {
   console.log(`Listening on http://localhost:${info.port}/base/`);
 });
