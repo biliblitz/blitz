@@ -9,8 +9,6 @@ import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { RedirectException } from "./exception.ts";
 
-export type Server<T> = (req: Request, t?: T) => Promise<Response>;
-
 export type ServerOptions = {
   manifest: ServerManifest;
 };
@@ -19,7 +17,6 @@ declare module "hono" {
   interface ContextRenderer {
     (runtime: Runtime): Promise<Response>;
   }
-
   interface ContextVariableMap {
     event: FetchEvent;
   }
@@ -36,6 +33,16 @@ export function createServer(vnode: VNode, { manifest }: ServerOptions) {
       return c.html("<!DOCTYPE html>" + html);
     });
     c.set("event", createFetchEvent(c, manifest));
+
+    await next();
+  });
+
+  app.use(async (c, next) => {
+    if (!c.req.path.endsWith("/_data.json") && !c.req.path.endsWith("/")) {
+      const url = new URL(c.req.url);
+      url.pathname += "/";
+      return c.redirect(url.href, 308);
+    }
 
     await next();
   });

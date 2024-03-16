@@ -36,12 +36,17 @@ export type LoaderResponse =
 export function createRouter({ route, children }: Directory) {
   const app = new Hono();
 
-  // middleware
-  app.get("*", async (c, next) => {
+  // middleware for loaders/actions
+  app.use(async (c, next) => {
     const event = c.get("event");
     await event.runMiddleware(route.middleware);
-    await event.runLayer(route.layout);
+    await next();
+  });
 
+  // middleware for running loader
+  app.get(async (c, next) => {
+    const event = c.get("event");
+    await event.runLayer(route.layout);
     await next();
   });
 
@@ -50,14 +55,12 @@ export function createRouter({ route, children }: Directory) {
     app.get("/", async (c) => {
       const event = c.get("event");
       await event.runLayer(route.index);
-
       return await c.render(event.runtime);
     });
 
     app.get("/_data.json", async (c) => {
       const event = c.get("event");
       await event.runLayer(route.index);
-
       return c.json<LoaderResponse>({
         ok: "loader",
         meta: event.metas,
