@@ -50,12 +50,15 @@ importers:
       "@types/node":
         specifier: ^20.9.0
         version: 20.11.9
+      typescript:
+        specifier: ^5.2.2
+        version: 5.3.3
       vite:
         specifier: ^5.0.12
         version: 5.0.12(@types/node@20.11.9)
       vite-tsconfig-paths:
         specifier: ^4.3.1
-        version: 4.3.1(vite@5.0.12)
+        version: 4.3.1(typescript@5.3.3)(vite@5.0.12)
 
   packages/blitz:
     dependencies:
@@ -2902,7 +2905,7 @@ packages:
       }
     dev: false
 
-  /tsconfck@3.0.2:
+  /tsconfck@3.0.2(typescript@5.3.3):
     resolution:
       {
         integrity: sha512-6lWtFjwuhS3XI4HsX4Zg0izOI3FU/AI9EGVlPEUMDIhvLPMD4wkiof0WCoDgW7qY+Dy198g4d9miAqUHWHFH6Q==,
@@ -2914,6 +2917,8 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+    dependencies:
+      typescript: 5.3.3
     dev: true
 
   /tslib@2.6.2:
@@ -3065,7 +3070,7 @@ packages:
       vfile-message: 4.0.2
     dev: false
 
-  /vite-tsconfig-paths@4.3.1(vite@5.0.12):
+  /vite-tsconfig-paths@4.3.1(typescript@5.3.3)(vite@5.0.12):
     resolution:
       {
         integrity: sha512-cfgJwcGOsIxXOLU/nELPny2/LUD/lcf1IbfyeKTv2bsupVbTH/xpFtdQlBmIP1GEK2CjjLxYhFfB+QODFAx5aw==,
@@ -3078,7 +3083,7 @@ packages:
     dependencies:
       debug: 4.3.4
       globrex: 0.1.2
-      tsconfck: 3.0.2
+      tsconfck: 3.0.2(typescript@5.3.3)
       vite: 5.0.12(@types/node@20.11.9)
     transitivePeerDependencies:
       - supports-color

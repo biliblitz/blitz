@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "pnpm run build:client && pnpm run build:server && pnpm run build:static",
+    "build": "tsc --build && pnpm run build:client && pnpm run build:server && pnpm run build:static",
     "build:client": "vite build --outDir dist/client --manifest",
     "build:server": "vite build --outDir dist/server --ssr app/entry.server.tsx",
     "build:static": "vite build --outDir dist/static --ssr -c adapters/static/vite.config.ts",
@@ -27,6 +27,7 @@
   "devDependencies": {
     "@biliblitz/vite": "^0.0.7",
     "@types/node": "^20.9.0",
+    "typescript": "^5.2.2",
     "vite": "^5.0.12",
     "vite-tsconfig-paths": "^4.3.1"
   }
