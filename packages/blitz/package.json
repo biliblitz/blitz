@@ -29,7 +29,7 @@
   },
   "scripts": {
     "fmt": "prettier --write src",
-    "build": "rm -rf dist && tsc --build && node build.js"
+    "build": "rm -rf dist && tsc --build && exbuild"
   },
   "license": "MIT",
   "peerDependencies": {
@@ -38,9 +38,8 @@
     "preact-render-to-string": "^6"
   },
   "devDependencies": {
+    "@swwind/exbuild": "^1.0.2",
     "@types/node": "^20.11.16",
-    "esbuild": "^0.19.5",
-    "tiny-glob": "^0.2.9",
     "typescript": "^5.2.2",
     "vite": "^5.0.12"
   }

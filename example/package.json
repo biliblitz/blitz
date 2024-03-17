@@ -11,8 +11,6 @@
     "start": "node server.js",
     "start:static": "node server-static.js"
   },
-  "keywords": [],
-  "author": "",
   "license": "MIT",
   "dependencies": {
     "@biliblitz/blitz": "^0.1.0",
