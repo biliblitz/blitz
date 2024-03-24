@@ -1,10 +1,16 @@
 import { ComponentChildren, ComponentType, createContext } from "preact";
-import { StateUpdater, useContext, useState } from "preact/hooks";
+import { useContext, useState } from "preact/hooks";
 import { FetchEvent, LoaderStore } from "../server/event.ts";
 import { ClientManifest, Graph, ServerManifest } from "../server/build.ts";
 import { unique } from "../utils/algorithms.ts";
 import { Meta } from "../server/meta.ts";
 import { Params } from "../server/router.ts";
+import {
+  NavigateContext,
+  RenderContext,
+  useNavigateCallback,
+  useRenderCallback,
+} from "./navigate.ts";
 
 export type Runtime = {
   meta: Meta;
@@ -77,19 +83,23 @@ export async function runtimeLoad(runtime: Runtime, components: number[]) {
   );
 }
 
-export const RuntimeContext = createContext<
-  [Runtime, StateUpdater<Runtime>] | null
->(null);
+export const RuntimeContext = createContext<Runtime | null>(null);
 
 export function RuntimeProvider(props: {
   value: Runtime;
   children: ComponentChildren;
 }) {
   const [runtime, setRuntime] = useState(props.value);
+  const render = useRenderCallback(runtime, setRuntime);
+  const navigate = useNavigateCallback(render);
 
   return (
-    <RuntimeContext.Provider value={[runtime, setRuntime]}>
-      {props.children}
+    <RuntimeContext.Provider value={runtime}>
+      <RenderContext.Provider value={render}>
+        <NavigateContext.Provider value={navigate}>
+          {props.children}
+        </NavigateContext.Provider>
+      </RenderContext.Provider>
     </RuntimeContext.Provider>
   );
 }
@@ -98,12 +108,5 @@ export function useRuntime() {
   const runtime = useContext(RuntimeContext);
   if (!runtime)
     throw new Error("Please nest your project inside <BlitzCityProvider />");
-  return runtime[0];
-}
-
-export function useSetRuntime() {
-  const runtime = useContext(RuntimeContext);
-  if (!runtime)
-    throw new Error("Please nest your project inside <BlitzCityProvider />");
-  return runtime[1];
+  return runtime;
 }

@@ -3,9 +3,8 @@ import type {
   ActionReturnValue,
   ActionState,
 } from "../server/action.ts";
-import { useNavigate } from "./navigate.ts";
+import { useNavigate, useRender } from "./navigate.ts";
 import { ActionResponse } from "../server/router.ts";
-import { useSetRuntime } from "./runtime.ts";
 import { useState } from "preact/hooks";
 import { fetchLoaders } from "./loader.ts";
 
@@ -24,7 +23,7 @@ export async function fetchAction<T>(ref: string, data: FormData) {
 export function useAction<T extends ActionReturnValue>(
   ref: string,
 ): ActionHandler<T> {
-  const setRuntime = useSetRuntime();
+  const render = useRender();
   const navigate = useNavigate();
 
   const [state, setState] = useState<ActionState<T>>({
@@ -45,14 +44,7 @@ export function useAction<T extends ActionReturnValue>(
         const data = await fetchLoaders(location.href);
 
         if (data.ok === "loader") {
-          setRuntime((runtime) => ({
-            ...runtime,
-            meta: data.meta,
-            params: data.params,
-            loaders: data.loaders,
-            location: new URL(location.href),
-            components: data.components,
-          }));
+          await render(data.meta, data.params, data.loaders, data.components);
         } else if (data.ok === "redirect") {
           await navigate(data.redirect);
         } else if (data.ok === "error") {
