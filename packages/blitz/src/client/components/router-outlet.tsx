@@ -16,17 +16,18 @@ export function RouterOutlet() {
 }
 
 function EntryPoint() {
+  const runtime = useRuntime();
+
   // dev specific entry
   if (isDev) {
     return (
       <>
-        <script type="module" src="/@vite/client"></script>
-        <script type="module" src="/app/entry.client.tsx"></script>
+        <script type="module" src={`${runtime.base}@vite/client`} />
+        <script type="module" src={`${runtime.base}app/entry.client.tsx`} />
       </>
     );
   }
 
-  const runtime = useRuntime();
   const src = runtime.base + runtime.graph.assets[runtime.graph.entry[0]];
 
   return <script type="module" src={src} />;

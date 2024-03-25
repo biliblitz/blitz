@@ -81,7 +81,7 @@ export async function generate(
   const pathnames = [] as string[];
 
   const env = { params: new Map() };
-  async function dfs(current: string, { route, children }: Directory) {
+  async function dfs({ route, children }: Directory, current: string = "") {
     if (route.index !== null) pathnames.push(current);
     for (const [dirname, child] of children) {
       if (dirname.startsWith("[") && dirname.endsWith("]")) {
@@ -94,17 +94,17 @@ export async function generate(
         const possibles = await static1(env);
         for (const possible of possibles) {
           env.params.set(param, possible);
-          await dfs(current + possible + "/", child);
+          await dfs(child, current + possible + "/");
         }
         env.params.delete(param);
       } else if (dirname.startsWith("(") && dirname.endsWith(")")) {
-        await dfs(current, child);
+        await dfs(child, current);
       } else {
-        await dfs(current + dirname + "/", child);
+        await dfs(child, current + dirname + "/");
       }
     }
   }
-  await dfs("", manifest.directory);
+  await dfs(manifest.directory);
 
   async function get(url: URL) {
     const request = new Request(url);

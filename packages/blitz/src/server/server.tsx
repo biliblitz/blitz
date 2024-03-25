@@ -23,7 +23,7 @@ declare module "hono" {
 }
 
 export function createServer(vnode: VNode, { manifest }: ServerOptions) {
-  const app = new Hono().basePath(manifest.base);
+  const app = new Hono();
 
   app.use(async (c, next) => {
     c.setRenderer(async (runtime) => {

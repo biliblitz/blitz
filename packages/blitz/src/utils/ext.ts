@@ -42,6 +42,15 @@ export function isVideo(filename: string) {
   return VIDEO_FILE_EXTENSIONS.some((ext) => filename.endsWith(ext));
 }
 
+export function isAsset(filename: string) {
+  return (
+    isImage(filename) ||
+    isFont(filename) ||
+    isAudio(filename) ||
+    isVideo(filename)
+  );
+}
+
 export function getLinkPreloadAs(filename: string) {
   if (isJs(filename)) return "script";
   if (isCss(filename)) return "style";

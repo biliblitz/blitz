@@ -15,6 +15,7 @@ import {
   removeClientServerExports,
 } from "./manifest.ts";
 import { loadClientGraph, loadDevGraph } from "./graph.ts";
+import { Hono } from "hono";
 
 export async function blitz(): Promise<Plugin> {
   const vmods = [manifestClient, manifestServer];
@@ -150,7 +151,7 @@ export async function blitz(): Promise<Plugin> {
       base = config.base;
     },
 
-    handleHotUpdate() {
+    handleHotUpdate(ctx) {
       project = null;
     },
 
@@ -166,8 +167,9 @@ export async function blitz(): Promise<Plugin> {
           }
 
           const module = await vite.ssrLoadModule("./app/entry.dev.tsx");
+          const app = module.default as Hono;
 
-          const listener = getRequestListener((req) => module.default(req));
+          const listener = getRequestListener((req) => app.fetch(req));
           await listener(req, res);
         });
       };
