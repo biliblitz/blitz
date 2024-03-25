@@ -20,7 +20,7 @@ importers:
   example:
     dependencies:
       "@biliblitz/blitz":
-        specifier: ^0.1.0
+        specifier: ^0.1.1
         version: link:../packages/blitz
       "@hono/node-server":
         specifier: ^1.5.0
@@ -42,7 +42,7 @@ importers:
         version: 6.3.1(preact@10.19.3)
     devDependencies:
       "@biliblitz/vite":
-        specifier: ^0.1.0
+        specifier: ^0.1.1
         version: link:../packages/vite
       "@types/node":
         specifier: ^20.9.0
@@ -100,7 +100,7 @@ importers:
         specifier: ^7.23.9
         version: 7.23.9
       "@biliblitz/blitz":
-        specifier: ^0.1.0
+        specifier: ^0.1.1
         version: link:../blitz
       "@hono/node-server":
         specifier: ^1.4.0
