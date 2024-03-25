@@ -1,7 +1,9 @@
 import { Link } from "@biliblitz/blitz";
 import { loader$ } from "@biliblitz/blitz/server";
 
-export const useFooData = loader$(() => {
+export const useFooData = loader$((c) => {
+  c.header("X-Your-Waifu", "Emilia");
+
   return { data: `Foo loader: ${Math.random()}` };
 });
 

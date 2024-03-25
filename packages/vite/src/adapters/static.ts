@@ -1,11 +1,12 @@
 import { Plugin } from "vite";
 import { Hono } from "hono";
 import { resolve, staticAdapterId } from "../vmod.ts";
-import { join } from "path";
+import path, { join } from "path";
 import { ServerManifest, Directory } from "@biliblitz/blitz/server";
 import { writeFile, mkdir, unlink } from "node:fs/promises";
 import chalk from "chalk";
 import { cp } from "fs/promises";
+import { RedirectStatusCode } from "hono/utils/http-status";
 
 export type Options = {
   /** @example "https://yoursite.com" */
@@ -13,6 +14,17 @@ export type Options = {
 };
 
 const originRegex = /^https?:\/\/(?:[a-z0-9\-]+\.)*[a-z0-9\-]+$/;
+
+type Redirect = {
+  source: string;
+  destination: string;
+  code: RedirectStatusCode;
+};
+
+type AdditionHeader = {
+  source: string;
+  headers: [string, string][];
+};
 
 export function staticAdapter(options: Options): Plugin {
   if (!originRegex.test(options.origin))
@@ -106,35 +118,77 @@ export async function generate(
   }
   await dfs(manifest.directory);
 
-  async function get(url: URL) {
-    const request = new Request(url);
-    const response = await server.request(request);
-    // handle redirect
-    if ([301, 302, 307, 308].includes(response.status)) {
-      const location = response.headers.get("Location");
-      return new TextEncoder().encode(
-        `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; URL=${location}" /></head><body>Redirecting to <a href="${location}">${location}</a></body></html>`,
-      );
-    }
+  const redirects: Redirect[] = [];
+  const headers: AdditionHeader[] = [];
+
+  const app = new Hono().basePath(manifest.base);
+  app.route("/", server);
+
+  async function handleRequest(
+    pathname: string,
+    dirname: string,
+    filename: string,
+  ) {
+    const request = new Request(new URL(origin + manifest.base + pathname));
+    const response = await app.fetch(request);
+
     // handle server explosion
     if (response.status >= 500) {
       throw new Error("Server exploded, stopping...");
     }
-    const buffer = await response.arrayBuffer();
-    return new Uint8Array(buffer);
+
+    // add additional headers
+    const additional: [string, string][] = [];
+    response.headers.forEach((value, key) => {
+      // console.log(`${key}: ${value}`);
+      const lower = key.toLowerCase();
+      if (lower !== "location" && lower !== "content-type") {
+        additional.push([key, value]);
+      }
+    });
+    if (additional.length > 0) {
+      headers.push({
+        source: pathname,
+        headers: additional,
+      });
+    }
+
+    // handle redirect
+    if ([301, 302, 307, 308].includes(response.status)) {
+      const location = response.headers.get("Location")!;
+      redirects.push({
+        source: pathname,
+        destination: location,
+        code: response.status as RedirectStatusCode,
+      });
+
+      if (filename === "index.html") {
+        console.log(
+          chalk.gray(dirname) +
+            chalk.white("index.html") +
+            " -> " +
+            chalk.gray(location),
+        );
+      }
+      return;
+    }
+
+    // write response to fs
+    const buffer = new Uint8Array(await response.arrayBuffer());
+    const filepath = path.join(dirname, filename);
+    await mkdir(dirname, { recursive: true });
+    await writeFile(filepath, buffer);
+
+    if (filename === "index.html") {
+      console.log(chalk.gray(dirname) + chalk.white("index.html"));
+    }
   }
 
   const start = Date.now();
   for (const pathname of pathnames) {
     const dirname = outdir + "/" + pathname;
-    await mkdir(dirname, { recursive: true });
-    const index = await get(new URL(origin + manifest.base + pathname));
-    await writeFile(dirname + "index.html", index);
-    const json = await get(
-      new URL(origin + manifest.base + pathname + "_data.json"),
-    );
-    await writeFile(dirname + "_data.json", json);
-    console.log(chalk.gray(dirname) + chalk.white("index.html"));
+    await handleRequest(pathname, dirname, "index.html");
+    await handleRequest(pathname + "_data.json", dirname, "_data.json");
   }
   const end = Date.now();
 
@@ -154,6 +208,32 @@ export async function generate(
     `</urlset>`,
   ].join("\n");
   await writeFile(join(outdir, "sitemap.xml"), sitemap);
+
+  // _redirects
+
+  await writeFile(
+    join(outdir, "_redirects"),
+    redirects
+      .map(
+        (redr) =>
+          `${manifest.base}${redr.source} ${redr.destination} ${redr.code}`,
+      )
+      .join("\n"),
+  );
+
+  // _headers
+
+  await writeFile(
+    join(outdir, "_headers"),
+    headers
+      .map((hdr) =>
+        [
+          `${manifest.base}${hdr.source}`,
+          ...hdr.headers.map(([key, value]) => `  ${key}: ${value}`),
+        ].join("\n"),
+      )
+      .join("\n\n"),
+  );
 
   // copy assets
 
