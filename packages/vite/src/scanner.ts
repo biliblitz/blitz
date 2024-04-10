@@ -3,6 +3,7 @@ import { isJs, isJsOrMdx, isMdx } from "./utils/ext.ts";
 import { readFile, readdir, stat } from "node:fs/promises";
 import { hashRef } from "./utils/crypto.ts";
 import { Directory, Route } from "@biliblitz/blitz/server";
+import { find_exports } from "@swwind/find-exports";
 
 function getFilenameWithoutExt(filename: string) {
   const ext = extname(filename);
@@ -121,37 +122,40 @@ export async function scanProjectStructure(entrance: string) {
 
 export type ProjectStructure = Awaited<ReturnType<typeof scanProjectStructure>>;
 
-const actionRegExp =
-  /\bexport\s+(?:const|let|var)\s+([a-zA-Z0-9_\$]+)\s*=\s*action\$/g;
-export async function parseAction(actionPath: string, index: number) {
-  if (isMdx(actionPath)) return [];
-  const source = await readFile(actionPath, "utf8");
-  const matches = [...source.matchAll(actionRegExp)].map((match) => match[1]);
-  return await Promise.all(
-    matches.map(async (name) => ({
-      name: name,
-      ref: await hashRef(`action-${index}-${name}`),
-    })),
-  );
+export type ActionMeta = { name: string; ref: string }[];
+export type LoaderMeta = { name: string; ref: string }[];
+
+export async function parseActionsAndLoaders(
+  filePath: string,
+  index: number,
+): Promise<{
+  actions: ActionMeta;
+  loaders: LoaderMeta;
+  hasMeta: boolean;
+}> {
+  if (isMdx(filePath)) return { actions: [], loaders: [], hasMeta: true };
+
+  const source = await readFile(filePath, "utf8");
+  const found = find_exports(source, ["action$", "loader$", "meta$"]);
+  const actionFounds = found.filter((x) => x.callee === "action$");
+  const loaderFounds = found.filter((x) => x.callee === "loader$");
+  const metaFounds = found.filter((x) => x.callee === "meta$");
+  return {
+    actions: await Promise.all(
+      actionFounds.map(async ({ name }) => ({
+        name,
+        ref: await hashRef(`action-${index}-${name}`),
+      })),
+    ),
+    loaders: await Promise.all(
+      loaderFounds.map(async ({ name }) => ({
+        name,
+        ref: await hashRef(`loader-${index}-${name}`),
+      })),
+    ),
+    hasMeta: metaFounds.some(({ name }) => name === "meta"),
+  };
 }
-
-export type ActionMeta = Awaited<ReturnType<typeof parseAction>>;
-
-const loaderRegExp =
-  /\bexport\s+(?:const|let|var)\s+([a-zA-Z0-9_\$]+)\s*=\s*loader\$/g;
-export async function parseLoader(loaderPath: string, index: number) {
-  if (isMdx(loaderPath)) return [];
-  const source = await readFile(loaderPath, "utf8");
-  const matches = [...source.matchAll(loaderRegExp)].map((match) => match[1]);
-  return await Promise.all(
-    matches.map(async (name) => ({
-      name: name,
-      ref: await hashRef(`loader-${index}-${name}`),
-    })),
-  );
-}
-
-export type LoaderMeta = Awaited<ReturnType<typeof parseLoader>>;
 
 export async function parseMiddleware(_: string, index: number) {
   return { ref: await hashRef(`middleware-${index}`) };
@@ -159,22 +163,22 @@ export async function parseMiddleware(_: string, index: number) {
 
 export type MiddlewareMeta = Awaited<ReturnType<typeof parseMiddleware>>;
 
-const metaRegExp = /\nexport\s+(?:const|let|var)\s+meta\s*=/;
-export async function parseMeta(metaPath: string) {
-  if (isMdx(metaPath)) return true;
-  const source = await readFile(metaPath, "utf8");
-  return metaRegExp.test(source);
-}
-
 export async function resolveProject(structure: ProjectStructure) {
-  return {
-    structure,
-    actions: await Promise.all(structure.componentPaths.map(parseAction)),
-    loaders: await Promise.all(structure.componentPaths.map(parseLoader)),
-    middlewares: await Promise.all(
-      structure.middlewarePaths.map(parseMiddleware),
+  const components = await Promise.all(
+    structure.componentPaths.map((filepath, index) =>
+      parseActionsAndLoaders(filepath, index),
     ),
-    metas: await Promise.all(structure.componentPaths.map(parseMeta)),
+  );
+  const middlewares = await Promise.all(
+    structure.middlewarePaths.map(parseMiddleware),
+  );
+
+  return {
+    metas: components.map((c) => c.hasMeta),
+    actions: components.map((c) => c.actions),
+    loaders: components.map((c) => c.loaders),
+    structure,
+    middlewares,
   };
 }
 

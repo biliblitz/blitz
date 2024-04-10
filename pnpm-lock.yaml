@@ -108,6 +108,9 @@ importers:
       "@mdx-js/mdx":
         specifier: ^3.0.0
         version: 3.0.0
+      "@swwind/find-exports":
+        specifier: ^1.0.1
+        version: 1.0.1
       chalk:
         specifier: ^5.3.0
         version: 5.3.0
@@ -1317,6 +1320,13 @@ packages:
       esbuild: 0.20.2
       tiny-glob: 0.2.9
     dev: true
+
+  /@swwind/find-exports@1.0.1:
+    resolution:
+      {
+        integrity: sha512-pqlBif4zoAKH2wIbvRliUFs4vF0N1ajEEj5ckvVm6KZnWc0mKaOpFGllUQrmIi1oUjg/9B5//y8kuBbsgvDIag==,
+      }
+    dev: false
 
   /@types/acorn@4.0.6:
     resolution:
