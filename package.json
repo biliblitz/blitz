@@ -7,9 +7,9 @@
     "build:example": "cd example && pnpm build"
   },
   "devDependencies": {
-    "prettier": "^3.0.3",
+    "prettier": "^3.2.5",
     "pretty-quick": "^4.0.0",
-    "simple-git-hooks": "^2.9.0"
+    "simple-git-hooks": "^2.11.1"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm pretty-quick --staged"

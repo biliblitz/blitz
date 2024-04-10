@@ -4,7 +4,13 @@ import { Runtime, runtimeLoad, useRuntime } from "./runtime.ts";
 import { unique } from "../utils/algorithms.ts";
 import { Meta } from "../server/meta.ts";
 import { Params } from "../server/router.ts";
-import { StateUpdater, useCallback, useContext, useMemo } from "preact/hooks";
+import {
+  Dispatch,
+  StateUpdater,
+  useCallback,
+  useContext,
+  useMemo,
+} from "preact/hooks";
 import { fetchLoaders } from "./loader.ts";
 import { createContext } from "preact";
 
@@ -19,7 +25,7 @@ export const RenderContext = createContext<Render | null>(null);
 
 export function useRenderCallback(
   runtime: Runtime,
-  setRuntime: StateUpdater<Runtime>,
+  setRuntime: Dispatch<StateUpdater<Runtime>>,
 ): Render {
   return useCallback(
     async (meta, params, loaders, components) => {
