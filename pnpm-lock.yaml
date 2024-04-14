@@ -109,8 +109,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       "@swwind/find-exports":
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^1.0.2
+        version: 1.0.2
       chalk:
         specifier: ^5.3.0
         version: 5.3.0
@@ -1068,10 +1068,10 @@ packages:
       tiny-glob: 0.2.9
     dev: true
 
-  /@swwind/find-exports@1.0.1:
+  /@swwind/find-exports@1.0.2:
     resolution:
       {
-        integrity: sha512-pqlBif4zoAKH2wIbvRliUFs4vF0N1ajEEj5ckvVm6KZnWc0mKaOpFGllUQrmIi1oUjg/9B5//y8kuBbsgvDIag==,
+        integrity: sha512-Up+QsOlTL0lJGQp8AHLuuoGhmtvfK4N/uj3aidgIKWMTTiUKKuKRYAyeG6uuJgPgfAkrnmByUQ7lXfY3HaT2ew==,
       }
     dev: false
 
