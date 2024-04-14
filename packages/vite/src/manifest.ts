@@ -1,5 +1,5 @@
+import { remove_exports } from "@swwind/remove-exports";
 import { ActionMeta, LoaderMeta, Project } from "./scanner.ts";
-import { removeExports } from "./remove-exports.ts";
 import { Graph } from "@biliblitz/blitz/server";
 
 export function toClientManifestCode({ structure }: Project) {
@@ -77,7 +77,7 @@ export function removeClientServerExports(
   loaders: LoaderMeta,
   hasMeta: boolean,
 ) {
-  const remove = removeExports(source, [
+  const remove = remove_exports(source, [
     ...actions.map(({ name }) => name),
     ...loaders.map(({ name }) => name),
     ...(hasMeta ? ["meta"] : []),
