@@ -88,8 +88,8 @@ importers:
         specifier: ^0.1.4
         version: link:../blitz
       "@hono/node-server":
-        specifier: ^1.9.1
-        version: 1.9.1
+        specifier: ^1.10.1
+        version: 1.11.0
       "@mdx-js/mdx":
         specifier: ^3.0.1
         version: 3.0.1
@@ -705,6 +705,14 @@ packages:
     os: [win32]
     requiresBuild: true
     optional: true
+
+  /@hono/node-server@1.11.0:
+    resolution:
+      {
+        integrity: sha512-TLIJq9TMtD1NEG1mVoqNUn1Ita0qSaB5XboZErjFBcO/GJYXwWY4dVdTi9G0lbxtu0x+hJXDItcLaFHb7rlFTw==,
+      }
+    engines: { node: ">=18.14.1" }
+    dev: false
 
   /@hono/node-server@1.9.1:
     resolution:

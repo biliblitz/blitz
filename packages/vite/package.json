@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@biliblitz/blitz": "^0.1.4",
-    "@hono/node-server": "^1.9.1",
+    "@hono/node-server": "^1.10.1",
     "@mdx-js/mdx": "^3.0.1",
     "@swwind/find-exports": "^1.0.2",
     "@swwind/remove-exports": "^1.0.0",
