@@ -1,6 +1,6 @@
 import type { Loader, LoaderReturnValue } from "./loader.ts";
 import { Context } from "hono";
-import { MetaFunction, createDefaultMeta, updateMeta } from "./meta.ts";
+import { MetaFunction, createDefaultMeta } from "./meta.ts";
 import { ServerManifest } from "./build.ts";
 import { createServerRuntime } from "../client/runtime.tsx";
 import { Action, ActionReturnValue } from "./action.ts";
@@ -14,9 +14,9 @@ export type Layer = {
 export function createFetchEvent(context: Context, manifest: ServerManifest) {
   const middlewareStore = new Map<string, any>();
   const loaderStore = new Map<string, LoaderReturnValue>();
-  const metas = createDefaultMeta();
   const components = [] as number[];
   const actions = new Map<string, Action>();
+  const metafns = [] as MetaFunction[];
 
   return {
     async runMiddleware(id: number | null) {
@@ -42,8 +42,7 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
 
       const meta = manifest.metas[id];
       if (meta) {
-        const update = await meta(context);
-        updateMeta(metas, update);
+        metafns.push(meta);
       }
     },
 
@@ -76,7 +75,11 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
     },
 
     get metas() {
-      return metas;
+      const meta = createDefaultMeta();
+      for (const metafn of metafns.reverse()) {
+        metafn(context, meta);
+      }
+      return meta;
     },
 
     get components() {

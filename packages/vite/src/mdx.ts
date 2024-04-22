@@ -35,10 +35,11 @@ export function blitzMdx(options?: CompileOptions): Plugin {
 
 function toMetaCode(frontmatter: FrontMatter) {
   return [
-    `const title = ${JSON.stringify(frontmatter.title || null)};`,
-    `const description = ${JSON.stringify(frontmatter.description || null)};`,
-    `export const meta = () => {
-      return ${JSON.stringify(frontmatter)};
+    `const title = ${JSON.stringify(frontmatter.title || "")};`,
+    `const description = ${JSON.stringify(frontmatter.description || "")};`,
+    `export const meta = (_ctx, meta) => {
+      meta.title = title;
+      meta.description = description;
     }`,
   ].join("\n");
 }

@@ -16,10 +16,8 @@ export const useLogin = action$(async () => {
   return { ok: Math.random() };
 });
 
-export const meta = meta$(() => {
-  return {
-    title: "this is meta",
-  };
+export const meta = meta$((_ctx, meta) => {
+  meta.title = meta.title || "this is meta";
 });
 
 export default () => {
