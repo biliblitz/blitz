@@ -1,6 +1,6 @@
 {
   "name": "@biliblitz/vite",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A blitzing minimal backend-framework for Preact (Vite plugins)",
   "type": "module",
   "files": [
@@ -38,7 +38,7 @@
     "typescript": "^5.4.4"
   },
   "dependencies": {
-    "@biliblitz/blitz": "^0.1.3",
+    "@biliblitz/blitz": "^0.1.4",
     "@hono/node-server": "^1.9.1",
     "@mdx-js/mdx": "^3.0.1",
     "@swwind/find-exports": "^1.0.2",
