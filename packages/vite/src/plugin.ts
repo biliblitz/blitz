@@ -16,6 +16,7 @@ import {
 } from "./manifest.ts";
 import { loadClientGraph, loadDevGraph } from "./graph.ts";
 import { Hono } from "hono";
+import treeshakeJsxEvents from "@swwind/treeshake-jsx-events";
 
 export async function blitz(): Promise<Plugin> {
   const vmods = [manifestClient, manifestServer];
@@ -92,6 +93,13 @@ export async function blitz(): Promise<Plugin> {
             project.loaders[index],
             project.metas[index],
           );
+        }
+      }
+
+      // treeshake onClick events from SSR build
+      if (options?.ssr) {
+        if (/\.(?:jsx|tsx)$/.test(id)) {
+          return treeshakeJsxEvents(code);
         }
       }
 
