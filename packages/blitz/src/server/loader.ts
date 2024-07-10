@@ -19,7 +19,7 @@ export type LoaderHandler<T extends LoaderReturnValue> = T;
  *
  * ```js
  * // loader.ts
- * export const useUser = loader$(async (evt) => {
+ * export const useUser = loader$(async (c) => {
  *   return { username: 'Alice' };
  * });
  * ```

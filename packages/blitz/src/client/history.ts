@@ -4,6 +4,7 @@ import { useRender } from "./navigate.ts";
 import { useRuntime } from "./runtime.ts";
 import { Meta } from "../server/meta.ts";
 import { Params } from "../server/router.ts";
+import { slowDown } from "../utils/algorithms.ts";
 
 /**
  * 古希腊掌管历史记录的神
@@ -52,7 +53,9 @@ export function useHistoryRestore() {
     }
 
     function scroll() {
-      replaceState({ position: [scrollX, scrollY] });
+      slowDown(() => {
+        replaceState({ position: [scrollX, scrollY] });
+      });
     }
 
     addEventListener("popstate", popstate);

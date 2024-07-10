@@ -8,9 +8,14 @@ export const useUsername = loader$(() => {
   return { username: `alice ${Math.random()}` };
 });
 
+export const useSomething = loader$(() => {
+  return { username: `bob ${Math.random()}` };
+});
+
 export default () => {
   const user = useUsername();
-  const username = useMemo(() => user.username, [user]);
+  const something = useSomething();
+
   const count = useSignal(0);
 
   const login = useLogin();
@@ -21,7 +26,7 @@ export default () => {
   return (
     <div>
       <h2 onClick={() => count.value++}>
-        Index: {username} - {count}
+        Index: {user.username} / {something.username} - {count}
       </h2>
       <p>
         <Link href="/foo">/foo</Link>
