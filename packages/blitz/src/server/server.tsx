@@ -1,13 +1,20 @@
-import { VNode } from "preact";
-import { render } from "preact-render-to-string";
-
-import { Runtime, RuntimeProvider } from "../client/runtime.ts";
-import { ServerManifest } from "./build.ts";
-import { ErrorResponse, RedirectResponse, createRouter } from "./router.ts";
-import { FetchEvent, createFetchEvent } from "./event.ts";
+import {
+  type Runtime,
+  RuntimeProvider,
+  type RuntimeStatic,
+} from "../client/runtime.ts";
+import type { ServerManifest } from "./build.ts";
+import {
+  type ErrorResponse,
+  type RedirectResponse,
+  createRouter,
+} from "./router.ts";
+import { type FetchEvent, createFetchEvent } from "./event.ts";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { RedirectException } from "./exception.ts";
+import { render } from "preact-render-to-string";
+import type { VNode } from "preact";
 
 export type ServerOptions = {
   manifest: ServerManifest;
@@ -15,7 +22,7 @@ export type ServerOptions = {
 
 declare module "hono" {
   interface ContextRenderer {
-    (runtime: Runtime): Promise<Response>;
+    (runtime: Runtime, runtimeStatic: RuntimeStatic): Promise<Response>;
   }
   interface ContextVariableMap {
     event: FetchEvent;
@@ -26,9 +33,11 @@ export function createServer(vnode: VNode, { manifest }: ServerOptions) {
   const app = new Hono();
 
   app.use(async (c, next) => {
-    c.setRenderer(async (runtime) => {
+    c.setRenderer(async (runtime, runtimeStatic) => {
       const html = render(
-        <RuntimeProvider value={runtime}>{vnode}</RuntimeProvider>,
+        <RuntimeProvider value={[runtime, runtimeStatic]}>
+          {vnode}
+        </RuntimeProvider>,
       );
       return c.html("<!DOCTYPE html>" + html);
     });

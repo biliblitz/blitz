@@ -1,65 +1,40 @@
 import type { Loader, LoaderReturnValue } from "./loader.ts";
-import { Context } from "hono";
-import { MetaFunction, createDefaultMeta } from "./meta.ts";
-import { ServerManifest } from "./build.ts";
+import type { Context, Next } from "hono";
+import { type MetaFunction, createDefaultMeta } from "./meta.ts";
+import type { ServerManifest } from "./build.ts";
 import { createServerRuntime } from "../client/runtime.tsx";
-import { Action, ActionReturnValue } from "./action.ts";
+import type { Action, ActionReturnValue } from "./action.ts";
 
 export type Layer = {
-  loaders: Loader[];
-  meta: MetaFunction | null;
   id: number;
+  meta: MetaFunction | null;
+  loaders: Loader[];
 };
 
 export function createFetchEvent(context: Context, manifest: ServerManifest) {
-  const middlewareStore = new Map<string, any>();
   const loaderStore = new Map<string, LoaderReturnValue>();
-  const components = [] as number[];
   const actions = new Map<string, Action>();
-  const metafns = [] as MetaFunction[];
+  const layers = [] as number[];
 
   return {
-    async runMiddleware(id: number | null) {
-      if (id === null) return;
-
+    async runMiddleware(id: number, next: Next) {
       const middleware = manifest.middlewares[id];
-      const data = await middleware(context);
-      middlewareStore.set(middleware._ref!, data);
+      if (middleware) await middleware(context, next);
+      else await next();
     },
 
-    async runLoaders(id: number | null) {
-      if (id === null) return;
-
-      const loaders = manifest.loaders[id];
-      for (const loader of loaders) {
+    async runLayer(id: number) {
+      for (const loader of manifest.loaders[id]) {
         const data = await loader._fn!(context);
         loaderStore.set(loader._ref!, data);
       }
+      layers.push(id);
     },
 
-    async runMeta(id: number | null) {
-      if (id === null) return;
-
-      const meta = manifest.metas[id];
-      if (meta) {
-        metafns.push(meta);
-      }
-    },
-
-    registerLayerActions(id: number | null) {
-      if (id === null) return;
+    async registerActions(id: number) {
       for (const action of manifest.actions[id]) {
         actions.set(action._ref!, action);
       }
-    },
-
-    async runLayer(id: number | null) {
-      if (id === null) return;
-
-      await this.runLoaders(id);
-      await this.runMeta(id);
-
-      components.push(id);
     },
 
     async runAction<T extends ActionReturnValue>(action: Action<T>) {
@@ -76,14 +51,15 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
 
     get metas() {
       const meta = createDefaultMeta();
-      for (const metafn of metafns.reverse()) {
-        metafn(context, meta);
+      for (const id of layers.toReversed()) {
+        const metafn = manifest.metas[id];
+        if (metafn) metafn(context, meta);
       }
       return meta;
     },
 
     get components() {
-      return components;
+      return layers.filter((x) => manifest.components[x] != null);
     },
 
     get params() {

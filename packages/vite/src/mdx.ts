@@ -1,6 +1,6 @@
-import { Plugin } from "vite";
+import type { Plugin } from "vite";
 import { isMdx } from "./utils/ext.ts";
-import { CompileOptions, compile } from "@mdx-js/mdx";
+import { compile, type CompileOptions } from "@mdx-js/mdx";
 import { VFile } from "vfile";
 import { matter } from "vfile-matter";
 import { readFile } from "fs/promises";
@@ -11,6 +11,9 @@ type FrontMatter = {
 };
 
 export function blitzMdx(options?: CompileOptions): Plugin {
+  options ??= {};
+  options.jsxImportSource ??= "preact";
+
   return {
     name: "blitz-mdx",
 
@@ -22,10 +25,7 @@ export function blitzMdx(options?: CompileOptions): Plugin {
         matter(source, { strip: true });
         const frontmatter = source.data.matter || {};
 
-        const mdx = await compile(
-          source,
-          options || { jsxImportSource: "preact" },
-        );
+        const mdx = await compile(source, options);
 
         return [toMetaCode(frontmatter), String(mdx)].join("\n");
       }

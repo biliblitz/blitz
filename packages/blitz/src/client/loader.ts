@@ -1,5 +1,5 @@
-import { LoaderHandler, LoaderReturnValue } from "../server/loader.ts";
-import { LoaderResponse } from "../server/router.ts";
+import type { LoaderHandler, LoaderReturnValue } from "../server/loader.ts";
+import type { LoaderResponse } from "../server/router.ts";
 import { useRuntime } from "./runtime.ts";
 import { useMemo } from "preact/hooks";
 
@@ -20,9 +20,7 @@ export function useLoader<T extends LoaderReturnValue>(
   const runtime = useRuntime();
   return useMemo(() => {
     const loaders = runtime.loaders.find((item) => item[0] === ref);
-    if (!loaders) {
-      throw new Error(`Loader not found: "${ref}"`);
-    }
+    if (!loaders) throw new Error(`Loader not found: "${ref}"`);
     return loaders[1] as T;
   }, [runtime]);
 }

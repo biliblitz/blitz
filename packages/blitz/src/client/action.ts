@@ -4,11 +4,15 @@ import type {
   ActionState,
 } from "../server/action.ts";
 import { useNavigate, useRender } from "./navigate.ts";
-import { ActionResponse } from "../server/router.ts";
 import { useState } from "preact/hooks";
 import { fetchLoaders } from "./loader.ts";
+import type { ActionResponse } from "../server/router.ts";
 
-export async function fetchAction<T>(ref: string, data: FormData) {
+export async function fetchAction<T>(
+  ref: string,
+  method: string,
+  data: FormData,
+) {
   const target = new URL(location.href);
   if (!target.pathname.endsWith("/")) {
     target.pathname += "/";
@@ -16,12 +20,13 @@ export async function fetchAction<T>(ref: string, data: FormData) {
   target.hash = "";
   target.pathname += "_data.json";
   target.searchParams.set("_action", ref);
-  const response = await fetch(target, { method: "POST", body: data });
+  const response = await fetch(target, { method, body: data });
   return (await response.json()) as ActionResponse<T>;
 }
 
 export function useAction<T extends ActionReturnValue>(
   ref: string,
+  method: string,
 ): ActionHandler<T> {
   const render = useRender();
   const navigate = useNavigate();
@@ -36,7 +41,7 @@ export function useAction<T extends ActionReturnValue>(
     setState(() => ({ state: "waiting", data: null, error: null }));
 
     try {
-      const resp = await fetchAction<T>(ref, formData);
+      const resp = await fetchAction<T>(ref, method, formData);
 
       if (resp.ok === "action") {
         setState({ state: "ok", data: resp.action, error: null });
@@ -68,6 +73,7 @@ export function useAction<T extends ActionReturnValue>(
   return {
     ref,
     state,
+    method,
     submit,
   };
 }

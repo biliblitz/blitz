@@ -1,6 +1,5 @@
 import { Form, Link } from "@biliblitz/blitz";
 import { loader$ } from "@biliblitz/blitz/server";
-import { useSignal } from "@preact/signals";
 import { useLogin } from "./layout.tsx";
 import { useMemo } from "preact/hooks";
 
@@ -16,8 +15,6 @@ export default () => {
   const user = useUsername();
   const something = useSomething();
 
-  const count = useSignal(0);
-
   const login = useLogin();
   const data = useMemo(() => JSON.stringify(login.state.data), [login.state]);
   const error = useMemo(() => login.state.error?.message, [login.state]);
@@ -25,8 +22,8 @@ export default () => {
 
   return (
     <div>
-      <h2 onClick={() => count.value++}>
-        Index: {user.username} / {something.username} - {count}
+      <h2>
+        Index: {user.username} / {something.username}
       </h2>
       <p>
         <Link href="/foo">/foo</Link>

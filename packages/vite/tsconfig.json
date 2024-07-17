@@ -6,7 +6,8 @@
     "lib": ["ESNext", "DOM"],
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outDir": "dist/types",
+    "declarationMap": true,
+    "outDir": "dist",
     "strict": true,
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
@@ -14,6 +15,7 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "resolveJsonModule": true,
+    "verbatimModuleSyntax": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

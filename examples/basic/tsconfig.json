@@ -10,18 +10,19 @@
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
     "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "types": ["node", "vite/client", "@biliblitz/blitz/env"],
     "paths": {
-      "~/*": ["./app/*"],
-    },
+      "~/*": ["./src/*"]
+    }
   },
   "include": [
-    "app",
+    "src",
     "adapters",
     "vite.config.ts",
     "server.js",
-    "server-static.js",
-  ],
+    "server-static.js"
+  ]
 }

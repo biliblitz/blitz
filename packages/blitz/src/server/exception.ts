@@ -1,5 +1,5 @@
 import { HTTPException } from "hono/http-exception";
-import { RedirectStatusCode } from "hono/utils/http-status";
+import type { RedirectStatusCode } from "hono/utils/http-status";
 
 export class RedirectException extends Error {
   readonly target: string | URL;

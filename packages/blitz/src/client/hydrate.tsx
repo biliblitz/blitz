@@ -1,7 +1,7 @@
-import { VNode, render } from "preact";
+import { type VNode, render } from "preact";
 import { RuntimeProvider, createRuntime, runtimeLoad } from "./runtime.ts";
-import { SerializedRuntime } from "./components/router-head.tsx";
-import { ClientManifest } from "../server/build.ts";
+import type { SerializedRuntime } from "./components/router-head.tsx";
+import type { ClientManifest } from "../server/build.ts";
 import { isDev } from "../utils/envs.ts";
 
 export type Options = {
@@ -42,7 +42,7 @@ async function createClientRuntime(manifest: ClientManifest) {
     new URL(location.href),
     json.components,
   );
-  await runtimeLoad(runtime, json.components);
+  await runtimeLoad(runtime[1], json.components);
 
   return runtime;
 }

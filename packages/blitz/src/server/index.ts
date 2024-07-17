@@ -1,6 +1,6 @@
 export { meta$ } from "./meta.ts";
 export { loader$ } from "./loader.ts";
-export { action$ } from "./action.ts";
+export { action$, delete$, put$, patch$ } from "./action.ts";
 export { static$ } from "./static.ts";
 export { middleware$ } from "./middleware.ts";
 

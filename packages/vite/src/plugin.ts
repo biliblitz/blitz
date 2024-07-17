@@ -1,45 +1,51 @@
-import type { Plugin } from "vite";
+import type { Plugin, ResolvedConfig } from "vite";
 import { relative } from "node:path";
 import {
-  resolve,
   manifestAssets,
   manifestClient,
   manifestServer,
+  resolve,
 } from "./vmod.ts";
 import { getRequestListener } from "@hono/node-server";
-import { Project, resolveProject, scanProjectStructure } from "./scanner.ts";
 import {
+  type Project,
+  type ProjectStructure,
+  resolveProject,
+  scanProjectStructure,
+} from "./scanner.ts";
+import {
+  removeClientServerExports,
   toAssetsManifestCode,
   toClientManifestCode,
   toServerManifestCode,
-  removeClientServerExports,
 } from "./manifest.ts";
 import { loadClientGraph, loadDevGraph } from "./graph.ts";
 import { Hono } from "hono";
-import treeshakeJsxEvents from "@swwind/treeshake-jsx-events";
 
-export async function blitz(): Promise<Plugin> {
+export function blitz(): Plugin {
   const vmods = [manifestClient, manifestServer];
   let isDev = false;
 
+  let structure: ProjectStructure | null = null;
   let project: Project | null = null;
-  async function getProject() {
-    if (!project) {
-      const structure = await scanProjectStructure("./app/routes");
-      project = await resolveProject(structure);
-    }
-    return project;
-  }
-  function getEntries(project: Project) {
+  const getStructure = async () => {
+    return (structure =
+      structure || (await scanProjectStructure("./src/routes")));
+  };
+  const getProject = async () => {
+    return (project = project || (await resolveProject(await getStructure())));
+  };
+
+  const getEntries = (structure: ProjectStructure) => {
     const cwd = process.cwd();
-    const entry = "app/entry.client.tsx";
-    const components = project.structure.componentPaths.map((path) =>
+    const entry = "src/entry.client.tsx";
+    const components = structure.componentPaths.map((path) =>
       relative(cwd, path),
     );
     return { entry, components };
-  }
+  };
 
-  let base = "/";
+  let resolvedConfig: ResolvedConfig;
 
   return {
     name: "blitz",
@@ -57,49 +63,48 @@ export async function blitz(): Promise<Plugin> {
 
     async load(id) {
       switch (id) {
-        case resolve(manifestClient):
-          return toClientManifestCode(await getProject());
+        case resolve(manifestClient): {
+          const structure = await getStructure();
+          return toClientManifestCode(structure);
+        }
 
         case resolve(manifestServer): {
-          const project = await getProject();
-          const { entry, components } = getEntries(project);
+          const structure = await getStructure();
+          const { entry, components } = getEntries(structure);
           const graph = isDev
             ? await loadDevGraph(entry, components)
             : await loadClientGraph(entry, components);
-          return toServerManifestCode(project, graph, base);
+          const project = await getProject();
+          return toServerManifestCode(
+            structure,
+            project,
+            graph,
+            resolvedConfig.base,
+          );
         }
 
         case resolve(manifestAssets): {
-          const project = await getProject();
-          const { entry, components } = getEntries(project);
+          const structure = await getStructure();
+          const { entry, components } = getEntries(structure);
           const graph = isDev
             ? await loadDevGraph(entry, components)
             : await loadClientGraph(entry, components);
-          return toAssetsManifestCode(graph, base);
+          return toAssetsManifestCode(graph, resolvedConfig.base);
         }
       }
+
+      return null;
     },
 
     async transform(code, id, options) {
-      // replace action/loader in browser
+      // remove action/loader in browser
       if (!options?.ssr) {
+        const structure = await getStructure();
         const project = await getProject();
 
-        const index = project.structure.componentPaths.indexOf(id);
+        const index = structure.componentPaths.indexOf(id);
         if (index > -1) {
-          return removeClientServerExports(
-            code,
-            project.actions[index],
-            project.loaders[index],
-            project.metas[index],
-          );
-        }
-      }
-
-      // treeshake onClick events from SSR build
-      if (options?.ssr) {
-        if (/\.(?:jsx|tsx)$/.test(id)) {
-          return treeshakeJsxEvents(code);
+          return await removeClientServerExports(code, project.raw[index]);
         }
       }
 
@@ -110,8 +115,8 @@ export async function blitz(): Promise<Plugin> {
       if (env.command === "build") {
         // build client
         if (!config.build?.ssr) {
-          const project = await getProject();
-          const entries = getEntries(project);
+          const structure = await getStructure();
+          const entries = getEntries(structure);
 
           return {
             build: {
@@ -134,7 +139,7 @@ export async function blitz(): Promise<Plugin> {
           return {
             build: {
               rollupOptions: {
-                external: [/^@biliblitz\//],
+                external: [/^node:/, /node_modules/],
                 output: {
                   assetFileNames: "build/assets/[hash].[ext]",
                 },
@@ -151,15 +156,22 @@ export async function blitz(): Promise<Plugin> {
         isDev = true;
         return {
           appType: "custom",
+          build: {
+            rollupOptions: {
+              input: ["./src/entry.dev.tsx"],
+            },
+          },
         };
       }
     },
 
     configResolved(config) {
-      base = config.base;
+      resolvedConfig = config;
     },
 
     handleHotUpdate(ctx) {
+      // TODO
+      structure = null;
       project = null;
     },
 
@@ -174,7 +186,7 @@ export async function blitz(): Promise<Plugin> {
             }
           }
 
-          const module = await vite.ssrLoadModule("./app/entry.dev.tsx");
+          const module = await vite.ssrLoadModule("./src/entry.dev.tsx");
           const app = module.default as Hono;
 
           const listener = getRequestListener((req) => app.fetch(req));

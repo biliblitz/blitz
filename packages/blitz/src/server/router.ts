@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import type { Directory } from "./build.ts";
-import { ActionReturnValue } from "./action.ts";
-import { Meta } from "./meta.ts";
-import { LoaderReturnValue } from "./loader.ts";
+import type { ActionReturnValue } from "./action.ts";
+import type { Meta } from "./meta.ts";
+import type { LoaderReturnValue } from "./loader.ts";
 import { HTTPException } from "hono/http-exception";
 
 export type Params = [string, string][];
@@ -14,10 +14,6 @@ export type RedirectResponse = { ok: "redirect"; redirect: string };
 export type ActionResponse<T = ActionReturnValue> =
   | {
       ok: "action";
-      // meta: Meta;
-      // params: Params;
-      // loaders: LoaderStore;
-      // components: number[];
       action: T;
     }
   | ErrorResponse
@@ -37,38 +33,47 @@ export type LoaderResponse =
 export function createRouter({ route, children }: Directory) {
   const app = new Hono();
 
-  // middleware for loaders/actions
-  app.use(async (c, next) => {
-    const event = c.get("event");
-    await event.runMiddleware(route.middleware);
-    await next();
-  });
+  // add layer
+  if (route.layout != null) {
+    const layout = route.layout;
 
-  // middleware for running loader
-  app.get(async (c, next) => {
-    const event = c.get("event");
-    await event.runLayer(route.layout);
-    await next();
-  });
+    // middleware for loaders/actions
+    app.use(async (c, next) => {
+      const event = c.get("event");
+      event.registerActions(layout);
+      await event.runMiddleware(layout, next);
+    });
 
-  // middleware for running action
-  app.post(async (c, next) => {
-    const event = c.get("event");
-    event.registerLayerActions(route.layout);
-    await next();
-  });
+    // middleware for running loader, meta and components
+    app.get(async (c, next) => {
+      const event = c.get("event");
+      await event.runLayer(layout);
+      await next();
+    });
+  }
 
   // resolve to current route
-  if (typeof route.index === "number") {
+  if (route.index != null) {
+    const index = route.index;
+
+    app.on(
+      ["GET", "POST", "DELETE", "PUT", "PATCH"],
+      ["/", "/_data.json"],
+      async (c, next) => {
+        const event = c.get("event");
+        await event.runMiddleware(index, next);
+      },
+    );
+
     app.get("/", async (c) => {
       const event = c.get("event");
-      await event.runLayer(route.index);
-      return await c.render(event.runtime);
+      await event.runLayer(index);
+      return await c.render(...event.runtime);
     });
 
     app.get("/_data.json", async (c) => {
       const event = c.get("event");
-      await event.runLayer(route.index);
+      await event.runLayer(index);
       return c.json<LoaderResponse>({
         ok: "loader",
         meta: event.metas,
@@ -78,14 +83,14 @@ export function createRouter({ route, children }: Directory) {
       });
     });
 
-    app.post("/_data.json", async (c) => {
+    app.on(["POST", "DELETE", "PUT", "PATCH"], "/_data.json", async (c) => {
       const event = c.get("event");
-      event.registerLayerActions(route.index);
+      event.registerActions(index);
 
       const ref = c.req.query("_action");
       if (!ref) {
         throw new HTTPException(400, {
-          message: "No `_action` in search params",
+          message: "No `?_action` query in search params",
         });
       }
 
@@ -93,6 +98,12 @@ export function createRouter({ route, children }: Directory) {
       if (!action) {
         throw new HTTPException(400, {
           message: "Action not found",
+        });
+      }
+
+      if (c.req.method !== action._mthd) {
+        throw new HTTPException(405, {
+          message: `Method not allowed, should use ${action._mthd}`,
         });
       }
 
@@ -104,9 +115,9 @@ export function createRouter({ route, children }: Directory) {
     });
   }
 
-  const catches = [] as [string, Directory][];
-  const params = [] as [string, Directory][];
   const fakes = [] as [string, Directory][];
+  const params = [] as [string, Directory][];
+  const catches = [] as [string, Directory][];
   const matches = [] as [string, Directory][];
 
   for (const [dirname, child] of children) {

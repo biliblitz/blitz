@@ -1,12 +1,17 @@
-import { LoaderStore } from "../server/event.ts";
+import type { LoaderStore } from "../server/event.ts";
 import { pushState, replaceState, replaceURL } from "./history.ts";
-import { Runtime, runtimeLoad, useRuntime } from "./runtime.ts";
-import { unique } from "../utils/algorithms.ts";
-import { Meta } from "../server/meta.ts";
-import { Params } from "../server/router.ts";
 import {
-  Dispatch,
-  StateUpdater,
+  type Runtime,
+  runtimeLoad,
+  type RuntimeStatic,
+  useRuntime,
+} from "./runtime.ts";
+import { unique } from "../utils/algorithms.ts";
+import type { Meta } from "../server/meta.ts";
+import type { Params } from "../server/router.ts";
+import {
+  type Dispatch,
+  type StateUpdater,
   useCallback,
   useContext,
   useMemo,
@@ -24,7 +29,7 @@ export type Render = (
 export const RenderContext = createContext<Render | null>(null);
 
 export function useRenderCallback(
-  runtime: Runtime,
+  runtimeStatic: RuntimeStatic,
   setRuntime: Dispatch<StateUpdater<Runtime>>,
 ): Render {
   return useCallback(
@@ -34,12 +39,12 @@ export function useRenderCallback(
         ...runtime,
         preloads: unique([
           ...runtime.preloads,
-          ...components.flatMap((id) => runtime.graph.components[id]),
+          ...components.flatMap((id) => runtimeStatic.graph.components[id]),
         ]),
       }));
 
       // async load modules
-      await runtimeLoad(runtime, components);
+      await runtimeLoad(runtimeStatic, components);
 
       // apply new values
       setRuntime((runtime) => ({
@@ -50,7 +55,7 @@ export function useRenderCallback(
         components,
       }));
     },
-    [runtime, setRuntime],
+    [runtimeStatic, setRuntime],
   );
 }
 

@@ -1,5 +1,5 @@
 import { isDev } from "../../utils/envs.ts";
-import { useRuntime } from "../runtime.ts";
+import { useRuntime, useRuntimeStatic } from "../runtime.ts";
 import { Outlet, OutletContext } from "./outlet.tsx";
 
 export function RouterOutlet() {
@@ -16,14 +16,14 @@ export function RouterOutlet() {
 }
 
 function EntryPoint() {
-  const runtime = useRuntime();
+  const runtime = useRuntimeStatic();
 
   // dev specific entry
   if (isDev) {
     return (
       <>
         <script type="module" src={`${runtime.base}@vite/client`} />
-        <script type="module" src={`${runtime.base}app/entry.client.tsx`} />
+        <script type="module" src={`${runtime.base}src/entry.client.tsx`} />
       </>
     );
   }

@@ -1,15 +1,16 @@
 {
-  "name": "blitz-example",
+  "name": "@example/basic",
   "version": "1.0.0",
   "type": "module",
   "private": true,
   "scripts": {
     "build": "tsc --build && pnpm run build:client && pnpm run build:server && pnpm run build:static",
     "build:client": "vite build --outDir dist/client --manifest",
-    "build:server": "vite build --outDir dist/server --ssr app/entry.server.tsx",
+    "build:server": "vite build --outDir dist/server --ssr src/entry.server.tsx",
     "build:static": "vite build --outDir dist/static --ssr -c adapters/static/vite.config.ts",
     "start": "node server.js",
-    "start:static": "node server-static.js"
+    "start:static": "node server-static.js",
+    "dev": "vite"
   },
   "license": "MIT",
   "dependencies": {

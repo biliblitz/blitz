@@ -1,10 +1,10 @@
 {
   "type": "module",
   "scripts": {
-    "build": "pnpm build:blitz && pnpm build:vite && pnpm build:example",
+    "build": "pnpm build:blitz && pnpm build:vite && pnpm build:example:basic",
     "build:blitz": "cd packages/blitz && pnpm build",
     "build:vite": "cd packages/vite && pnpm build",
-    "build:example": "cd example && pnpm build"
+    "build:example:basic": "cd examples/basic && pnpm build"
   },
   "devDependencies": {
     "prettier": "^3.2.5",

@@ -1,9 +1,8 @@
-import { ComponentType } from "preact";
-import { MetaFunction } from "./meta.ts";
-import { Action } from "./action.ts";
-import { Loader } from "./loader.ts";
-import { StaticFunction } from "./static.ts";
-import { Middleware } from "./middleware.ts";
+import type { MetaFunction } from "./meta.ts";
+import type { Action } from "./action.ts";
+import type { Loader } from "./loader.ts";
+import type { Middleware } from "./middleware.ts";
+import type { ComponentType } from "preact";
 
 export type Graph = {
   assets: string[];
@@ -12,7 +11,7 @@ export type Graph = {
 };
 
 export interface ClientManifest {
-  components: ComponentType[];
+  components: (ComponentType | null)[];
 }
 
 export interface ServerManifest extends ClientManifest {
@@ -21,17 +20,13 @@ export interface ServerManifest extends ClientManifest {
   metas: (MetaFunction | null)[];
   actions: Action[][];
   loaders: Loader[][];
-  statics: StaticFunction[];
   directory: Directory;
-  middlewares: Middleware[];
+  middlewares: (Middleware | null)[];
 }
 
 export type Route = {
   index: number | null;
-  error: number | null;
   layout: number | null;
-  static: number | null;
-  middleware: number | null;
 };
 
 export type Directory = {

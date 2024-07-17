@@ -1,5 +1,6 @@
-import { Context } from "hono";
+import type { Context } from "hono";
 import { useLoader } from "../client/loader.ts";
+import { middleware$, type Middleware } from "./middleware.ts";
 
 export type LoaderReturnValue = {} | null;
 export type LoaderFunction<T extends LoaderReturnValue = LoaderReturnValue> = (
@@ -47,9 +48,91 @@ export type LoaderHandler<T extends LoaderReturnValue> = T;
  */
 export function loader$<T extends LoaderReturnValue>(
   fn: LoaderFunction<T>,
+): Loader<T>;
+export function loader$<T extends LoaderReturnValue>(
+  m1: Middleware,
+  fn: LoaderFunction<T>,
+): Loader<T>;
+export function loader$<T extends LoaderReturnValue>(
+  m1: Middleware,
+  m2: Middleware,
+  fn: LoaderFunction<T>,
+): Loader<T>;
+export function loader$<T extends LoaderReturnValue>(
+  m1: Middleware,
+  m2: Middleware,
+  m3: Middleware,
+  fn: LoaderFunction<T>,
+): Loader<T>;
+export function loader$<T extends LoaderReturnValue>(
+  m1: Middleware,
+  m2: Middleware,
+  m3: Middleware,
+  m4: Middleware,
+  fn: LoaderFunction<T>,
+): Loader<T>;
+export function loader$<T extends LoaderReturnValue>(
+  m1: Middleware,
+  m2: Middleware,
+  m3: Middleware,
+  m4: Middleware,
+  m5: Middleware,
+  fn: LoaderFunction<T>,
+): Loader<T>;
+export function loader$<T extends LoaderReturnValue>(
+  ...args: (Middleware | LoaderFunction<T>)[]
+): Loader<T>;
+export function loader$<T extends LoaderReturnValue>(
+  name: string,
+  fn: LoaderFunction<T>,
+): Loader<T>;
+export function loader$<T extends LoaderReturnValue>(
+  name: string,
+  m1: Middleware,
+  fn: LoaderFunction<T>,
+): Loader<T>;
+export function loader$<T extends LoaderReturnValue>(
+  name: string,
+  m1: Middleware,
+  m2: Middleware,
+  fn: LoaderFunction<T>,
+): Loader<T>;
+export function loader$<T extends LoaderReturnValue>(
+  name: string,
+  m1: Middleware,
+  m2: Middleware,
+  m3: Middleware,
+  fn: LoaderFunction<T>,
+): Loader<T>;
+export function loader$<T extends LoaderReturnValue>(
+  name: string,
+  m1: Middleware,
+  m2: Middleware,
+  m3: Middleware,
+  m4: Middleware,
+  fn: LoaderFunction<T>,
+): Loader<T>;
+export function loader$<T extends LoaderReturnValue>(
+  name: string,
+  m1: Middleware,
+  m2: Middleware,
+  m3: Middleware,
+  m4: Middleware,
+  m5: Middleware,
+  fn: LoaderFunction<T>,
+): Loader<T>;
+export function loader$<T extends LoaderReturnValue>(
+  name: string,
+  ...args: (Middleware | LoaderFunction<T>)[]
+): Loader<T>;
+export function loader$<T extends LoaderReturnValue>(
+  ...funcs:
+    | [...(Middleware | LoaderFunction<T>)[]]
+    | [string, ...(Middleware | LoaderFunction<T>)[]]
 ): Loader<T> {
   const handler = () => useLoader<T>(handler._ref);
-  handler._fn = fn;
-  handler._ref = "";
+  handler._ref = typeof funcs[0] === "string" ? (funcs.shift() as string) : "";
+  handler._fn = funcs.pop() as LoaderFunction<T>;
+  handler._m = middleware$(...(funcs as Middleware[]));
   return handler;
 }

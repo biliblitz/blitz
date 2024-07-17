@@ -1,5 +1,3 @@
-const JAVASCRIPT_FILE_EXTENSIONS = [".js"];
-const STYLE_FILE_EXTENSIONS = [".css"];
 const IMAGE_FILE_EXTENSIONS = [
   ".apng",
   ".png",
@@ -19,11 +17,11 @@ const AUDIO_FILE_EXTENSIONS = [".mp3", ".wav", ".flac", ".aac", ".opus"];
 const FONT_FILE_EXTENSIONS = [".woff", ".woff2", ".eot", ".ttf", ".otf"];
 
 export function isJs(filename: string) {
-  return JAVASCRIPT_FILE_EXTENSIONS.some((ext) => filename.endsWith(ext));
+  return filename.endsWith(".js");
 }
 
 export function isCss(filename: string) {
-  return STYLE_FILE_EXTENSIONS.some((ext) => filename.endsWith(ext));
+  return filename.endsWith(".css");
 }
 
 export function isImage(filename: string) {
@@ -58,6 +56,5 @@ export function getLinkPreloadAs(filename: string) {
   if (isImage(filename)) return "image";
   if (isAudio(filename)) return "audio";
   if (isVideo(filename)) return "video";
-  console.error(`Unknown preload file type: ${filename}`);
-  return;
+  throw new Error(`Unknown preload file type: ${filename}`);
 }

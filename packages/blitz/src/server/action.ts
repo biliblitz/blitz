@@ -1,5 +1,6 @@
 import { useAction } from "../client/action.ts";
-import { Context } from "hono";
+import type { Context } from "hono";
+import { middleware$, type Middleware } from "./middleware.ts";
 
 export type ActionReturnValue = {} | null;
 export type ActionFunction<T extends ActionReturnValue = ActionReturnValue> = (
@@ -7,8 +8,10 @@ export type ActionFunction<T extends ActionReturnValue = ActionReturnValue> = (
 ) => T | Promise<T>;
 export interface Action<T extends ActionReturnValue = ActionReturnValue> {
   (): ActionHandler<T>;
+  _m?: Middleware;
   _fn?: ActionFunction<T>;
   _ref?: string;
+  _mthd?: string;
 }
 export type ActionState<T> =
   | { state: "idle"; data: null; error: null }
@@ -18,18 +21,112 @@ export type ActionState<T> =
 export type ActionHandler<T extends ActionReturnValue = ActionReturnValue> = {
   ref: string;
   state: ActionState<T>;
+  method: string;
   submit(data: FormData): Promise<void>;
 };
 
+interface DefineAction {
+  <T extends ActionReturnValue>(fn: ActionFunction<T>): Action<T>;
+  <T extends ActionReturnValue>(
+    m1: Middleware,
+    fn: ActionFunction<T>,
+  ): Action<T>;
+  <T extends ActionReturnValue>(
+    m1: Middleware,
+    m2: Middleware,
+    fn: ActionFunction<T>,
+  ): Action<T>;
+  <T extends ActionReturnValue>(
+    m1: Middleware,
+    m2: Middleware,
+    m3: Middleware,
+    fn: ActionFunction<T>,
+  ): Action<T>;
+  <T extends ActionReturnValue>(
+    m1: Middleware,
+    m2: Middleware,
+    m3: Middleware,
+    m4: Middleware,
+    fn: ActionFunction<T>,
+  ): Action<T>;
+  <T extends ActionReturnValue>(
+    m1: Middleware,
+    m2: Middleware,
+    m3: Middleware,
+    m4: Middleware,
+    m5: Middleware,
+    fn: ActionFunction<T>,
+  ): Action<T>;
+  <T extends ActionReturnValue>(
+    ...args: (Middleware | ActionFunction<T>)[]
+  ): Action<T>;
+  <T extends ActionReturnValue>(name: string, fn: ActionFunction<T>): Action<T>;
+  <T extends ActionReturnValue>(
+    name: string,
+    m1: Middleware,
+    fn: ActionFunction<T>,
+  ): Action<T>;
+  <T extends ActionReturnValue>(
+    name: string,
+    m1: Middleware,
+    m2: Middleware,
+    fn: ActionFunction<T>,
+  ): Action<T>;
+  <T extends ActionReturnValue>(
+    name: string,
+    m1: Middleware,
+    m2: Middleware,
+    m3: Middleware,
+    fn: ActionFunction<T>,
+  ): Action<T>;
+  <T extends ActionReturnValue>(
+    name: string,
+    m1: Middleware,
+    m2: Middleware,
+    m3: Middleware,
+    m4: Middleware,
+    fn: ActionFunction<T>,
+  ): Action<T>;
+  <T extends ActionReturnValue>(
+    name: string,
+    m1: Middleware,
+    m2: Middleware,
+    m3: Middleware,
+    m4: Middleware,
+    m5: Middleware,
+    fn: ActionFunction<T>,
+  ): Action<T>;
+  <T extends ActionReturnValue>(
+    name: string,
+    ...args: (Middleware | ActionFunction<T>)[]
+  ): Action<T>;
+}
+
+function action(method: string): DefineAction {
+  return <T extends ActionReturnValue>(
+    ...args:
+      | [...(Middleware | ActionFunction<T>)[]]
+      | [string, ...(Middleware | ActionFunction<T>)[]]
+  ): Action<T> => {
+    const handler = () => useAction<T>(handler._ref, method);
+    handler._mthd = method;
+    handler._ref = typeof args[0] === "string" ? (args.shift() as string) : "";
+    handler._fn = args.pop() as ActionFunction<T>;
+    handler._m = middleware$(...(args as Middleware[]));
+    return handler;
+  };
+}
+
 /**
- * Making some changes to local database
+ * Making some changes to server.
  *
  * ## Examples
  *
  * ```js
- * // action.ts
- * export const useLogin = action$((evt) => {
- *   const formData = await evt.request.formData();
+ * import { Form } from "@swwind/firefly";
+ *
+ * export const useLogin = action$(async (c) => {
+ *   const formData = await c.req.formData();
  *   const username = formData.get("username");
  *   const password = formData.get("password");
  *
@@ -37,33 +134,43 @@ export type ActionHandler<T extends ActionReturnValue = ActionReturnValue> = {
  *     return { username: "Administrator" }
  *   }
  *
- *   throw new Response("Invalid username/password", { status: 401 });
+ *   throw new HTTPException(401, { message: "Invalid username/password" });
  * });
- * ```
  *
- * And
- *
- * ```jsx
- * // index.tsx
- * import { useLogin } from "./action.ts";
- * import { Form } from "@biliblitz/blitz";
- * export default function () {
+ * export default component$(() => {
  *   const login = useLogin();
- *   // automatically
+ *   // to send automatically
  *   <Form action={login}>
  *     <input type="text" name="username" />
  *     <input type="password" name="password" />
  *   </Form>
- *   // manually
+ *   // to send manually
  *   <button onClick={() => login.submit(new FormData())} />
- * }
+ * });
+ * ```
+ *
+ * Add an action name if you want.
+ *
+ * ```js
+ * export const useLogin = action$("my-action", async (c) => {
+ *   // ...
+ * });
+ * ```
+ *
+ * Add middlewares if you want.
+ *
+ * ```js
+ * const auth = middleware$( ... );
+ * const verify = middleware$( ... );
+ * export const useLogin = action$(auth, verify, async (c) => {
+ *   // ...
+ * });
  * ```
  */
-export function action$<T extends ActionReturnValue>(
-  fn: ActionFunction<T>,
-): Action<T> {
-  const handler = () => useAction<T>(handler._ref);
-  handler._fn = fn;
-  handler._ref = "";
-  return handler;
-}
+export const action$ = action("POST");
+/** See {@link action$} */
+export const delete$ = action("DELETE");
+/** See {@link action$} */
+export const put$ = action("PUT");
+/** See {@link action$} */
+export const patch$ = action("PATCH");

@@ -1,8 +1,6 @@
 import { Outlet } from "@biliblitz/blitz";
 import { meta$, action$ } from "@biliblitz/blitz/server";
 
-import "./bbb.css";
-
 const wait = (time: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, time));
 
@@ -17,7 +15,7 @@ export const useLogin = action$(async () => {
 });
 
 export const meta = meta$((_ctx, meta) => {
-  meta.title = meta.title || "this is meta";
+  meta.title = meta.title || "Welcome to blitz";
 });
 
 export default () => {

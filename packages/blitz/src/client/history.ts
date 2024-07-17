@@ -1,10 +1,9 @@
 import { useEffect } from "preact/hooks";
-import { LoaderStore } from "../server/event.ts";
+import type { LoaderStore } from "../server/event.ts";
 import { useRender } from "./navigate.ts";
 import { useRuntime } from "./runtime.ts";
-import { Meta } from "../server/meta.ts";
-import { Params } from "../server/router.ts";
-import { slowDown } from "../utils/algorithms.ts";
+import type { Meta } from "../server/meta.ts";
+import type { Params } from "../server/router.ts";
 
 /**
  * 古希腊掌管历史记录的神
@@ -27,6 +26,16 @@ export function replaceURL(url: string | URL) {
 
 export function pushState(state: HistoryState, url: string | URL) {
   history.pushState(state, "", url);
+}
+
+let currentTimeout: number | null = null;
+
+function slowdown(fn: () => void, timeout = 500) {
+  if (currentTimeout) {
+    clearTimeout(currentTimeout);
+  }
+
+  currentTimeout = (setTimeout as Window["setTimeout"])(fn, timeout);
 }
 
 export function useHistoryRestore() {
@@ -53,7 +62,7 @@ export function useHistoryRestore() {
     }
 
     function scroll() {
-      slowDown(() => {
+      slowdown(() => {
         replaceState({ position: [scrollX, scrollY] });
       });
     }

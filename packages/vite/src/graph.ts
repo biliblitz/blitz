@@ -1,7 +1,7 @@
 import { access, constants, readFile } from "node:fs/promises";
-import { ManifestChunk } from "vite";
+import type { ManifestChunk } from "vite";
 import { unique } from "./utils/algorithms.ts";
-import { Graph } from "@biliblitz/blitz/server";
+import type { Graph } from "@biliblitz/blitz/server";
 
 export async function loadClientGraph(
   entry: string,

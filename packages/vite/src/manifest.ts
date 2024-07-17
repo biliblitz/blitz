@@ -1,114 +1,126 @@
-import { remove_exports } from "@swwind/remove-exports";
-import { ActionMeta, LoaderMeta, Project } from "./scanner.ts";
-import { Graph } from "@biliblitz/blitz/server";
+import { transform } from "@swc/core";
+import type { Project, ProjectStructure } from "./scanner.ts";
+import type { AnalyzeResult } from "./analyze.ts";
+import type { Graph } from "@biliblitz/blitz/server";
+import removeExportsWasm from "@swwind/remove-exports";
 
-export function toClientManifestCode({ structure }: Project) {
+export function toClientManifestCode(structure: ProjectStructure) {
   return [
-    /** @see https://vitejs.dev/guide/backend-integration.html */
-    `import "vite/modulepreload-polyfill";`,
+    // /** @see https://vitejs.dev/guide/backend-integration.html */
+    // `import "vite/modulepreload-polyfill";`,
     `const components = new Array(${structure.componentPaths.length});`,
     `export const manifest = { components };`,
   ].join("\n");
 }
 
 export function toServerManifestCode(
+  structure: ProjectStructure,
   project: Project,
   graph: Graph,
   base: string,
 ) {
-  const { structure, actions, loaders, middlewares, metas } = project;
+  const { actions, loaders, middlewares, metas, components } = project;
 
   return [
-    ...structure.componentPaths.map(
-      (filePath, i) => `import c${i} from "${filePath}";`,
-    ),
     ...actions.map(
       (actions, i) =>
         `import { ${actions
-          .map(({ name }, j) => `${name} as a${i}_${j}`)
+          .map(({ name }, j) => `${name} as a${i}$${j}`)
           .join(", ")} } from "${structure.componentPaths[i]}";`,
     ),
     ...loaders.map(
       (loaders, i) =>
         `import { ${loaders
-          .map(({ name }, j) => `${name} as l${i}_${j}`)
+          .map(({ name }, j) => `${name} as l${i}$${j}`)
           .join(", ")} } from "${structure.componentPaths[i]}";`,
     ),
-    ...metas
-      .map((hasMeta, i) =>
-        hasMeta
-          ? `import { meta as t${i} } from "${structure.componentPaths[i]}";`
-          : null,
-      )
-      .filter((s) => s !== null),
-    ...structure.middlewarePaths.map(
-      (filePath, i) => `import m${i} from "${filePath}";`,
+    ...metas.map(
+      (has, i) =>
+        has &&
+        `import { meta as t${i} } from "${structure.componentPaths[i]}";`,
     ),
-    ...structure.staticPaths.map(
-      (filePath, i) => `import s${i} from "${filePath}";`,
+    ...components.map(
+      (has, i) => has && `import c${i} from "${structure.componentPaths[i]}";`,
+    ),
+    ...middlewares.map(
+      (has, i) =>
+        has &&
+        `import { middleware as m${i} } from "${structure.componentPaths[i]}";`,
     ),
 
     // assign ref
     ...actions.flatMap((actions, i) =>
-      actions.map(({ ref }, j) => `a${i}_${j}._ref = "${ref}";`),
+      actions.map(({ ref }, j) => `a${i}$${j}._ref = "${ref}";`),
     ),
     ...loaders.flatMap((loaders, i) =>
-      loaders.map(({ ref }, j) => `l${i}_${j}._ref = "${ref}";`),
+      loaders.map(({ ref }, j) => `l${i}$${j}._ref = "${ref}";`),
     ),
-    ...middlewares.map(({ ref }, i) => `m${i}._ref = "${ref}";`),
 
     // export
     `const base = ${JSON.stringify(base)};`,
     `const graph = ${JSON.stringify(graph)};`,
-    `const metas = [${structure.componentPaths.map((_, i) => (metas[i] ? `t${i}` : "null")).join(", ")}];`,
-    `const actions = [${actions.map((a, i) => `[${a.map((_, j) => `a${i}_${j}`).join(", ")}]`).join(", ")}];`,
-    `const loaders = [${loaders.map((l, i) => `[${l.map((_, j) => `l${i}_${j}`).join(", ")}]`).join(", ")}];`,
-    `const statics = [${structure.staticPaths.map((_, i) => `s${i}`).join(", ")}];`,
+    `const metas = [${structure.componentPaths
+      .map((_, i) => (metas[i] ? `t${i}` : "null"))
+      .join(", ")}];`,
+    `const actions = [${actions
+      .map((a, i) => `[${a.map((_, j) => `a${i}$${j}`).join(", ")}]`)
+      .join(", ")}];`,
+    `const loaders = [${loaders
+      .map((l, i) => `[${l.map((_, j) => `l${i}$${j}`).join(", ")}]`)
+      .join(", ")}];`,
     `const directory = ${JSON.stringify(structure.directory)};`,
-    `const components = [${structure.componentPaths.map((_, i) => `c${i}`).join(", ")}];`,
-    `const middlewares = [${middlewares.map((_, i) => `m${i}`).join(", ")}];`,
-    `export const manifest = { base, graph, metas, actions, loaders, statics, directory, components, middlewares };`,
-  ].join("\n");
+    `const components = [${components
+      .map((has, i) => (has ? `c${i}` : "null"))
+      .join(", ")}];`,
+    `const middlewares = [${middlewares
+      .map((has, i) => (has ? `m${i}` : "null"))
+      .join(", ")}];`,
+    `export const manifest = { base, graph, metas, actions, loaders, directory, components, middlewares };`,
+  ]
+    .map((x) => x || "")
+    .join("\n");
 }
 
-export function removeClientServerExports(
+export async function removeClientServerExports(
   source: string,
-  actions: ActionMeta,
-  loaders: LoaderMeta,
-  hasMeta: boolean,
+  result: AnalyzeResult,
 ) {
-  const remove = remove_exports(source, [
-    ...actions.map(({ name }) => name),
-    ...loaders.map(({ name }) => name),
-    ...(hasMeta ? ["meta"] : []),
-  ]);
+  const removes = [
+    ...result.action.map((x) => x.name),
+    ...result.loader.map((x) => x.name),
+    ...(result.meta ? ["meta"] : []),
+    ...(result.middleware ? ["middleware"] : []),
+  ];
 
-  const imports: string[] = [];
+  // console.log("wasm", wasm);
+  const { code } = await transform(source, {
+    jsc: {
+      parser: {
+        syntax: "ecmascript",
+        jsx: false,
+      },
+      experimental: {
+        plugins: [removeExportsWasm({ removes })],
+      },
+      preserveAllComments: true,
+    },
+    // sourceMaps: true,
+  });
 
-  if (actions.length > 0) {
-    imports.push(
-      `import { useAction as $blitz$useAction } from "@biliblitz/blitz";`,
-    );
-  }
-  if (loaders.length > 0) {
-    imports.push(
-      `import { useLoader as $blitz$useLoader } from "@biliblitz/blitz";`,
-    );
-  }
-  imports.push(
-    ...actions.map(
-      (action) =>
-        `export const ${action.name} = () => $blitz$useAction("${action.ref}");`,
-    ),
-  );
-  imports.push(
-    ...loaders.map(
-      (loader) =>
-        `export const ${loader.name} = () => $blitz$useLoader("${loader.ref}");`,
-    ),
-  );
-
-  return imports.join("\n") + remove;
+  return {
+    code: [
+      `import { useAction as __injectAction, useLoader as __injectLoader } from "@biliblitz/blitz";`,
+      ...result.action.map(
+        (x) =>
+          `export const ${x.name} = () => __injectAction("${x.ref}", "${x.method}");`,
+      ),
+      ...result.loader.map(
+        (x) => `export const ${x.name} = () => __injectLoader("${x.ref}");`,
+      ),
+      result.component ? "" : "export default null;",
+      code,
+    ].join("\n"),
+  };
 }
 
 export function toAssetsManifestCode(graph: Graph, base: string) {

@@ -1,12 +1,12 @@
-import { Plugin } from "vite";
+import type { Plugin } from "vite";
 import { Hono } from "hono";
 import { resolve, staticAdapterId } from "../vmod.ts";
 import path, { join } from "path";
-import { ServerManifest, Directory } from "@biliblitz/blitz/server";
+import type { ServerManifest, Directory } from "@biliblitz/blitz/server";
 import { writeFile, mkdir, unlink } from "node:fs/promises";
-import chalk from "chalk";
 import { cp } from "fs/promises";
-import { RedirectStatusCode } from "hono/utils/http-status";
+import type { RedirectStatusCode } from "hono/utils/http-status";
+import { cyan, gray, green, white } from "kolorist";
 
 export type Options = {
   /** @example "https://yoursite.com" */
@@ -72,7 +72,7 @@ export function staticAdapter(options: Options): Plugin {
 }
 
 const staticAdapterEntryCode = (origin: string) => `
-import server from "./app/entry.static.tsx";
+import server from "./src/entry.static.tsx";
 import { manifest } from "blitz:manifest/server";
 import { generate } from "@biliblitz/vite/adapters/static";
 
@@ -85,9 +85,7 @@ export async function generate(
   origin: string,
 ) {
   console.log("");
-  console.log(
-    `${chalk.cyan(`blitz`)} ${chalk.green("generating static pages...")}`,
-  );
+  console.log(`${cyan(`blitz`)} ${green("generating static pages...")}`);
 
   const outdir = "dist/static";
   const pathnames = [] as string[];
@@ -97,18 +95,19 @@ export async function generate(
     if (route.index !== null) pathnames.push(current);
     for (const [dirname, child] of children) {
       if (dirname.startsWith("[") && dirname.endsWith("]")) {
-        if (child.route.static === null)
-          throw new Error(
-            `static.ts is missing for route "${current + dirname + "/"}"`,
-          );
-        const param = dirname === "[...]" ? "$" : dirname.slice(1, -1);
-        const static1 = manifest.statics[child.route.static];
-        const possibles = await static1(env);
-        for (const possible of possibles) {
-          env.params.set(param, possible);
-          await dfs(child, current + possible + "/");
-        }
-        env.params.delete(param);
+        // if (child.route.static === null)
+        //   throw new Error(
+        //     `static.ts is missing for route "${current + dirname + "/"}"`,
+        //   );
+        // const param = dirname === "[...]" ? "$" : dirname.slice(1, -1);
+        // const static1 = manifest.statics[child.route.static];
+        // const possibles = await static1(env);
+        // for (const possible of possibles) {
+        //   env.params.set(param, possible);
+        //   await dfs(child, current + possible + "/");
+        // }
+        // env.params.delete(param);
+        throw new Error("Todo");
       } else if (dirname.startsWith("(") && dirname.endsWith(")")) {
         await dfs(child, current);
       } else {
@@ -164,10 +163,7 @@ export async function generate(
 
       if (filename === "index.html") {
         console.log(
-          chalk.gray(dirname) +
-            chalk.white("index.html") +
-            " -> " +
-            chalk.gray(location),
+          gray(dirname) + white("index.html") + " -> " + gray(location),
         );
       }
       return;
@@ -180,7 +176,7 @@ export async function generate(
     await writeFile(filepath, buffer);
 
     if (filename === "index.html") {
-      console.log(chalk.gray(dirname) + chalk.white("index.html"));
+      console.log(gray(dirname) + white("index.html"));
     }
   }
 
@@ -193,7 +189,7 @@ export async function generate(
   const end = Date.now();
 
   console.log(
-    chalk.green(`✓ generated ${pathnames.length} pages in ${end - start}ms.`),
+    green(`✓ generated ${pathnames.length} pages in ${end - start}ms.`),
   );
 
   // sitemaps

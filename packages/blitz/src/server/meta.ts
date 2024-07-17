@@ -1,5 +1,5 @@
-import { JSX } from "preact/jsx-runtime";
-import { Context } from "hono";
+import type { JSX } from "preact/jsx-runtime";
+import type { Context } from "hono";
 
 export type Meta = {
   title: string;

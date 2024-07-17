@@ -1,4 +1,4 @@
-import { JSX } from "preact";
+import type { JSX } from "preact";
 import { useNavigate } from "../navigate.ts";
 
 interface LinkProps extends JSX.HTMLAttributes<HTMLAnchorElement> {

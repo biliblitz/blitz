@@ -1,27 +1,16 @@
-import { JSX } from "preact";
-import { ActionHandler, ActionReturnValue } from "../../server/action.ts";
+import type { JSX } from "preact";
+import type { ActionHandler, ActionReturnValue } from "../../server/action.ts";
 import { useEffect } from "preact/hooks";
 
 type FormProps<T extends ActionReturnValue> = Omit<
   JSX.HTMLAttributes<HTMLFormElement>,
-  "action" | "onSuccess" | "onError"
+  "action"
 > & {
   action: ActionHandler<T>;
-  onSuccess?: (data: T) => void;
-  onError?: (error: Error) => void;
 };
 
 export function Form<T extends ActionReturnValue>(props: FormProps<T>) {
-  const { action, onSuccess, onError, ...remains } = props;
-
-  // register callbacks
-  useEffect(() => {
-    if (action.state.state === "ok") {
-      onSuccess?.(action.state.data);
-    } else if (action.state.state === "error" && onError) {
-      onError?.(action.state.error);
-    }
-  }, [action.state]);
+  const { action, ...remains } = props;
 
   return (
     <form

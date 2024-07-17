@@ -4,6 +4,7 @@
   "description": "A blitzing minimal backend-framework for Preact",
   "type": "module",
   "files": [
+    "src",
     "dist",
     "env.d.ts",
     "README.md"
@@ -12,24 +13,24 @@
     "type": "git",
     "url": "git+https://github.com/biliblitz/blitz.git"
   },
-  "types": "./dist/types/client/index.d.ts",
-  "module": "./dist/esm/client/index.mjs",
+  "types": "./dist/client/index.d.ts",
+  "module": "./dist/client/index.mjs",
   "exports": {
     ".": {
-      "types": "./dist/types/client/index.d.ts",
-      "import": "./dist/esm/client/index.mjs"
+      "types": "./dist/client/index.d.ts",
+      "import": "./dist/client/index.mjs"
     },
     "./server": {
-      "types": "./dist/types/server/index.d.ts",
-      "import": "./dist/esm/server/index.mjs"
+      "types": "./dist/server/index.d.ts",
+      "import": "./dist/server/index.mjs"
     },
     "./env": {
-      "types": "./env.d.ts"
+      "types": "./dist/env.d.ts"
     }
   },
   "scripts": {
     "fmt": "prettier --write src",
-    "build": "rm -rf dist && tsc --build && exbuild"
+    "build": "rm -rf dist && tsc --build && cp src/env.d.ts dist && exbuild"
   },
   "license": "MIT",
   "peerDependencies": {
@@ -38,9 +39,9 @@
     "preact-render-to-string": "^6"
   },
   "devDependencies": {
-    "@swwind/exbuild": "^1.0.3",
-    "@types/node": "^20.12.7",
-    "typescript": "^5.4.4",
-    "vite": "^5.2.8"
+    "@swwind/exbuild": "^1.0.8",
+    "@types/node": "^20.14.11",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.4"
   }
 }

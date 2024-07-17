@@ -1,28 +1,3 @@
-const JAVASCRIPT_FILE_EXTENSIONS = [
-  ".js",
-  ".jsx",
-  ".cjs",
-  ".cjsx",
-  ".mjs",
-  ".mjsx",
-  ".ts",
-  ".tsx",
-  ".cts",
-  ".ctsx",
-  ".mts",
-  ".mtsx",
-];
-const MDX_FILE_EXTENSIONS = [".md", ".mdx"];
-const STYLE_FILE_EXTENSIONS = [
-  ".css",
-  ".scss",
-  ".sass",
-  ".less",
-  ".styl",
-  ".stylus",
-  ".pcss",
-  ".sss",
-];
 const IMAGE_FILE_EXTENSIONS = [
   ".apng",
   ".png",
@@ -42,11 +17,11 @@ const AUDIO_FILE_EXTENSIONS = [".mp3", ".wav", ".flac", ".aac", ".opus"];
 const FONT_FILE_EXTENSIONS = [".woff", ".woff2", ".eot", ".ttf", ".otf"];
 
 export function isJs(filename: string) {
-  return JAVASCRIPT_FILE_EXTENSIONS.some((ext) => filename.endsWith(ext));
+  return /\.[cm]?[jt]sx?$/.test(filename);
 }
 
 export function isMdx(filename: string) {
-  return MDX_FILE_EXTENSIONS.some((ext) => filename.endsWith(ext));
+  return /\.mdx?$/.test(filename);
 }
 
 export function isJsOrMdx(filename: string) {
@@ -54,7 +29,7 @@ export function isJsOrMdx(filename: string) {
 }
 
 export function isCss(filename: string) {
-  return STYLE_FILE_EXTENSIONS.some((ext) => filename.endsWith(ext));
+  return filename.endsWith(".css");
 }
 
 export function isImage(filename: string) {

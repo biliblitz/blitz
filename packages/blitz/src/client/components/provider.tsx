@@ -1,4 +1,4 @@
-import { JSX } from "preact";
+import type { JSX } from "preact";
 import { useHistoryRestore } from "../history.ts";
 
 interface ProviderProps extends JSX.HTMLAttributes<HTMLHtmlElement> {}
