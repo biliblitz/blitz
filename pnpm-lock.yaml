@@ -94,7 +94,7 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       "@swc/core":
-        specifier: ^1.6.13
+        specifier: ~1.6.13
         version: 1.6.13
       "@swwind/remove-exports":
         specifier: ^2.1.3
