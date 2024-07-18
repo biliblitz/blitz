@@ -11,6 +11,8 @@ import { cyan, gray, green, white } from "kolorist";
 export type Options = {
   /** @example "https://yoursite.com" */
   origin: string;
+  /** @default true */
+  sitemap?: boolean;
 };
 
 const originRegex = /^https?:\/\/(?:[a-z0-9\-]+\.)*[a-z0-9\-]+$/;
@@ -30,6 +32,8 @@ export function staticAdapter(options: Options): Plugin {
   if (!originRegex.test(options.origin))
     console.warn(`SSG: origin "${options.origin}" seems to be invalid`);
 
+  options.sitemap ??= true;
+
   return {
     name: "blitz-static-adapter",
 
@@ -43,7 +47,7 @@ export function staticAdapter(options: Options): Plugin {
     load(id) {
       switch (id) {
         case resolve(staticAdapterId):
-          return staticAdapterEntryCode(options.origin);
+          return staticAdapterEntryCode(options);
       }
     },
 
@@ -71,18 +75,18 @@ export function staticAdapter(options: Options): Plugin {
   };
 }
 
-const staticAdapterEntryCode = (origin: string) => `
+const staticAdapterEntryCode = (options: Options) => `
 import server from "./src/entry.static.tsx";
 import { manifest } from "blitz:manifest/server";
 import { generate } from "@biliblitz/vite/adapters/static";
 
-await generate(server, manifest, ${JSON.stringify(origin)});
+await generate(server, manifest, ${JSON.stringify(options)});
 `;
 
 export async function generate(
   server: Hono,
   manifest: ServerManifest,
-  origin: string,
+  options: Options,
 ) {
   console.log("");
   console.log(`${cyan(`blitz`)} ${green("generating static pages...")}`);
@@ -123,12 +127,14 @@ export async function generate(
   const app = new Hono().basePath(manifest.base);
   app.route("/", server);
 
-  async function handleRequest(
+  const handleRequest = async (
     pathname: string,
     dirname: string,
     filename: string,
-  ) {
-    const request = new Request(new URL(origin + manifest.base + pathname));
+  ) => {
+    const request = new Request(
+      new URL(options.origin + manifest.base + pathname),
+    );
     const response = await app.fetch(request);
 
     // handle server explosion
@@ -178,7 +184,7 @@ export async function generate(
     if (filename === "index.html") {
       console.log(gray(dirname) + white("index.html"));
     }
-  }
+  };
 
   const start = Date.now();
   for (const pathname of pathnames) {
@@ -193,17 +199,18 @@ export async function generate(
   );
 
   // sitemaps
-
-  const sitemap = [
-    `<?xml version="1.0" encoding="UTF-8"?>`,
-    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
-    ...pathnames.map(
-      (pathname) =>
-        `<url><loc>${origin}${manifest.base}${pathname}</loc></url>`,
-    ),
-    `</urlset>`,
-  ].join("\n");
-  await writeFile(join(outdir, "sitemap.xml"), sitemap);
+  if (options.sitemap) {
+    const sitemap = [
+      `<?xml version="1.0" encoding="UTF-8"?>`,
+      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+      ...pathnames.map(
+        (pathname) =>
+          `<url><loc>${options.origin + manifest.base + pathname}</loc></url>`,
+      ),
+      `</urlset>`,
+    ].join("\n");
+    await writeFile(join(outdir, "sitemap.xml"), sitemap);
+  }
 
   // _redirects
 
@@ -212,7 +219,7 @@ export async function generate(
     redirects
       .map(
         (redr) =>
-          `${manifest.base}${redr.source} ${redr.destination} ${redr.code}`,
+          `${manifest.base + redr.source} ${redr.destination} ${redr.code}`,
       )
       .join("\n"),
   );
