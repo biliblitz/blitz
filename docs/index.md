@@ -1,17 +1,24 @@
-# `@biliblitz/blitz`
+---
+# https://vitepress.dev/reference/default-theme-home-page
+layout: home
 
-`@biliblitz/blitz` 是一款轻量级的全栈框架，基于 `preact`。
+hero:
+  name: "Blitz"
+  text: "A blitzingly fast, game changing, next generation meta framework for preact."
+  tagline: 现在购买立减 -100%
+  actions:
+    - theme: brand
+      text: 立即开始
+      link: /tutorial/start
+    - theme: alt
+      text: 为什么要用这个
+      link: /tutorial/start
 
-如果您熟悉 Remix，或者是 Qwik City，那么您就会感觉像在家里。
-
-## 其他教程
-
-- [开始](./tutorial/start.md)
-- [Markdown & MDX](./tutorial/mdx.md)
-
-## 设计说明
-
-- [Action](./design/actions.md)
-- [Loader](./design/loaders.md)
-- [Form](./design/form.md)
-- [FetchEvent](./design/event.md)
+features:
+  - title: File structure based routings
+    details: Yes, just like other frameworks.
+  - title: Multiple targets
+    details: nodejs, static, cloudflare pages, and more!
+  - title: Hono
+    details: Yes we use hono as our backend.
+---

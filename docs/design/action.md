@@ -49,7 +49,8 @@ export default () => {
 
 ### `ActionHandler<T>.submit(data: FormData): Promise<void>`
 
-手动发起一次 POST 请求，使用 [`Form`](./form.md) 可以自动化提交的行为。该 Promise 会在请求处理结束之后返回。
+手动发起一次 POST 请求，使用 [`Form`](./form.md) 可以自动化提交的行为。该
+Promise 会在请求处理结束之后返回。
 
 ### `ActionState.state: "idle" | "waiting" | "error" | "ok"`
 

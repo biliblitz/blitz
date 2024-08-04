@@ -15,7 +15,7 @@ import { loader$ } from "@biliblitz/blitz/server";
 
 // 使用 loader$ 进行定义，函数会传入一个 FetchEvent 对象
 // 这部分代码只会在服务端运行
-export const useUsername = loader$(async (evt: FetchEvent) => {
+export const useUsername = loader$(async (c) => {
   // 可以使用异步接口编写后端代码
   const user = await db.findUser({ id: 114514 });
 
@@ -29,6 +29,6 @@ export default () => {
   // 引用钩子函数获取 loader 在服务端运行的结果
   const username = useUsername(); // { username: string }
 
-  return <div>Hello {username.value.username}!</div>;
+  return <div>Hello {username.username}!</div>;
 };
 ```
