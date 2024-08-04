@@ -20,6 +20,46 @@ importers:
         specifier: ^1.3.1
         version: 1.3.1(@algolia/client-search@4.24.0)(@types/node@20.14.11)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.5.3)
 
+  examples/adapter-static:
+    dependencies:
+      "@biliblitz/blitz":
+        specifier: workspace:^
+        version: link:../../packages/blitz
+      "@hono/node-server":
+        specifier: ^1.10.1
+        version: 1.12.0
+      "@preact/preset-vite":
+        specifier: ^2.8.2
+        version: 2.8.2(@babel/core@7.24.4)(preact@10.22.1)(vite@5.3.4(@types/node@20.14.11))
+      "@preact/signals":
+        specifier: ^1.2.3
+        version: 1.2.3(preact@10.22.1)
+      hono:
+        specifier: ^4.2.3
+        version: 4.5.0
+      preact:
+        specifier: ^10.20.2
+        version: 10.22.1
+      preact-render-to-string:
+        specifier: ^6.4.2
+        version: 6.5.5(preact@10.22.1)
+    devDependencies:
+      "@biliblitz/vite":
+        specifier: workspace:^
+        version: link:../../packages/vite
+      "@types/node":
+        specifier: ^20.12.7
+        version: 20.14.11
+      typescript:
+        specifier: ^5.4.4
+        version: 5.5.3
+      vite:
+        specifier: ^5.2.8
+        version: 5.3.4(@types/node@20.14.11)
+      vite-tsconfig-paths:
+        specifier: ^4.3.2
+        version: 4.3.2(typescript@5.5.3)(vite@5.3.4(@types/node@20.14.11))
+
   examples/basic:
     dependencies:
       "@biliblitz/blitz":
