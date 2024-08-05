@@ -1,5 +1,4 @@
 import type { Plugin } from "vite";
-import { isMdx } from "./utils/ext.ts";
 import { compile, type CompileOptions } from "@mdx-js/mdx";
 import { VFile } from "vfile";
 import { matter } from "vfile-matter";
@@ -9,6 +8,8 @@ type FrontMatter = {
   title?: string;
   description?: string;
 };
+
+const isMdx = (x: string) => /\.mdx?$/.test(x);
 
 export function blitzMdx(options?: CompileOptions): Plugin {
   options ??= {};

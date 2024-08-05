@@ -1,7 +1,7 @@
 {
-  "name": "@biliblitz/vite",
-  "version": "0.2.1",
-  "description": "A blitzing minimal backend-framework for Preact (Vite plugins)",
+  "name": "@biliblitz/vite-plugin-static",
+  "version": "0.0.1",
+  "description": "A blitzing minimal backend-framework for Preact (Vite plugin for static target)",
   "type": "module",
   "files": [
     "src",
@@ -25,23 +25,15 @@
     "build": "rm -rf dist && tsc --build && exbuild"
   },
   "license": "MIT",
-  "peerDependencies": {
-    "hono": "^4",
-    "vite": ">=5"
-  },
   "devDependencies": {
+    "@biliblitz/blitz": "^0.2.0",
     "@swwind/exbuild": "^1.0.8",
     "@types/node": "^20.14.11",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.4",
+    "vite": ">=5"
   },
   "dependencies": {
-    "@biliblitz/blitz": "^0.2.0",
-    "@hono/node-server": "^1.12.0",
-    "@mdx-js/mdx": "^3.0.1",
-    "@swc/core": "~1.6.13",
-    "@swwind/remove-exports": "^2.1.3",
-    "kolorist": "^1.8.0",
-    "vfile": "^6.0.2",
-    "vfile-matter": "^5.0.0"
+    "hono": "^4.2.3",
+    "kolorist": "^1.8.0"
   }
 }

@@ -1,4 +1,4 @@
-import { staticAdapter } from "@biliblitz/vite/adapters/static";
+import { staticAdapter } from "@biliblitz/vite-plugin-static";
 import { defineConfig, mergeConfig } from "vite";
 import baseConfig from "../../vite.config.ts";
 

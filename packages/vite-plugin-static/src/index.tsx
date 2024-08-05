@@ -1,12 +1,11 @@
-import type { Plugin } from "vite";
 import { Hono } from "hono";
-import { resolve, staticAdapterId } from "../vmod.ts";
-import path, { join } from "path";
-import type { ServerManifest, Directory } from "@biliblitz/blitz/server";
-import { writeFile, mkdir, unlink } from "node:fs/promises";
-import { cp } from "fs/promises";
-import type { RedirectStatusCode } from "hono/utils/http-status";
 import { cyan, gray, green, white } from "kolorist";
+import { join } from "node:path";
+import { writeFile, mkdir, unlink, cp } from "node:fs/promises";
+import { resolve, staticAdapterId } from "./vmod.ts";
+import type { Plugin } from "vite";
+import type { ServerManifest, Directory } from "@biliblitz/blitz/server";
+import type { RedirectStatusCode } from "hono/utils/http-status";
 
 export type Options = {
   /** @example "https://yoursite.com" */
@@ -78,7 +77,7 @@ export function staticAdapter(options: Options): Plugin {
 const staticAdapterEntryCode = (options: Options) => `
 import server from "./src/entry.static.tsx";
 import { manifest } from "blitz:manifest/server";
-import { generate } from "@biliblitz/vite/adapters/static";
+import { generate } from "@biliblitz/vite-plugin-static";
 
 await generate(server, manifest, ${JSON.stringify(options)});
 `;
@@ -94,7 +93,6 @@ export async function generate(
   const outdir = "dist/static";
   const pathnames = [] as string[];
 
-  const env = { params: new Map() };
   async function dfs({ route, children }: Directory, current: string = "") {
     if (route.index !== null) pathnames.push(current);
     for (const [dirname, child] of children) {
@@ -177,7 +175,7 @@ export async function generate(
 
     // write response to fs
     const buffer = new Uint8Array(await response.arrayBuffer());
-    const filepath = path.join(dirname, filename);
+    const filepath = join(dirname, filename);
     await mkdir(dirname, { recursive: true });
     await writeFile(filepath, buffer);
 

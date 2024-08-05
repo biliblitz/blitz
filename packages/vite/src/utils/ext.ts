@@ -24,9 +24,9 @@ export function isMdx(filename: string) {
   return /\.mdx?$/.test(filename);
 }
 
-export function isJsOrMdx(filename: string) {
-  return isJs(filename) || isMdx(filename);
-}
+// export function isJsOrMdx(filename: string) {
+//   return isJs(filename) || isMdx(filename);
+// }
 
 export function isCss(filename: string) {
   return filename.endsWith(".css");

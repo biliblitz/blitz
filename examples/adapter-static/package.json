@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@biliblitz/blitz": "workspace:^",
+    "@biliblitz/vite-plugin-static": "workspace:^",
     "@hono/node-server": "^1.10.1",
     "@preact/preset-vite": "^2.8.2",
     "@preact/signals": "^1.2.3",

@@ -24,6 +24,8 @@
   },
   "devDependencies": {
     "@biliblitz/vite": "workspace:^",
+    "@biliblitz/vite-plugin-mdx": "workspace:^",
+    "@biliblitz/vite-plugin-static": "workspace:^",
     "@types/node": "^20.12.7",
     "typescript": "^5.4.4",
     "vite": "^5.2.8",
