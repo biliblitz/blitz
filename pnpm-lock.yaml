@@ -176,15 +176,9 @@ importers:
 
   packages/vite:
     dependencies:
-      "@biliblitz/blitz":
-        specifier: ^0.2.0
-        version: link:../blitz
       "@hono/node-server":
         specifier: ^1.12.0
         version: 1.12.0
-      "@mdx-js/mdx":
-        specifier: ^3.0.1
-        version: 3.0.1
       "@swc/core":
         specifier: ~1.6.13
         version: 1.6.13
@@ -203,10 +197,10 @@ importers:
       vfile-matter:
         specifier: ^5.0.0
         version: 5.0.0
-      vite:
-        specifier: ">=5"
-        version: 5.3.4(@types/node@20.14.11)
     devDependencies:
+      "@biliblitz/blitz":
+        specifier: ^0.2.0
+        version: link:../blitz
       "@swwind/exbuild":
         specifier: ^1.0.8
         version: 1.0.8
@@ -216,6 +210,9 @@ importers:
       typescript:
         specifier: ^5.5.3
         version: 5.5.3
+      vite:
+        specifier: ">=5"
+        version: 5.3.4(@types/node@20.14.11)
 
   packages/vite-plugin-mdx:
     dependencies:

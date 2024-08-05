@@ -20,7 +20,7 @@ import {
   toServerManifestCode,
 } from "./manifest.ts";
 import { loadClientGraph, loadDevGraph } from "./graph.ts";
-import { Hono } from "hono";
+import type { Hono } from "hono";
 
 export function blitz(): Plugin {
   const vmods = [manifestClient, manifestServer];
