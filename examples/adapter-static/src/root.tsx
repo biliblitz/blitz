@@ -1,5 +1,7 @@
 import { BlitzCityProvider, RouterHead, RouterOutlet } from "@biliblitz/blitz";
 
+import "./assets/style.css";
+
 /**
  * Main entry of the whole application.
  */

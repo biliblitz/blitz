@@ -4,8 +4,14 @@ import { serveStatic } from "@hono/node-server/serve-static";
 
 const app = new Hono();
 
-app.use(serveStatic({ root: "./dist/static/" }));
+app.use(
+  "/base/*",
+  serveStatic({
+    root: "./dist/static/",
+    rewriteRequestPath: (x) => x.slice(5),
+  }),
+);
 
 serve(app, (info) => {
-  console.log(`Listening on http://localhost:${info.port}/`);
+  console.log(`Listening on http://localhost:${info.port}/base/`);
 });

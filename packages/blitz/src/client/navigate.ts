@@ -70,14 +70,21 @@ export type Navigate = (target: string | URL) => Promise<void>;
 
 export const NavigateContext = createContext<Navigate | null>(null);
 
-export function useNavigateCallback(render: Render): Navigate {
+export function useNavigateCallback(
+  render: Render,
+  runtime: RuntimeStatic,
+): Navigate {
   return useCallback(
     async function navigate(target) {
       if (typeof target === "string") {
         target = new URL(target, location.href);
       }
 
-      if (target.host !== location.host) {
+      // if is external link
+      if (
+        target.host !== location.host ||
+        !target.pathname.startsWith(runtime.base)
+      ) {
         open(target);
         return;
       }

@@ -95,7 +95,7 @@ export function RuntimeProvider(props: {
   const [_runtime, runtimeStatic] = props.value;
   const [runtime, setRuntime] = useState(_runtime);
   const render = useRenderCallback(runtimeStatic, setRuntime);
-  const navigate = useNavigateCallback(render);
+  const navigate = useNavigateCallback(render, runtimeStatic);
 
   return (
     <RuntimeContext.Provider value={runtime}>
