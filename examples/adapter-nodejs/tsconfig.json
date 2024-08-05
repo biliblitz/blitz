@@ -18,11 +18,5 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": [
-    "src",
-    "adapters",
-    "vite.config.ts",
-    "server.js",
-    "server-static.js"
-  ]
+  "include": ["src", "adapters", "vite.config.ts", "server.js"]
 }

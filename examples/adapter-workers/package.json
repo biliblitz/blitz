@@ -1,26 +1,26 @@
 {
-  "name": "@example/adapter-static",
+  "name": "@example/adapter-workers",
   "version": "1.0.0",
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "tsc --build && pnpm run build:client && pnpm run build:static",
+    "build": "tsc --build && pnpm run build:client && pnpm run build:workers",
     "build:client": "vite build --manifest",
-    "build:static": "vite build --ssr -c adapters/static/vite.config.ts",
-    "start": "node server.js",
+    "build:workers": "vite build --ssr -c adapters/workers/vite.config.ts",
+    "start": "wrangler dev",
     "dev": "vite"
   },
   "license": "MIT",
   "dependencies": {
     "@biliblitz/blitz": "workspace:^",
-    "@hono/node-server": "^1.10.1",
-    "hono": "^4.2.3",
     "preact": "^10.20.2",
-    "preact-render-to-string": "^6.4.2"
+    "preact-render-to-string": "^6.4.2",
+    "wrangler": "^3.68.0"
   },
   "devDependencies": {
     "@biliblitz/vite": "workspace:^",
-    "@biliblitz/vite-plugin-static": "workspace:^",
+    "@biliblitz/vite-plugin-workers": "workspace:^",
+    "@cloudflare/workers-types": "^4.20240729.0",
     "@preact/preset-vite": "^2.8.2",
     "@types/node": "^20.12.7",
     "typescript": "^5.4.4",

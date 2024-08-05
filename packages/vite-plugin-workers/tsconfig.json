@@ -3,20 +3,19 @@
     "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "lib": ["ESNext", "DOM", "WebWorker"],
-    "noEmit": true,
+    "lib": ["ESNext", "DOM"],
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": true,
+    "outDir": "dist",
     "strict": true,
-    "allowJs": true,
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "resolveJsonModule": true,
-    "types": ["node", "vite/client", "@biliblitz/blitz/env"],
-    "paths": {
-      "~/*": ["./src/*"]
-    }
+    "verbatimModuleSyntax": true
   },
-  "include": ["src", "adapters", "vite.config.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

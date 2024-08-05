@@ -54,10 +54,12 @@ export function staticAdapter(options: Options): Plugin {
       return {
         build: {
           target: "esnext",
+          outDir: "dist/static",
           rollupOptions: {
             input: [staticAdapterId],
             output: {
               entryFileNames: "_server.js",
+              assetFileNames: "build/assets/[hash].[ext]",
             },
           },
           copyPublicDir: true,

@@ -1,12 +1,12 @@
 {
-  "name": "@example/adapter-static",
+  "name": "@example/adapter-nodejs",
   "version": "1.0.0",
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "tsc --build && pnpm run build:client && pnpm run build:static",
+    "build": "tsc --build && pnpm run build:client && pnpm run build:nodejs",
     "build:client": "vite build --manifest",
-    "build:static": "vite build --ssr -c adapters/static/vite.config.ts",
+    "build:nodejs": "vite build --ssr -c adapters/nodejs/vite.config.ts",
     "start": "node server.js",
     "dev": "vite"
   },
@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@biliblitz/vite": "workspace:^",
-    "@biliblitz/vite-plugin-static": "workspace:^",
+    "@biliblitz/vite-plugin-nodejs": "workspace:^",
     "@preact/preset-vite": "^2.8.2",
     "@types/node": "^20.12.7",
     "typescript": "^5.4.4",

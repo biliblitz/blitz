@@ -22,7 +22,7 @@ import {
 import { loadClientGraph, loadDevGraph } from "./graph.ts";
 import type { Hono } from "hono";
 
-export function blitz(): Plugin {
+export function blitz(): Plugin<{ env: any }> {
   const vmods = [manifestClient, manifestServer];
   let isDev = false;
 
@@ -46,9 +46,11 @@ export function blitz(): Plugin {
   };
 
   let resolvedConfig: ResolvedConfig;
+  let api: { env: any } = { env: null };
 
   return {
     name: "blitz",
+    api,
 
     resolveId(id) {
       switch (id) {
@@ -112,43 +114,26 @@ export function blitz(): Plugin {
     },
 
     async config(config, env) {
-      if (env.command === "build") {
-        // build client
-        if (!config.build?.ssr) {
-          const structure = await getStructure();
-          const entries = getEntries(structure);
+      // build client
+      if (env.command === "build" && !config.build?.ssr) {
+        const structure = await getStructure();
+        const entries = getEntries(structure);
 
-          return {
-            build: {
-              rollupOptions: {
-                input: [entries.entry, ...entries.components],
-                output: {
-                  entryFileNames: "build/p-[hash].js",
-                  chunkFileNames: "build/p-[hash].js",
-                  assetFileNames: "build/assets/[hash].[ext]",
-                },
-                preserveEntrySignatures: "allow-extension",
+        return {
+          build: {
+            outDir: "dist/client",
+            rollupOptions: {
+              input: [entries.entry, ...entries.components],
+              output: {
+                entryFileNames: "build/p-[hash].js",
+                chunkFileNames: "build/p-[hash].js",
+                assetFileNames: "build/assets/[hash].[ext]",
               },
-              copyPublicDir: false,
+              preserveEntrySignatures: "allow-extension",
             },
-          };
-        }
-
-        // build server
-        else {
-          return {
-            build: {
-              rollupOptions: {
-                external: [/^node:/, /node_modules/],
-                output: {
-                  assetFileNames: "build/assets/[hash].[ext]",
-                },
-              },
-              copyPublicDir: false,
-              cssMinify: true,
-            },
-          };
-        }
+            copyPublicDir: false,
+          },
+        };
       }
 
       // dev mode
@@ -189,7 +174,9 @@ export function blitz(): Plugin {
           const module = await vite.ssrLoadModule("./src/entry.dev.tsx");
           const app = module.default as Hono;
 
-          const listener = getRequestListener((req) => app.fetch(req));
+          const listener = getRequestListener((req) =>
+            api.env ? app.fetch(req, api.env) : app.fetch(req),
+          );
           await listener(req, res);
         });
       };
