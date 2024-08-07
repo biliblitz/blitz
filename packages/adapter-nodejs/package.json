@@ -1,7 +1,7 @@
 {
-  "name": "@biliblitz/vite-plugin-static",
+  "name": "@biliblitz/adapter-nodejs",
   "version": "0.0.1",
-  "description": "A blitzing minimal backend-framework for Preact (Vite plugin for static target)",
+  "description": "A blitzing minimal backend-framework for Preact (Vite plugin for nodejs)",
   "type": "module",
   "files": [
     "src",
@@ -21,19 +21,13 @@
     }
   },
   "scripts": {
-    "fmt": "prettier --write src",
     "build": "rm -rf dist && tsc --build && exbuild"
   },
   "license": "MIT",
   "devDependencies": {
-    "@biliblitz/blitz": "^0.2.0",
     "@swwind/exbuild": "^1.0.8",
-    "@types/node": "^20.14.11",
     "typescript": "^5.5.4",
     "vite": "^5"
   },
-  "dependencies": {
-    "hono": "^4.2.3",
-    "kolorist": "^1.8.0"
-  }
+  "dependencies": {}
 }

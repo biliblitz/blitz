@@ -1,47 +1,50 @@
-import type { JSX } from "preact";
+import { defineComponent, watch } from "vue";
 import type { ActionHandler, ActionReturnValue } from "../../server/action.ts";
-import { useEffect } from "preact/hooks";
 
-type FormProps<T extends ActionReturnValue> = Omit<
-  JSX.HTMLAttributes<HTMLFormElement>,
-  "action"
-> & {
-  action: ActionHandler<T>;
-};
+export const Form = defineComponent({
+  name: "Form",
+  props: {
+    action: {
+      type: Object as () => ActionHandler,
+      required: true,
+    },
+  },
+  setup(props, { slots }) {
+    const submit = (e: Event) => {
+      e.preventDefault();
+      const formData = new FormData(
+        e.currentTarget as HTMLFormElement,
+        (e as SubmitEvent).submitter,
+      );
+      props.action.submit(formData);
+    };
 
-export function Form<T extends ActionReturnValue>(props: FormProps<T>) {
-  const { action, ...remains } = props;
+    return () => (
+      <form
+        action={`?_action=${props.action.ref}`}
+        method="POST"
+        onSubmit={submit}
+      >
+        {slots.default && slots.default()}
+      </form>
+    );
+  },
+});
 
-  return (
-    <form
-      action={"?_action=" + action.ref}
-      method="POST"
-      onSubmit={(e) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget, e.submitter);
-        action.submit(formData);
-      }}
-      {...remains}
-    />
-  );
-}
-
-type ActionEffect<T extends ActionReturnValue> = {
-  action: ActionHandler<T>;
+type WatchActionOptions<T extends ActionReturnValue> = {
   success?: (data: T) => void | (() => void);
   error?: (error: Error) => void | (() => void);
 };
 
-export function useActionEffect<T extends ActionReturnValue>({
-  action,
-  success,
-  error,
-}: ActionEffect<T>) {
-  useEffect(() => {
-    if (action.state.state === "ok" && success) {
-      return success(action.state.data);
-    } else if (action.state.state === "error" && error) {
-      return error(action.state.error);
+export function watchAction<T extends ActionReturnValue>(
+  action: ActionHandler<T>,
+  options: WatchActionOptions<T>,
+) {
+  watch(action.state, (state) => {
+    if (state.status === "ok") {
+      options.success && options.success(state.data);
+    } else if (state.status === "error") {
+      options.error && options.error(state.error);
     }
-  }, [action.state]);
+  });
 }

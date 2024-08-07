@@ -29,14 +29,14 @@
     }
   },
   "scripts": {
-    "fmt": "prettier --write src",
     "build": "rm -rf dist && tsc --build && cp src/env.d.ts dist && exbuild"
   },
   "license": "MIT",
-  "peerDependencies": {
+  "dependencies": {
+    "@unhead/vue": "^1.9.16",
     "hono": "^4",
-    "preact": "^10",
-    "preact-render-to-string": "^6"
+    "vue": "^3",
+    "vue-router": "^4.4.3"
   },
   "devDependencies": {
     "@swwind/exbuild": "^1.0.8",

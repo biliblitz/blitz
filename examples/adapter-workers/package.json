@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@biliblitz/vite": "workspace:^",
-    "@biliblitz/vite-plugin-workers": "workspace:^",
+    "@biliblitz/adapter-workers": "workspace:^",
     "@cloudflare/workers-types": "^4.20240729.0",
     "@preact/preset-vite": "^2.8.2",
     "@types/node": "^20.12.7",

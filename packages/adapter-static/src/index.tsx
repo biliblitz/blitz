@@ -79,7 +79,7 @@ export function staticAdapter(options: Options): Plugin {
 const staticAdapterEntryCode = (options: Options) => `
 import server from "./src/entry.static.tsx";
 import { manifest } from "blitz:manifest/server";
-import { generate } from "@biliblitz/vite-plugin-static";
+import { generate } from "@biliblitz/adapter-static";
 
 await generate(server, manifest, ${JSON.stringify(options)});
 `;

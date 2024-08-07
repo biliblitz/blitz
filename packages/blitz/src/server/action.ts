@@ -1,6 +1,7 @@
 import { useAction } from "../client/action.ts";
 import type { Context } from "hono";
 import { middleware$, type Middleware } from "./middleware.ts";
+import type { Ref } from "vue";
 
 export type ActionReturnValue = {} | null;
 export type ActionFunction<T extends ActionReturnValue = ActionReturnValue> = (
@@ -14,13 +15,13 @@ export interface Action<T extends ActionReturnValue = ActionReturnValue> {
   _mthd?: string;
 }
 export type ActionState<T> =
-  | { state: "idle"; data: null; error: null }
-  | { state: "waiting"; data: null; error: null }
-  | { state: "ok"; data: T; error: null }
-  | { state: "error"; data: null; error: Error };
+  | { status: "idle"; data: null; error: null }
+  | { status: "waiting"; data: null; error: null }
+  | { status: "ok"; data: T; error: null }
+  | { status: "error"; data: null; error: Error };
 export type ActionHandler<T extends ActionReturnValue = ActionReturnValue> = {
   ref: string;
-  state: ActionState<T>;
+  state: Ref<ActionState<T>>;
   method: string;
   submit(data: FormData): Promise<void>;
 };

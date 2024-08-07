@@ -1,7 +1,7 @@
 {
-  "name": "@biliblitz/vite-plugin-workers",
+  "name": "@biliblitz/adapter-static",
   "version": "0.0.1",
-  "description": "A blitzing minimal backend-framework for Preact (Vite plugin for cloudflare workers)",
+  "description": "A blitzing minimal backend-framework for Preact (Vite plugin for static target)",
   "type": "module",
   "files": [
     "src",
@@ -21,7 +21,6 @@
     }
   },
   "scripts": {
-    "fmt": "prettier --write src",
     "build": "rm -rf dist && tsc --build && exbuild"
   },
   "license": "MIT",
@@ -33,6 +32,7 @@
     "vite": "^5"
   },
   "dependencies": {
-    "wrangler": "^3.68.0"
+    "hono": "^4.2.3",
+    "kolorist": "^1.8.0"
   }
 }

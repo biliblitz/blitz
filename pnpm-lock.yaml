@@ -38,12 +38,12 @@ importers:
         specifier: ^6.4.2
         version: 6.5.5(preact@10.22.1)
     devDependencies:
+      "@biliblitz/adapter-nodejs":
+        specifier: workspace:^
+        version: link:../../packages/adapter-nodejs
       "@biliblitz/vite":
         specifier: workspace:^
         version: link:../../packages/vite
-      "@biliblitz/vite-plugin-nodejs":
-        specifier: workspace:^
-        version: link:../../packages/vite-plugin-nodejs
       "@preact/preset-vite":
         specifier: ^2.8.2
         version: 2.8.2(@babel/core@7.24.4)(preact@10.22.1)(vite@5.3.4(@types/node@20.14.11))
@@ -78,12 +78,12 @@ importers:
         specifier: ^6.4.2
         version: 6.5.5(preact@10.22.1)
     devDependencies:
+      "@biliblitz/adapter-static":
+        specifier: workspace:^
+        version: link:../../packages/adapter-static
       "@biliblitz/vite":
         specifier: workspace:^
         version: link:../../packages/vite
-      "@biliblitz/vite-plugin-static":
-        specifier: workspace:^
-        version: link:../../packages/vite-plugin-static
       "@preact/preset-vite":
         specifier: ^2.8.2
         version: 2.8.2(@babel/core@7.24.4)(preact@10.22.1)(vite@5.3.4(@types/node@20.14.11))
@@ -118,12 +118,12 @@ importers:
         specifier: ^3.68.0
         version: 3.68.0(@cloudflare/workers-types@4.20240729.0)
     devDependencies:
+      "@biliblitz/adapter-workers":
+        specifier: workspace:^
+        version: link:../../packages/adapter-workers
       "@biliblitz/vite":
         specifier: workspace:^
         version: link:../../packages/vite
-      "@biliblitz/vite-plugin-workers":
-        specifier: workspace:^
-        version: link:../../packages/vite-plugin-workers
       "@cloudflare/workers-types":
         specifier: ^4.20240729.0
         version: 4.20240729.0
@@ -142,52 +142,6 @@ importers:
       vite-tsconfig-paths:
         specifier: ^4.3.2
         version: 4.3.2(typescript@5.5.4)(vite@5.3.4(@types/node@20.14.11))
-
-  examples/basic:
-    dependencies:
-      "@biliblitz/blitz":
-        specifier: workspace:^
-        version: link:../../packages/blitz
-      "@hono/node-server":
-        specifier: ^1.10.1
-        version: 1.12.0
-      "@preact/preset-vite":
-        specifier: ^2.8.2
-        version: 2.8.2(@babel/core@7.24.4)(preact@10.22.1)(vite@5.3.4(@types/node@20.14.11))
-      "@preact/signals":
-        specifier: ^1.2.3
-        version: 1.2.3(preact@10.22.1)
-      hono:
-        specifier: ^4.2.3
-        version: 4.5.0
-      preact:
-        specifier: ^10.20.2
-        version: 10.22.1
-      preact-render-to-string:
-        specifier: ^6.4.2
-        version: 6.5.5(preact@10.22.1)
-    devDependencies:
-      "@biliblitz/vite":
-        specifier: workspace:^
-        version: link:../../packages/vite
-      "@biliblitz/vite-plugin-mdx":
-        specifier: workspace:^
-        version: link:../../packages/vite-plugin-mdx
-      "@biliblitz/vite-plugin-static":
-        specifier: workspace:^
-        version: link:../../packages/vite-plugin-static
-      "@types/node":
-        specifier: ^20.12.7
-        version: 20.14.11
-      typescript:
-        specifier: ^5.4.4
-        version: 5.5.3
-      vite:
-        specifier: ^5.2.8
-        version: 5.3.4(@types/node@20.14.11)
-      vite-tsconfig-paths:
-        specifier: ^4.3.2
-        version: 4.3.2(typescript@5.5.3)(vite@5.3.4(@types/node@20.14.11))
 
   examples/minimal:
     dependencies:
@@ -220,17 +174,79 @@ importers:
         specifier: ^4.3.2
         version: 4.3.2(typescript@5.5.3)(vite@5.3.4(@types/node@20.14.11))
 
+  packages/adapter-nodejs:
+    devDependencies:
+      "@swwind/exbuild":
+        specifier: ^1.0.8
+        version: 1.0.8
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+      vite:
+        specifier: ^5
+        version: 5.3.4(@types/node@20.14.11)
+
+  packages/adapter-static:
+    dependencies:
+      hono:
+        specifier: ^4.2.3
+        version: 4.5.0
+      kolorist:
+        specifier: ^1.8.0
+        version: 1.8.0
+    devDependencies:
+      "@biliblitz/blitz":
+        specifier: ^0.2.0
+        version: link:../blitz
+      "@swwind/exbuild":
+        specifier: ^1.0.8
+        version: 1.0.8
+      "@types/node":
+        specifier: ^20.14.11
+        version: 20.14.11
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+      vite:
+        specifier: ^5
+        version: 5.3.4(@types/node@20.14.11)
+
+  packages/adapter-workers:
+    dependencies:
+      wrangler:
+        specifier: ^3.68.0
+        version: 3.68.0(@cloudflare/workers-types@4.20240729.0)
+    devDependencies:
+      "@biliblitz/blitz":
+        specifier: ^0.2.0
+        version: link:../blitz
+      "@swwind/exbuild":
+        specifier: ^1.0.8
+        version: 1.0.8
+      "@types/node":
+        specifier: ^20.14.11
+        version: 20.14.11
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+      vite:
+        specifier: ^5
+        version: 5.3.4(@types/node@20.14.11)
+
   packages/blitz:
     dependencies:
+      "@unhead/vue":
+        specifier: ^1.9.16
+        version: 1.9.16(vue@3.4.35(typescript@5.5.3))
       hono:
         specifier: ^4
         version: 4.5.0
-      preact:
-        specifier: ^10
-        version: 10.22.1
-      preact-render-to-string:
-        specifier: ^6
-        version: 6.5.5(preact@10.22.1)
+      vue:
+        specifier: ^3
+        version: 3.4.35(typescript@5.5.3)
+      vue-router:
+        specifier: ^4.4.3
+        version: 4.4.3(vue@3.4.35(typescript@5.5.3))
     devDependencies:
       "@swwind/exbuild":
         specifier: ^1.0.8
@@ -288,65 +304,6 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
     devDependencies:
-      "@swwind/exbuild":
-        specifier: ^1.0.8
-        version: 1.0.8
-      "@types/node":
-        specifier: ^20.14.11
-        version: 20.14.11
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-      vite:
-        specifier: ^5
-        version: 5.3.4(@types/node@20.14.11)
-
-  packages/vite-plugin-nodejs:
-    devDependencies:
-      "@swwind/exbuild":
-        specifier: ^1.0.8
-        version: 1.0.8
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-      vite:
-        specifier: ^5
-        version: 5.3.4(@types/node@20.14.11)
-
-  packages/vite-plugin-static:
-    dependencies:
-      hono:
-        specifier: ^4.2.3
-        version: 4.5.0
-      kolorist:
-        specifier: ^1.8.0
-        version: 1.8.0
-    devDependencies:
-      "@biliblitz/blitz":
-        specifier: ^0.2.0
-        version: link:../blitz
-      "@swwind/exbuild":
-        specifier: ^1.0.8
-        version: 1.0.8
-      "@types/node":
-        specifier: ^20.14.11
-        version: 20.14.11
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-      vite:
-        specifier: ^5
-        version: 5.3.4(@types/node@20.14.11)
-
-  packages/vite-plugin-workers:
-    dependencies:
-      wrangler:
-        specifier: ^3.68.0
-        version: 3.68.0(@cloudflare/workers-types@4.20240729.0)
-    devDependencies:
-      "@biliblitz/blitz":
-        specifier: ^0.2.0
-        version: link:../blitz
       "@swwind/exbuild":
         specifier: ^1.0.8
         version: 1.0.8
@@ -1302,20 +1259,6 @@ packages:
       "@babel/core": 7.x
       vite: 2.x || 3.x || 4.x || 5.x
 
-  "@preact/signals-core@1.6.0":
-    resolution:
-      {
-        integrity: sha512-O/XGxwP85h1F7+ouqTMOIZ3+V1whfaV9ToIVcuyGriD4JkSD00cQo54BKdqjvBJxbenvp7ynfqRHEwI6e+NIhw==,
-      }
-
-  "@preact/signals@1.2.3":
-    resolution:
-      {
-        integrity: sha512-M2DXse3Wi8HwjI1d2vQWOLJ3lHogvqTsJYvl4ofXRXgMFQzJ7kmlZvlt5i8x5S5VwgZu0ghru4HkLqOoFfU2JQ==,
-      }
-    peerDependencies:
-      preact: 10.x
-
   "@prefresh/babel-plugin@0.5.1":
     resolution:
       {
@@ -1823,6 +1766,32 @@ packages:
         integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==,
       }
 
+  "@unhead/dom@1.9.16":
+    resolution:
+      {
+        integrity: sha512-aZIAnnc89Csi1vV4mtlHYI765B7m1yuaXUuQiYHwr6glE9FLyy2X87CzEci4yPH/YbkKm0bGQRfcxXq6Eq0W7g==,
+      }
+
+  "@unhead/schema@1.9.16":
+    resolution:
+      {
+        integrity: sha512-V2BshX+I6D2wN4ys5so8RQDUgsggsxW9FVBiuQi4h8oPWtHclogxzDiHa5BH2TgvNIoUxLnLYNAShMGipmVuUw==,
+      }
+
+  "@unhead/shared@1.9.16":
+    resolution:
+      {
+        integrity: sha512-pfJnArULCY+GBr7OtYyyxihRiQLkT31TpyK6nUKIwyax4oNOGyhNfk0RFzNq16BwLg60d1lrc5bd5mZGbfClMA==,
+      }
+
+  "@unhead/vue@1.9.16":
+    resolution:
+      {
+        integrity: sha512-kpMWWwm8cOwo4gw4An43pz30l2CqNtmJpX5Xsu79rwf6Viq8jHAjk6BGqyKy220M2bpa0Va4fnR532SgGO1YgQ==,
+      }
+    peerDependencies:
+      vue: ">=2.7 || >=3"
+
   "@vitejs/plugin-vue@5.1.2":
     resolution:
       {
@@ -1855,6 +1824,12 @@ packages:
     resolution:
       {
         integrity: sha512-7iynB+0KB1AAJKk/biENTV5cRGHRdbdaD7Mx3nWcm1W8bVD6QmnH3B4AHhQQ1qZHhqFwzEzMwiytXm3PX1e60A==,
+      }
+
+  "@vue/devtools-api@6.6.3":
+    resolution:
+      {
+        integrity: sha512-0MiMsFma/HqA6g3KLKn+AGpL1kgKhFWszC9U29NfpWK5LE7bjeXxySWJrOJ77hBz+TBrBQ7o4QJqbPbqbs8rJw==,
       }
 
   "@vue/devtools-api@7.3.7":
@@ -3552,6 +3527,12 @@ packages:
         integrity: sha512-u3TfBX02WzbHTpaEfWEKwDijDSFAHcgXkayUZ+MVDrjhLFvgAJzFGTSTmwlEhwWi2exyRQey23ah9wELMM6etg==,
       }
 
+  unhead@1.9.16:
+    resolution:
+      {
+        integrity: sha512-FOoXkuRNDwt7PUaNE0LXNCb6RCz4vTpkGymz4tJ8rcaG5uUJ0lxGK536hzCFwFw3Xkp3n+tkt2yCcbAZE/FOvA==,
+      }
+
   unified@11.0.5:
     resolution:
       {
@@ -3698,6 +3679,14 @@ packages:
       "@vue/composition-api":
         optional: true
 
+  vue-router@4.4.3:
+    resolution:
+      {
+        integrity: sha512-sv6wmNKx2j3aqJQDMxLFzs/u/mjA9Z5LCgy6BE0f7yFWMjrPLnS/sPNn8ARY/FXw6byV18EFutn5lTO6+UsV5A==,
+      }
+    peerDependencies:
+      vue: ^3.2.0
+
   vue@3.4.35:
     resolution:
       {
@@ -3784,6 +3773,12 @@ packages:
     resolution:
       {
         integrity: sha512-qSFXUk3UZBLfggAW3dJKg0BMblG5biqSF8M34E06o5CSsZtH92u9Hqmj2RzGiHDi64fhe83+4tENFP2DB6t6ZA==,
+      }
+
+  zhead@2.2.4:
+    resolution:
+      {
+        integrity: sha512-8F0OI5dpWIA5IGG5NHUg9staDwz/ZPxZtvGVf01j7vHqSyZ0raHY+78atOVxRqb73AotX22uV1pXt3gYSstGag==,
       }
 
   zod@3.23.8:
@@ -4343,13 +4338,6 @@ snapshots:
       - preact
       - supports-color
 
-  "@preact/signals-core@1.6.0": {}
-
-  "@preact/signals@1.2.3(preact@10.22.1)":
-    dependencies:
-      "@preact/signals-core": 1.6.0
-      preact: 10.22.1
-
   "@prefresh/babel-plugin@0.5.1": {}
 
   "@prefresh/core@1.5.2(preact@10.22.1)":
@@ -4589,6 +4577,28 @@ snapshots:
 
   "@ungap/structured-clone@1.2.0": {}
 
+  "@unhead/dom@1.9.16":
+    dependencies:
+      "@unhead/schema": 1.9.16
+      "@unhead/shared": 1.9.16
+
+  "@unhead/schema@1.9.16":
+    dependencies:
+      hookable: 5.5.3
+      zhead: 2.2.4
+
+  "@unhead/shared@1.9.16":
+    dependencies:
+      "@unhead/schema": 1.9.16
+
+  "@unhead/vue@1.9.16(vue@3.4.35(typescript@5.5.3))":
+    dependencies:
+      "@unhead/schema": 1.9.16
+      "@unhead/shared": 1.9.16
+      hookable: 5.5.3
+      unhead: 1.9.16
+      vue: 3.4.35(typescript@5.5.3)
+
   "@vitejs/plugin-vue@5.1.2(vite@5.3.4(@types/node@20.14.11))(vue@3.4.35(typescript@5.5.4))":
     dependencies:
       vite: 5.3.4(@types/node@20.14.11)
@@ -4624,6 +4634,8 @@ snapshots:
       "@vue/compiler-dom": 3.4.35
       "@vue/shared": 3.4.35
 
+  "@vue/devtools-api@6.6.3": {}
+
   "@vue/devtools-api@7.3.7":
     dependencies:
       "@vue/devtools-kit": 7.3.7
@@ -4657,6 +4669,12 @@ snapshots:
       "@vue/runtime-core": 3.4.35
       "@vue/shared": 3.4.35
       csstype: 3.1.3
+
+  "@vue/server-renderer@3.4.35(vue@3.4.35(typescript@5.5.3))":
+    dependencies:
+      "@vue/compiler-ssr": 3.4.35
+      "@vue/shared": 3.4.35
+      vue: 3.4.35(typescript@5.5.3)
 
   "@vue/server-renderer@3.4.35(vue@3.4.35(typescript@5.5.4))":
     dependencies:
@@ -5796,6 +5814,13 @@ snapshots:
       pathe: 1.1.2
       ufo: 1.5.4
 
+  unhead@1.9.16:
+    dependencies:
+      "@unhead/dom": 1.9.16
+      "@unhead/schema": 1.9.16
+      "@unhead/shared": 1.9.16
+      hookable: 5.5.3
+
   unified@11.0.5:
     dependencies:
       "@types/unist": 3.0.2
@@ -5942,6 +5967,21 @@ snapshots:
     dependencies:
       vue: 3.4.35(typescript@5.5.4)
 
+  vue-router@4.4.3(vue@3.4.35(typescript@5.5.3)):
+    dependencies:
+      "@vue/devtools-api": 6.6.3
+      vue: 3.4.35(typescript@5.5.3)
+
+  vue@3.4.35(typescript@5.5.3):
+    dependencies:
+      "@vue/compiler-dom": 3.4.35
+      "@vue/compiler-sfc": 3.4.35
+      "@vue/runtime-dom": 3.4.35
+      "@vue/server-renderer": 3.4.35(vue@3.4.35(typescript@5.5.3))
+      "@vue/shared": 3.4.35
+    optionalDependencies:
+      typescript: 5.5.3
+
   vue@3.4.35(typescript@5.5.4):
     dependencies:
       "@vue/compiler-dom": 3.4.35
@@ -6006,6 +6046,8 @@ snapshots:
       cookie: 0.5.0
       mustache: 4.2.0
       stacktracey: 2.1.8
+
+  zhead@2.2.4: {}
 
   zod@3.23.8: {}
 

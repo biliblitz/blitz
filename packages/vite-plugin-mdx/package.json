@@ -21,7 +21,6 @@
     }
   },
   "scripts": {
-    "fmt": "prettier --write src",
     "build": "rm -rf dist && tsc --build && exbuild"
   },
   "license": "MIT",

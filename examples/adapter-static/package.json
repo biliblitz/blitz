@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@biliblitz/vite": "workspace:^",
-    "@biliblitz/vite-plugin-static": "workspace:^",
+    "@biliblitz/adapter-static": "workspace:^",
     "@preact/preset-vite": "^2.8.2",
     "@types/node": "^20.12.7",
     "typescript": "^5.4.4",
