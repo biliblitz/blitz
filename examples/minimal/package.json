@@ -11,13 +11,15 @@
   "license": "MIT",
   "dependencies": {
     "@biliblitz/blitz": "workspace:^",
-    "preact": "^10.20.2",
-    "preact-render-to-string": "^6.4.2"
+    "@unhead/vue": "^1.9.16",
+    "vue": "^3",
+    "vue-router": "^4.4.3"
   },
   "devDependencies": {
     "@biliblitz/vite": "workspace:^",
-    "@preact/preset-vite": "^2.8.2",
     "@types/node": "^20.12.7",
+    "@unhead/addons": "^1.9.16",
+    "@vitejs/plugin-vue": "^5.1.2",
     "typescript": "^5.4.4",
     "vite": "^5.2.8",
     "vite-tsconfig-paths": "^4.3.2"

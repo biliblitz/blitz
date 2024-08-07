@@ -5,17 +5,17 @@ export type StaticEnv = {
 export type StaticFunction = (env: StaticEnv) => string[] | Promise<string[]>;
 
 /**
- * Static params enumerator for Static Site Generate (SSG).
+ * Static params enumerator for SSG (Static Site Generate).
  *
- * This won't run except SSG rendering.
+ * This won't run without using static adapter.
  *
  * @example
  *
  * ```js
- * // /[param]/static.ts
- * export default static$(() => {
- *   return ["alice", "bob"];
- * });
+ * // /[param]/layout.ts
+ * export const paths = static$(() => {
+ *   return ['one', 'another'];
+ * })
  * ```
  */
 export function static$(fn: StaticFunction) {

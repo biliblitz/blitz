@@ -3,13 +3,19 @@ import type { Project, ProjectStructure } from "./scanner.ts";
 import type { AnalyzeResult } from "./analyze.ts";
 import type { Graph } from "@biliblitz/blitz/server";
 import removeExportsWasm from "@swwind/remove-exports";
+import { generateRoutes } from "./routes.ts";
+import { s } from "./utils/algorithms.ts";
 
-export function toClientManifestCode(structure: ProjectStructure) {
+export function toClientManifestCode(
+  structure: ProjectStructure,
+  project: Project,
+  base: string,
+) {
   return [
     // /** @see https://vitejs.dev/guide/backend-integration.html */
     // `import "vite/modulepreload-polyfill";`,
-    `const components = new Array(${structure.componentPaths.length});`,
-    `export const manifest = { components };`,
+    `const routes = ${generateRoutes(structure, project, base, (i) => `() => import(${s(structure.componentPaths[i])})`)};`,
+    `export const manifest = { routes };`,
   ].join("\n");
 }
 
@@ -19,7 +25,7 @@ export function toServerManifestCode(
   graph: Graph,
   base: string,
 ) {
-  const { actions, loaders, middlewares, metas, components } = project;
+  const { actions, loaders, middlewares, components } = project;
 
   return [
     ...actions.map(
@@ -33,11 +39,6 @@ export function toServerManifestCode(
         `import { ${loaders
           .map(({ name }, j) => `${name} as l${i}$${j}`)
           .join(", ")} } from "${structure.componentPaths[i]}";`,
-    ),
-    ...metas.map(
-      (has, i) =>
-        has &&
-        `import { meta as t${i} } from "${structure.componentPaths[i]}";`,
     ),
     ...components.map(
       (has, i) => has && `import c${i} from "${structure.componentPaths[i]}";`,
@@ -57,25 +58,21 @@ export function toServerManifestCode(
     ),
 
     // export
-    `const base = ${JSON.stringify(base)};`,
-    `const graph = ${JSON.stringify(graph)};`,
-    `const metas = [${structure.componentPaths
-      .map((_, i) => (metas[i] ? `t${i}` : "null"))
-      .join(", ")}];`,
+    `const base = ${s(base)};`,
+    `const entry = ${s(graph.assets[graph.entry[0]])};`,
+    `const routes = ${generateRoutes(structure, project, base, (i) => `c${i}`)};`,
     `const actions = [${actions
       .map((a, i) => `[${a.map((_, j) => `a${i}$${j}`).join(", ")}]`)
       .join(", ")}];`,
     `const loaders = [${loaders
       .map((l, i) => `[${l.map((_, j) => `l${i}$${j}`).join(", ")}]`)
       .join(", ")}];`,
-    `const directory = ${JSON.stringify(structure.directory)};`,
-    `const components = [${components
-      .map((has, i) => (has ? `c${i}` : "null"))
-      .join(", ")}];`,
+    `const directory = ${s(structure.directory)};`,
     `const middlewares = [${middlewares
       .map((has, i) => (has ? `m${i}` : "null"))
       .join(", ")}];`,
-    `export const manifest = { base, graph, metas, actions, loaders, directory, components, middlewares };`,
+
+    `export const manifest = { base, entry, routes, actions, loaders, directory, middlewares };`,
   ]
     .map((x) => x || "")
     .join("\n");
@@ -109,22 +106,16 @@ export async function removeClientServerExports(
 
   return {
     code: [
-      `import { useAction as __injectAction, useLoader as __injectLoader } from "@biliblitz/blitz";`,
+      `import { useAction as _useAction, useLoader as _useLoader } from "@biliblitz/blitz";`,
       ...result.action.map(
         (x) =>
-          `export const ${x.name} = () => __injectAction("${x.ref}", "${x.method}");`,
+          `export const ${x.name} = () => _useAction("${x.ref}", "${x.method}");`,
       ),
       ...result.loader.map(
-        (x) => `export const ${x.name} = () => __injectLoader("${x.ref}");`,
+        (x) => `export const ${x.name} = () => _useLoader("${x.ref}");`,
       ),
       result.component ? "" : "export default null;",
       code,
     ].join("\n"),
   };
-}
-
-export function toAssetsManifestCode(graph: Graph, base: string) {
-  return `export default [${graph.assets
-    .map((asset) => JSON.stringify(base + asset))
-    .join(", ")}];`;
 }

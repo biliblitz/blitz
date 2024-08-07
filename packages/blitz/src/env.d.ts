@@ -5,8 +5,3 @@ declare module "blitz:manifest/server" {
 declare module "blitz:manifest/client" {
   export const manifest: import("./server/build.ts").ClientManifest;
 }
-
-declare module "blitz:manifest/assets" {
-  const assets: string[];
-  export default assets;
-}

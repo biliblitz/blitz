@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import type { Directory } from "./build.ts";
 import type { ActionReturnValue } from "./action.ts";
-import type { Meta } from "./meta.ts";
 import type { LoaderReturnValue } from "./loader.ts";
 import { HTTPException } from "hono/http-exception";
 
@@ -12,25 +11,16 @@ export type ErrorResponse = { ok: "error"; error: string; status: number };
 export type RedirectResponse = { ok: "redirect"; redirect: string };
 
 export type ActionResponse<T = ActionReturnValue> =
-  | {
-      ok: "action";
-      action: T;
-    }
+  | { ok: "action"; action: T }
   | ErrorResponse
   | RedirectResponse;
 
 export type LoaderResponse =
-  | {
-      ok: "loader";
-      meta: Meta;
-      params: Params;
-      loaders: LoaderStore;
-      components: number[];
-    }
+  | { ok: "loader"; loaders: LoaderStore }
   | ErrorResponse
   | RedirectResponse;
 
-export function createRouter({ route, children }: Directory) {
+export function createHonoRouter({ route, children }: Directory) {
   const app = new Hono();
 
   // add layer
@@ -76,10 +66,7 @@ export function createRouter({ route, children }: Directory) {
       await event.runLayer(index);
       return c.json<LoaderResponse>({
         ok: "loader",
-        meta: event.metas,
-        params: event.params,
         loaders: event.loaders,
-        components: event.components,
       });
     });
 
@@ -108,10 +95,7 @@ export function createRouter({ route, children }: Directory) {
       }
 
       const res = await event.runAction(action);
-      return c.json<ActionResponse>({
-        ok: "action",
-        action: res,
-      });
+      return c.json<ActionResponse>({ ok: "action", action: res });
     });
   }
 
@@ -121,7 +105,7 @@ export function createRouter({ route, children }: Directory) {
   const matches = [] as [string, Directory][];
 
   for (const [dirname, child] of children) {
-    if (dirname === "[...]") {
+    if (dirname.startsWith("[[") && dirname.endsWith("]]")) {
       catches.push([dirname, child]);
     } else if (dirname.startsWith("[") && dirname.endsWith("]")) {
       params.push([dirname, child]);
@@ -133,18 +117,18 @@ export function createRouter({ route, children }: Directory) {
   }
 
   for (const [dirname, child] of matches) {
-    app.route(`/${dirname}/`, createRouter(child));
+    app.route(`/${dirname}/`, createHonoRouter(child));
   }
   for (const [_, child] of fakes) {
-    app.route("/", createRouter(child));
+    app.route("/", createHonoRouter(child));
   }
   for (const [dirname, child] of params) {
     const name = dirname.slice(1, -1);
-    app.route(`/:${name}/`, createRouter(child));
+    app.route(`/:${name}/`, createHonoRouter(child));
   }
   // FIXME: untested
   for (const [_, child] of catches) {
-    app.route("/:_{^.+$}/", createRouter(child));
+    app.route("/:_{^.+$}/", createHonoRouter(child));
   }
 
   return app;

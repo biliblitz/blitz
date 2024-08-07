@@ -1,13 +1,11 @@
 import type { Loader, LoaderReturnValue } from "./loader.ts";
 import type { Context, Next } from "hono";
-import { type MetaFunction, createDefaultMeta } from "./meta.ts";
 import type { ServerManifest } from "./build.ts";
 import { createServerRuntime } from "../client/runtime.tsx";
 import type { Action, ActionReturnValue } from "./action.ts";
 
 export type Layer = {
   id: number;
-  meta: MetaFunction | null;
   loaders: Loader[];
 };
 
@@ -47,27 +45,6 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
 
     get loaders() {
       return Array.from(loaderStore);
-    },
-
-    get metas() {
-      const meta = createDefaultMeta();
-      for (const id of layers.toReversed()) {
-        const metafn = manifest.metas[id];
-        if (metafn) metafn(context, meta);
-      }
-      return meta;
-    },
-
-    get components() {
-      return layers.filter((x) => manifest.components[x] != null);
-    },
-
-    get params() {
-      return Object.entries(context.req.param());
-    },
-
-    get url() {
-      return new URL(context.req.url);
     },
 
     get runtime() {

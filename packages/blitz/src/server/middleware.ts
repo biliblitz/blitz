@@ -33,7 +33,7 @@ export interface Middleware {
  *     throw new RedirectException(new URL("/login", c.req.url));
  *   await next();
  * });
- *
+ * // you can directly use it here
  * export const useMyData = loader$(verifyLogin, async (c) => {
  *   // this runs after virifyLogin
  *   return { verified: true };
@@ -67,17 +67,8 @@ export function middleware$(...middlewares: Middleware[]): Middleware {
     const nuxt = async () => {
       const middleware = queue.shift();
       if (!middleware) await next();
-      else await middleware(ctx, once(nuxt));
+      else await middleware(ctx, nuxt);
     };
     await nuxt();
-  };
-}
-
-function once<T>(fn: () => T): () => T {
-  let called = false;
-  return () => {
-    if (called) throw new Error("Cannot call next function twice.");
-    called = true;
-    return fn();
   };
 }

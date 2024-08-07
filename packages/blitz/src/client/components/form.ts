@@ -1,4 +1,4 @@
-import { defineComponent, watch } from "vue";
+import { defineComponent, h, watch } from "vue";
 import type { ActionHandler, ActionReturnValue } from "../../server/action.ts";
 
 export const Form = defineComponent({
@@ -19,15 +19,16 @@ export const Form = defineComponent({
       props.action.submit(formData);
     };
 
-    return () => (
-      <form
-        action={`?_action=${props.action.ref}`}
-        method="POST"
-        onSubmit={submit}
-      >
-        {slots.default && slots.default()}
-      </form>
-    );
+    return () =>
+      h(
+        "form",
+        {
+          action: `?_action=${props.action.ref}`,
+          method: "POST",
+          onSubmit: submit,
+        },
+        slots.default,
+      );
   },
 });
 

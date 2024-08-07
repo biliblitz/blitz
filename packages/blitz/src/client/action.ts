@@ -3,10 +3,11 @@ import type {
   ActionReturnValue,
   ActionState,
 } from "../server/action.ts";
-import { useNavigate, useRender } from "./navigate.ts";
-import { useState } from "preact/hooks";
 import { fetchLoaders } from "./loader.ts";
 import type { ActionResponse } from "../server/router.ts";
+import { ref as _ref, type Ref } from "vue";
+import { useRouter } from "vue-router";
+import { useRuntime } from "./runtime.tsx";
 
 export async function fetchAction<T>(
   ref: string,
@@ -28,45 +29,44 @@ export function useAction<T extends ActionReturnValue>(
   ref: string,
   method: string,
 ): ActionHandler<T> {
-  const render = useRender();
-  const navigate = useNavigate();
-
-  const [state, setState] = useState<ActionState<T>>({
-    state: "idle",
+  const router = useRouter();
+  const runtime = useRuntime();
+  const state = _ref<ActionState<T>>({
+    status: "idle",
     data: null,
     error: null,
-  });
+  }) as Ref<ActionState<T>>;
 
   const submit = async (formData: FormData) => {
-    setState(() => ({ state: "waiting", data: null, error: null }));
+    state.value = { status: "waiting", data: null, error: null };
 
     try {
       const resp = await fetchAction<T>(ref, method, formData);
 
       if (resp.ok === "action") {
-        setState({ state: "ok", data: resp.action, error: null });
+        state.value = { status: "ok", data: resp.action, error: null };
 
         const data = await fetchLoaders(location.href);
 
         if (data.ok === "loader") {
-          await render(data.meta, data.params, data.loaders, data.components);
+          runtime.value = { loaders: data.loaders };
         } else if (data.ok === "redirect") {
-          await navigate(data.redirect);
+          await router.push(data.redirect);
         } else if (data.ok === "error") {
           throw new Error(data.error);
         } else {
           throw new Error("Invalid Response");
         }
       } else if (resp.ok === "redirect") {
-        await navigate(resp.redirect);
+        await router.push(resp.redirect);
       } else if (resp.ok === "error") {
         throw new Error(resp.error);
       } else {
         throw new Error("Invalid Response");
       }
     } catch (e) {
-      const error = e instanceof Error ? e : new Error(String(e));
-      setState({ state: "error", data: null, error });
+      const error = e instanceof Error ? e : new Error(String(e), { cause: e });
+      state.value = { status: "error", data: null, error };
     }
   };
 

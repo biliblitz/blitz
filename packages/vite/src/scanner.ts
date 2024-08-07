@@ -1,6 +1,6 @@
 import { join, resolve } from "node:path";
 import { readdir, readFile, stat } from "node:fs/promises";
-import { isMdx } from "./utils/ext.ts";
+import { isMdx, isVue } from "./utils/ext.ts";
 import { parse } from "@swc/core";
 import { analyze, type AnalyzeResult } from "./analyze.ts";
 import type { Directory, Route } from "@biliblitz/blitz/server";
@@ -11,11 +11,11 @@ async function analyzeCode(code: string, index: number) {
 }
 
 const isIndex = (filename: string) =>
-  /^index\.(?:[cm]?[jt]sx?|mdx?)$/i.test(filename);
-const isError = (filename: string) =>
-  /^error\.(?:[cm]?[jt]sx?|mdx?)$/i.test(filename);
+  /^index\.(?:[cm]?[jt]sx?|mdx?|vue)$/i.test(filename);
+// const isError = (filename: string) =>
+//   /^error\.(?:[cm]?[jt]sx?|mdx?|vue)$/i.test(filename);
 const isLayout = (filename: string) =>
-  /^layout\.(?:[cm]?[jt]sx?|mdx?)$/i.test(filename);
+  /^layout\.(?:[cm]?[jt]sx?|mdx?|vue)$/i.test(filename);
 
 export async function scanProjectStructure(entrance: string) {
   entrance = resolve(entrance);
@@ -83,6 +83,17 @@ export async function analyzeLayoutOrIndex(
       action: [],
       loader: [],
       meta: true,
+      component: true,
+      middleware: false,
+    };
+  }
+
+  // FIXME: finish scanner
+  if (isVue(filePath)) {
+    return {
+      action: [],
+      loader: [],
+      meta: false,
       component: true,
       middleware: false,
     };

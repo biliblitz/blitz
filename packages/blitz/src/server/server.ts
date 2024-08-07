@@ -1,20 +1,24 @@
 import {
+  RUNTIME_STATIC_SYMBOL,
+  RUNTIME_SYMBOL,
   type Runtime,
-  RuntimeProvider,
   type RuntimeStatic,
-} from "../client/runtime.ts";
+} from "../client/runtime.tsx";
 import type { ServerManifest } from "./build.ts";
 import {
   type ErrorResponse,
   type RedirectResponse,
-  createRouter,
+  createHonoRouter,
 } from "./router.ts";
 import { type FetchEvent, createFetchEvent } from "./event.ts";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { RedirectException } from "./exception.ts";
-import { render } from "preact-render-to-string";
-import type { VNode } from "preact";
+import { renderToString } from "vue/server-renderer";
+import { createSSRApp, ref, type Component } from "vue";
+import { createServerHead } from "@unhead/vue";
+import { renderSSRHead } from "@unhead/ssr";
+import { createMemoryHistory, createRouter } from "vue-router";
 
 export type ServerOptions = {
   manifest: ServerManifest;
@@ -29,17 +33,36 @@ declare module "hono" {
   }
 }
 
-export function createServer(vnode: VNode, { manifest }: ServerOptions) {
+export function createServer(App: Component, { manifest }: ServerOptions) {
   const app = new Hono();
 
   app.use(async (c, next) => {
     c.setRenderer(async (runtime, runtimeStatic) => {
-      const html = render(
-        <RuntimeProvider value={[runtime, runtimeStatic]}>
-          {vnode}
-        </RuntimeProvider>,
+      const app = createSSRApp(App);
+      const head = createServerHead();
+      const router = createRouter({
+        routes: manifest.routes,
+        history: createMemoryHistory(manifest.base),
+      });
+      router.replace(c.req.path);
+      app.use(head);
+      app.use(router);
+      app.provide(RUNTIME_SYMBOL, ref(runtime));
+      app.provide(RUNTIME_STATIC_SYMBOL, runtimeStatic);
+      const appHTML = await renderToString(app);
+      const payload = await renderSSRHead(head, { omitLineBreaks: true });
+
+      return c.html(
+        `<!DOCTYPE html>` +
+          `<html${payload.htmlAttrs}>` +
+          `<head>${payload.headTags}</head>` +
+          `<body${payload.bodyAttrs}>` +
+          `${payload.bodyTagsOpen}` +
+          `<div id="app">${appHTML}</div>` +
+          `${payload.bodyTags}` +
+          `</body>` +
+          `</html>`,
       );
-      return c.html("<!DOCTYPE html>" + html);
     });
     c.set("event", createFetchEvent(c, manifest));
 
@@ -57,7 +80,7 @@ export function createServer(vnode: VNode, { manifest }: ServerOptions) {
     await next();
   });
 
-  const route = createRouter(manifest.directory);
+  const route = createHonoRouter(manifest.directory);
   app.route("/", route);
 
   app.onError(async (err, c) => {

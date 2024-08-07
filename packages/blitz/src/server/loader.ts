@@ -1,6 +1,7 @@
 import type { Context } from "hono";
 import { useLoader } from "../client/loader.ts";
 import { middleware$, type Middleware } from "./middleware.ts";
+import type { ComputedRef } from "vue";
 
 export type LoaderReturnValue = {} | null;
 export type LoaderFunction<T extends LoaderReturnValue = LoaderReturnValue> = (
@@ -11,7 +12,7 @@ export interface Loader<T extends LoaderReturnValue = LoaderReturnValue> {
   _fn?: LoaderFunction<T>;
   _ref?: string;
 }
-export type LoaderHandler<T extends LoaderReturnValue> = T;
+export type LoaderHandler<T extends LoaderReturnValue> = ComputedRef<T>;
 
 /**
  * Perform data-query for frontend

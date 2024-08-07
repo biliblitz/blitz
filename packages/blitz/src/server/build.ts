@@ -1,23 +1,21 @@
-import type { MetaFunction } from "./meta.ts";
+import type { RouteRecord } from "vue-router";
 import type { Action } from "./action.ts";
 import type { Loader } from "./loader.ts";
 import type { Middleware } from "./middleware.ts";
-import type { ComponentType } from "preact";
 
 export type Graph = {
-  assets: string[];
   entry: number[];
+  assets: string[];
   components: number[][];
 };
 
 export interface ClientManifest {
-  components: (ComponentType | null)[];
+  routes: RouteRecord[];
 }
 
 export interface ServerManifest extends ClientManifest {
   base: string;
-  graph: Graph;
-  metas: (MetaFunction | null)[];
+  entry: string;
   actions: Action[][];
   loaders: Loader[][];
   directory: Directory;

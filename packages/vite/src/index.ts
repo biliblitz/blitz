@@ -1,11 +1,6 @@
 import type { Plugin, ResolvedConfig } from "vite";
 import { relative } from "node:path";
-import {
-  manifestAssets,
-  manifestClient,
-  manifestServer,
-  resolve,
-} from "./vmod.ts";
+import { manifestClient, manifestServer, resolve } from "./vmod.ts";
 import { getRequestListener } from "@hono/node-server";
 import {
   type Project,
@@ -15,12 +10,12 @@ import {
 } from "./scanner.ts";
 import {
   removeClientServerExports,
-  toAssetsManifestCode,
   toClientManifestCode,
   toServerManifestCode,
 } from "./manifest.ts";
 import { loadClientGraph, loadDevGraph } from "./graph.ts";
 import type { Hono } from "hono";
+import { isVue } from "./utils/ext.ts";
 
 export function blitz(): Plugin<{ env: any }> {
   const vmods = [manifestClient, manifestServer];
@@ -58,8 +53,6 @@ export function blitz(): Plugin<{ env: any }> {
           return resolve(manifestClient);
         case manifestServer:
           return resolve(manifestServer);
-        case manifestAssets:
-          return resolve(manifestAssets);
       }
     },
 
@@ -67,7 +60,8 @@ export function blitz(): Plugin<{ env: any }> {
       switch (id) {
         case resolve(manifestClient): {
           const structure = await getStructure();
-          return toClientManifestCode(structure);
+          const project = await getProject();
+          return toClientManifestCode(structure, project, resolvedConfig.base);
         }
 
         case resolve(manifestServer): {
@@ -84,15 +78,6 @@ export function blitz(): Plugin<{ env: any }> {
             resolvedConfig.base,
           );
         }
-
-        case resolve(manifestAssets): {
-          const structure = await getStructure();
-          const { entry, components } = getEntries(structure);
-          const graph = isDev
-            ? await loadDevGraph(entry, components)
-            : await loadClientGraph(entry, components);
-          return toAssetsManifestCode(graph, resolvedConfig.base);
-        }
       }
 
       return null;
@@ -105,7 +90,8 @@ export function blitz(): Plugin<{ env: any }> {
         const project = await getProject();
 
         const index = structure.componentPaths.indexOf(id);
-        if (index > -1) {
+        if (index > -1 && !isVue(id)) {
+          console.log("I am gonna remove something...", code, id);
           return await removeClientServerExports(code, project.raw[index]);
         }
       }

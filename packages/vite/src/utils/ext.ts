@@ -24,6 +24,10 @@ export function isMdx(filename: string) {
   return /\.mdx?$/.test(filename);
 }
 
+export function isVue(filename: string) {
+  return /\.vue$/.test(filename);
+}
+
 // export function isJsOrMdx(filename: string) {
 //   return isJs(filename) || isMdx(filename);
 // }
