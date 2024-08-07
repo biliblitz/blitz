@@ -1,3 +1,4 @@
+import { copyFile, cp, mkdir, stat, unlink } from "fs/promises";
 import type { Plugin } from "vite";
 import { getPlatformProxy } from "wrangler";
 
@@ -35,12 +36,24 @@ export function workersAdapter(): Plugin {
                 entryFileNames: "server.js",
                 assetFileNames: "build/assets/[hash].[ext]",
               },
+              external: ["__STATIC_CONTENT_MANIFEST"],
             },
+            copyPublicDir: false,
             minify: true,
           },
           ssr: { noExternal: true },
         };
       }
+    },
+
+    async closeBundle() {
+      await mkdir("./dist/workers/assets");
+      await cp("./dist/client/build", "./dist/workers/assets/build", {
+        recursive: true,
+      });
+      try {
+        await cp("./public", "./dist/workers/assets/", { recursive: true });
+      } catch {}
     },
   };
 }

@@ -28,9 +28,6 @@ importers:
       "@hono/node-server":
         specifier: ^1.10.1
         version: 1.12.0
-      "@preact/preset-vite":
-        specifier: ^2.8.2
-        version: 2.8.2(@babel/core@7.24.4)(preact@10.22.1)(vite@5.3.4(@types/node@20.14.11))
       hono:
         specifier: ^4.2.3
         version: 4.5.0
@@ -47,6 +44,9 @@ importers:
       "@biliblitz/vite-plugin-nodejs":
         specifier: workspace:^
         version: link:../../packages/vite-plugin-nodejs
+      "@preact/preset-vite":
+        specifier: ^2.8.2
+        version: 2.8.2(@babel/core@7.24.4)(preact@10.22.1)(vite@5.3.4(@types/node@20.14.11))
       "@types/node":
         specifier: ^20.12.7
         version: 20.14.11
@@ -105,12 +105,9 @@ importers:
       "@biliblitz/blitz":
         specifier: workspace:^
         version: link:../../packages/blitz
-      "@hono/node-server":
-        specifier: ^1.10.1
-        version: 1.12.0
-      hono:
-        specifier: ^4.2.3
-        version: 4.5.0
+      "@cloudflare/kv-asset-handler":
+        specifier: ^0.3.4
+        version: 0.3.4
       preact:
         specifier: ^10.20.2
         version: 10.22.1

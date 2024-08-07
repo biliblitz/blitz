@@ -13,6 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@biliblitz/blitz": "workspace:^",
+    "@cloudflare/kv-asset-handler": "^0.3.4",
     "preact": "^10.20.2",
     "preact-render-to-string": "^6.4.2",
     "wrangler": "^3.68.0"
