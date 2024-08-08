@@ -170,6 +170,49 @@ importers:
         specifier: ^2.0.29
         version: 2.0.29(typescript@5.5.4)
 
+  examples/mdx:
+    dependencies:
+      "@biliblitz/blitz":
+        specifier: workspace:^
+        version: link:../../packages/blitz
+      "@unhead/vue":
+        specifier: ^1.9.16
+        version: 1.9.16(vue@3.4.35(typescript@5.5.4))
+      vue:
+        specifier: ^3
+        version: 3.4.35(typescript@5.5.4)
+      vue-router:
+        specifier: ^4.4.3
+        version: 4.4.3(vue@3.4.35(typescript@5.5.4))
+    devDependencies:
+      "@biliblitz/vite":
+        specifier: workspace:^
+        version: link:../../packages/vite
+      "@biliblitz/vite-plugin-mdx":
+        specifier: workspace:^
+        version: link:../../packages/vite-plugin-mdx
+      "@types/node":
+        specifier: ^20.12.7
+        version: 20.14.11
+      "@unhead/addons":
+        specifier: ^1.9.16
+        version: 1.9.16(rollup@4.18.1)
+      "@vitejs/plugin-vue":
+        specifier: ^5.1.2
+        version: 5.1.2(vite@5.3.4(@types/node@20.14.11))(vue@3.4.35(typescript@5.5.4))
+      typescript:
+        specifier: ^5.4.4
+        version: 5.5.4
+      vite:
+        specifier: ^5.2.8
+        version: 5.3.4(@types/node@20.14.11)
+      vite-tsconfig-paths:
+        specifier: ^4.3.2
+        version: 4.3.2(typescript@5.5.4)(vite@5.3.4(@types/node@20.14.11))
+      vue-tsc:
+        specifier: ^2.0.29
+        version: 2.0.29(typescript@5.5.4)
+
   examples/minimal:
     dependencies:
       "@biliblitz/blitz":

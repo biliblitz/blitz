@@ -8,18 +8,19 @@ type FrontMatter = {
   description?: string;
 };
 
-const isMdx = (x: string) => /\.mdx?$/.test(x);
+const isMdx = (x: string) => /\.mdx?$/.test(x.split("?")[0]);
 
 export function blitzMdx(options?: CompileOptions): Plugin {
   options ??= {};
   options.jsxImportSource ??= "vue";
+  options.elementAttributeNameCase = "html";
 
   return {
     name: "blitz-mdx",
 
-    load(id) {
-      if (isMdx(id)) {
-        return id;
+    shouldTransformCachedModule(options) {
+      if (isMdx(options.id)) {
+        return false;
       }
     },
 
@@ -28,11 +29,43 @@ export function blitzMdx(options?: CompileOptions): Plugin {
         const source = new VFile(code);
 
         matter(source, { strip: true });
-        const frontmatter = source.data.matter || {};
+        const frontmatter = (source.data.matter || {}) as FrontMatter;
 
-        const mdx = await compile(source, options);
+        const mdx = String(
+          await compile(source, {
+            ...options,
+            format: id.endsWith("x") ? "mdx" : "md",
+            outputFormat: "program",
+          }),
+        ).split("\n");
 
-        return [toMetaCode(frontmatter), String(mdx)].join("\n");
+        // find inject point
+        const index = mdx.indexOf(
+          "export default function MDXContent(props = {}) {",
+        );
+        if (index > -1) {
+          mdx.length = index;
+          mdx.unshift(
+            `const title = ${JSON.stringify(frontmatter.title || "")};`,
+            `const description = ${JSON.stringify(frontmatter.description || "")};`,
+          );
+          mdx.push(
+            `import { h as _h } from "vue";`,
+            `import { useHead as _useHead } from "@unhead/vue";`,
+            `export default {`,
+            `  props: ["components"],`,
+            `  setup(props) {`,
+            `    _useHead({ title, description });`,
+            `    const { wrapper: MDXLayout } = props.components || {};`,
+            `    return MDXLayout`,
+            `      ? () => _h(MDXLayout, props, () => _createMdxContent(props))`,
+            `      : () => _createMdxContent(props);`,
+            `  },`,
+            `};`,
+          );
+        }
+
+        return { code: mdx.join("\n") };
       }
     },
   };

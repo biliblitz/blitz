@@ -83,7 +83,7 @@ export function blitz(): Plugin<{ env: any }> {
         const project = await getProject();
 
         const index = structure.componentPaths.indexOf(id);
-        if (index > -1 && !isVue(id)) {
+        if (index > -1) {
           console.log("I am gonna remove something...", code, id);
           return await removeClientServerExports(code, project.raw[index]);
         }
@@ -97,6 +97,7 @@ export function blitz(): Plugin<{ env: any }> {
       if (env.command === "build" && !config.build?.ssr) {
         return {
           build: {
+            target: "esnext",
             outDir: "dist/client",
             rollupOptions: {
               input: ["./src/entry.client.tsx"],
@@ -106,6 +107,7 @@ export function blitz(): Plugin<{ env: any }> {
                 assetFileNames: "build/assets/[hash].[ext]",
               },
             },
+            modulePreload: true,
             copyPublicDir: false,
           },
         };
