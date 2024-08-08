@@ -3,6 +3,8 @@ import { useHead } from "@unhead/vue";
 import { defineComponent, h } from "vue";
 import { RouterView } from "vue-router";
 
+import "./assets/style.css";
+
 export default defineComponent({
   setup() {
     useHead({

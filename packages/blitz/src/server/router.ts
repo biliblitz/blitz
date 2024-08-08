@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import type { Directory } from "./build.ts";
+import type { Directory } from "./types.ts";
 import type { ActionReturnValue } from "./action.ts";
 import type { LoaderReturnValue } from "./loader.ts";
 import { HTTPException } from "hono/http-exception";
@@ -58,7 +58,7 @@ export function createHonoRouter({ route, children }: Directory) {
     app.get("/", async (c) => {
       const event = c.get("event");
       await event.runLayer(index);
-      return await c.render(...event.runtime);
+      return await c.render(event.runtime);
     });
 
     app.get("/_data.json", async (c) => {

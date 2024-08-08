@@ -1,10 +1,9 @@
 import {
-  RUNTIME_STATIC_SYMBOL,
+  MANIFEST_SYMBOL,
   RUNTIME_SYMBOL,
   type Runtime,
-  type RuntimeStatic,
-} from "../client/runtime.tsx";
-import type { ServerManifest } from "./build.ts";
+} from "../client/runtime.ts";
+import type { ServerManifest } from "./types.ts";
 import {
   type ErrorResponse,
   type RedirectResponse,
@@ -26,7 +25,7 @@ export type ServerOptions = {
 
 declare module "hono" {
   interface ContextRenderer {
-    (runtime: Runtime, runtimeStatic: RuntimeStatic): Promise<Response>;
+    (runtime: Runtime): Promise<Response>;
   }
   interface ContextVariableMap {
     event: FetchEvent;
@@ -37,7 +36,7 @@ export function createServer(App: Component, { manifest }: ServerOptions) {
   const app = new Hono();
 
   app.use(async (c, next) => {
-    c.setRenderer(async (runtime, runtimeStatic) => {
+    c.setRenderer(async (runtime) => {
       const app = createSSRApp(App);
       const head = createServerHead();
       const router = createRouter({
@@ -48,9 +47,12 @@ export function createServer(App: Component, { manifest }: ServerOptions) {
       app.use(head);
       app.use(router);
       app.provide(RUNTIME_SYMBOL, ref(runtime));
-      app.provide(RUNTIME_STATIC_SYMBOL, runtimeStatic);
-      const appHTML = await renderToString(app);
+      app.provide(MANIFEST_SYMBOL, manifest);
+      await router.isReady();
+      const ctx = {};
+      const appHTML = await renderToString(app, ctx);
       const payload = await renderSSRHead(head, { omitLineBreaks: true });
+      console.log(ctx);
 
       return c.html(
         `<!DOCTYPE html>` +

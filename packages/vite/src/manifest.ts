@@ -9,13 +9,17 @@ import { s } from "./utils/algorithms.ts";
 export function toClientManifestCode(
   structure: ProjectStructure,
   project: Project,
+  graph: Graph,
   base: string,
 ) {
   return [
     // /** @see https://vitejs.dev/guide/backend-integration.html */
     // `import "vite/modulepreload-polyfill";`,
+    `const base = ${s(base)};`,
+    `const entry = ${s(graph.entry)};`,
+    `const styles = [${graph.styles.map((x) => s(x)).join(", ")}];`,
     `const routes = ${generateRoutes(structure, project, base, (i) => `() => import(${s(structure.componentPaths[i])})`)};`,
-    `export const manifest = { routes };`,
+    `export const manifest = { base, entry, styles, routes };`,
   ].join("\n");
 }
 
@@ -59,7 +63,8 @@ export function toServerManifestCode(
 
     // export
     `const base = ${s(base)};`,
-    `const entry = ${s(graph.assets[graph.entry[0]])};`,
+    `const entry = ${s(graph.entry)};`,
+    `const styles = [${graph.styles.map((x) => s(x)).join(", ")}];`,
     `const routes = ${generateRoutes(structure, project, base, (i) => `c${i}`)};`,
     `const actions = [${actions
       .map((a, i) => `[${a.map((_, j) => `a${i}$${j}`).join(", ")}]`)
@@ -72,7 +77,7 @@ export function toServerManifestCode(
       .map((has, i) => (has ? `m${i}` : "null"))
       .join(", ")}];`,
 
-    `export const manifest = { base, entry, routes, actions, loaders, directory, middlewares };`,
+    `export const manifest = { base, entry, styles, routes, actions, loaders, directory, middlewares };`,
   ]
     .map((x) => x || "")
     .join("\n");
@@ -85,7 +90,6 @@ export async function removeClientServerExports(
   const removes = [
     ...result.action.map((x) => x.name),
     ...result.loader.map((x) => x.name),
-    ...(result.meta ? ["meta"] : []),
     ...(result.middleware ? ["middleware"] : []),
   ];
 

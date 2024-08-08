@@ -1,5 +1,4 @@
 import type { Plugin, ResolvedConfig } from "vite";
-import { relative } from "node:path";
 import { manifestClient, manifestServer, resolve } from "./vmod.ts";
 import { getRequestListener } from "@hono/node-server";
 import {
@@ -31,15 +30,6 @@ export function blitz(): Plugin<{ env: any }> {
     return (project = project || (await resolveProject(await getStructure())));
   };
 
-  const getEntries = (structure: ProjectStructure) => {
-    const cwd = process.cwd();
-    const entry = "src/entry.client.tsx";
-    const components = structure.componentPaths.map((path) =>
-      relative(cwd, path),
-    );
-    return { entry, components };
-  };
-
   let resolvedConfig: ResolvedConfig;
   let api: { env: any } = { env: null };
 
@@ -60,16 +50,19 @@ export function blitz(): Plugin<{ env: any }> {
       switch (id) {
         case resolve(manifestClient): {
           const structure = await getStructure();
+          const graph = isDev ? await loadDevGraph() : await loadClientGraph();
           const project = await getProject();
-          return toClientManifestCode(structure, project, resolvedConfig.base);
+          return toClientManifestCode(
+            structure,
+            project,
+            graph,
+            resolvedConfig.base,
+          );
         }
 
         case resolve(manifestServer): {
           const structure = await getStructure();
-          const { entry, components } = getEntries(structure);
-          const graph = isDev
-            ? await loadDevGraph(entry, components)
-            : await loadClientGraph(entry, components);
+          const graph = isDev ? await loadDevGraph() : await loadClientGraph();
           const project = await getProject();
           return toServerManifestCode(
             structure,
@@ -102,20 +95,16 @@ export function blitz(): Plugin<{ env: any }> {
     async config(config, env) {
       // build client
       if (env.command === "build" && !config.build?.ssr) {
-        const structure = await getStructure();
-        const entries = getEntries(structure);
-
         return {
           build: {
             outDir: "dist/client",
             rollupOptions: {
-              input: [entries.entry, ...entries.components],
+              input: ["./src/entry.client.tsx"],
               output: {
                 entryFileNames: "build/p-[hash].js",
                 chunkFileNames: "build/p-[hash].js",
                 assetFileNames: "build/assets/[hash].[ext]",
               },
-              preserveEntrySignatures: "allow-extension",
             },
             copyPublicDir: false,
           },

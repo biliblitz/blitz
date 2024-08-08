@@ -4,18 +4,18 @@ import type { Loader } from "./loader.ts";
 import type { Middleware } from "./middleware.ts";
 
 export type Graph = {
-  entry: number[];
-  assets: string[];
-  components: number[][];
+  entry: string;
+  styles: string[];
 };
 
 export interface ClientManifest {
+  base: string;
+  entry: string;
+  styles: string[];
   routes: RouteRecord[];
 }
 
 export interface ServerManifest extends ClientManifest {
-  base: string;
-  entry: string;
   actions: Action[][];
   loaders: Loader[][];
   directory: Directory;

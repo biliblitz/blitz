@@ -1,24 +1,27 @@
-import { useServerHead } from "@unhead/vue";
+import { useHead, useServerHead } from "@unhead/vue";
 import type { LoaderStore } from "../server/router.ts";
-import { useRuntime, useRuntimeStatic } from "./runtime.tsx";
+import { useManifest, useRuntime } from "./runtime.ts";
 import { isDev } from "../utils/envs.ts";
 import { computed } from "vue";
 
 export type SerializedRuntime = {
-  base: string;
-  entry: string;
   loaders: LoaderStore;
 };
 
 export function useEntryPoint() {
   const runtime = useRuntime();
-  const runtimeStatic = useRuntimeStatic();
+  const manifest = useManifest();
+
+  useHead({
+    link: manifest.styles.map((href) => ({
+      rel: "stylesheet",
+      href: manifest.base + href,
+    })),
+  });
 
   useServerHead({
     script: computed(() => {
       const object: SerializedRuntime = {
-        base: runtimeStatic.base,
-        entry: runtimeStatic.entry,
         loaders: runtime.value.loaders,
       };
 
@@ -36,16 +39,14 @@ export function useEntryPoint() {
     // dev specific entry
     useServerHead({
       script: [
-        { type: "module", src: `${runtimeStatic.base}@vite/client` },
-        { type: "module", src: `${runtimeStatic.base}src/entry.client.tsx` },
+        { type: "module", src: manifest.base + "@vite/client" },
+        { type: "module", src: manifest.base + "src/entry.client.tsx" },
       ],
     });
   } else {
     // prod entry
     useServerHead({
-      script: [
-        { type: "module", src: runtimeStatic.base + runtimeStatic.entry },
-      ],
+      script: [{ type: "module", src: manifest.base + manifest.entry }],
     });
   }
 }

@@ -82,7 +82,6 @@ export async function analyzeLayoutOrIndex(
     return {
       action: [],
       loader: [],
-      meta: true,
       component: true,
       middleware: false,
     };
@@ -93,7 +92,6 @@ export async function analyzeLayoutOrIndex(
     return {
       action: [],
       loader: [],
-      meta: false,
       component: true,
       middleware: false,
     };
@@ -112,7 +110,6 @@ export async function resolveProject(structure: ProjectStructure) {
 
   return {
     raw: components,
-    metas: components.map((c) => c.meta),
     actions: components.map((c) => c.action),
     loaders: components.map((c) => c.loader),
     components: components.map((c) => c.component),

@@ -11,9 +11,8 @@ export type AnalyzeResult = {
     name: string;
     ref: string;
   }[];
-  meta: boolean;
-  middleware: boolean;
   component: boolean;
+  middleware: boolean;
 };
 
 const methods = {
@@ -27,9 +26,8 @@ export function analyze(module: Module, index: number): AnalyzeResult {
   const result: AnalyzeResult = {
     action: [],
     loader: [],
-    meta: false,
-    middleware: false,
     component: false,
+    middleware: false,
   };
 
   for (const item of module.body) {
@@ -49,11 +47,6 @@ export function analyze(module: Module, index: number): AnalyzeResult {
       for (const decl of item.declaration.declarations) {
         if (decl.id.type === "Identifier") {
           const name = decl.id.value;
-
-          if (name === "meta") {
-            result.meta = true;
-            continue;
-          }
 
           if (name === "middleware") {
             result.middleware = true;

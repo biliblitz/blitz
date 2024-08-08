@@ -1,7 +1,7 @@
 import type { Loader, LoaderReturnValue } from "./loader.ts";
 import type { Context, Next } from "hono";
-import type { ServerManifest } from "./build.ts";
-import { createServerRuntime } from "../client/runtime.tsx";
+import type { ServerManifest } from "./types.ts";
+import { createServerRuntime } from "../client/runtime.ts";
 import type { Action, ActionReturnValue } from "./action.ts";
 
 export type Layer = {
@@ -48,7 +48,7 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
     },
 
     get runtime() {
-      return createServerRuntime(manifest, this);
+      return createServerRuntime(this);
     },
   };
 }

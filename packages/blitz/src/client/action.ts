@@ -7,7 +7,7 @@ import { fetchLoaders } from "./loader.ts";
 import type { ActionResponse } from "../server/router.ts";
 import { ref as _ref, type Ref } from "vue";
 import { useRouter } from "vue-router";
-import { useRuntime } from "./runtime.tsx";
+import { useRuntime } from "./runtime.ts";
 
 export async function fetchAction<T>(
   ref: string,
