@@ -6,7 +6,6 @@ const assetManifest = JSON.parse(manifestJSON);
 
 export default {
   async fetch(req, env, ctx) {
-    console.log(assetManifest);
     try {
       return await getAssetFromKV(
         { request: req.clone(), waitUntil: ctx.waitUntil.bind(ctx) },

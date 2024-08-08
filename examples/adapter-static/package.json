@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "tsc --build && pnpm run build:client && pnpm run build:static",
+    "build": "vue-tsc --build && pnpm run build:client && pnpm run build:static",
     "build:client": "vite build --manifest",
     "build:static": "vite build --ssr -c adapters/static/vite.config.ts",
     "start": "node server.js",
@@ -27,6 +27,7 @@
     "@vitejs/plugin-vue": "^5.1.2",
     "typescript": "^5.4.4",
     "vite": "^5.2.8",
-    "vite-tsconfig-paths": "^4.3.2"
+    "vite-tsconfig-paths": "^4.3.2",
+    "vue-tsc": "^2.0.29"
   }
 }

@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "tsc --build && pnpm run build:client && pnpm run build:nodejs",
+    "build": "vue-tsc --build && pnpm run build:client && pnpm run build:nodejs",
     "build:client": "vite build --manifest",
     "build:nodejs": "vite build --ssr -c adapters/nodejs/vite.config.ts",
     "start": "node server.js",
@@ -14,17 +14,20 @@
   "dependencies": {
     "@biliblitz/blitz": "workspace:^",
     "@hono/node-server": "^1.10.1",
+    "@unhead/vue": "^1.9.16",
     "hono": "^4.2.3",
-    "preact": "^10.20.2",
-    "preact-render-to-string": "^6.4.2"
+    "vue": "^3",
+    "vue-router": "^4.4.3"
   },
   "devDependencies": {
-    "@biliblitz/vite": "workspace:^",
     "@biliblitz/adapter-nodejs": "workspace:^",
-    "@preact/preset-vite": "^2.8.2",
+    "@biliblitz/vite": "workspace:^",
     "@types/node": "^20.12.7",
+    "@unhead/addons": "^1.9.16",
+    "@vitejs/plugin-vue": "^5.1.2",
     "typescript": "^5.4.4",
     "vite": "^5.2.8",
-    "vite-tsconfig-paths": "^4.3.2"
+    "vite-tsconfig-paths": "^4.3.2",
+    "vue-tsc": "^2.0.29"
   }
 }

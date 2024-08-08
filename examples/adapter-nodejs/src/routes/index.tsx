@@ -1,3 +1,7 @@
-export default function Index() {
-  return <div>hello world</div>;
-}
+import { defineComponent } from "vue";
+
+export default defineComponent({
+  setup() {
+    return () => <div>hello world</div>;
+  },
+});

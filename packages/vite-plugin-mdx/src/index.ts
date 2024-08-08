@@ -2,7 +2,6 @@ import type { Plugin } from "vite";
 import { compile, type CompileOptions } from "@mdx-js/mdx";
 import { VFile } from "vfile";
 import { matter } from "vfile-matter";
-import { readFile } from "fs/promises";
 
 type FrontMatter = {
   title?: string;
@@ -13,15 +12,20 @@ const isMdx = (x: string) => /\.mdx?$/.test(x);
 
 export function blitzMdx(options?: CompileOptions): Plugin {
   options ??= {};
-  options.jsxImportSource ??= "preact";
+  options.jsxImportSource ??= "vue";
 
   return {
     name: "blitz-mdx",
 
-    async load(id) {
+    load(id) {
       if (isMdx(id)) {
-        const buffer = await readFile(id, "utf8");
-        const source = new VFile(buffer);
+        return id;
+      }
+    },
+
+    async transform(code, id) {
+      if (isMdx(id)) {
+        const source = new VFile(code);
 
         matter(source, { strip: true });
         const frontmatter = source.data.matter || {};
