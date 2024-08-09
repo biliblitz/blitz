@@ -47,7 +47,7 @@ export function cacheAsync<T>(fn: () => Promise<T>) {
       value = null;
     },
 
-    async value() {
+    async fetch() {
       return value || (value = await fn());
     },
   };

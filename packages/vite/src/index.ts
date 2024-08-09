@@ -14,15 +14,13 @@ import { resolve as resolvePath } from "path";
 
 export function blitz(): Plugin<{ env: any }> {
   const srcRoutes = resolvePath("./src/routes");
-  // const vmods = [manifestClient, manifestServer];
+  const vmods = [manifestClient, manifestServer];
   let isDev = false;
 
   const structure = cacheAsync(
     waitAsync(async () => {
       // console.log("blitz: scanning structure...");
-      const structure = await scanProjectStructure(srcRoutes);
-      // console.log("blitz: scanning finished...");
-      return structure;
+      return await scanProjectStructure(srcRoutes);
     }),
   );
 
@@ -45,12 +43,12 @@ export function blitz(): Plugin<{ env: any }> {
     async load(id) {
       switch (id) {
         case resolve(manifestClient): {
-          const project = await structure.value();
+          const project = await structure.fetch();
           return toClientManifestCode(project, resolvedConfig.base);
         }
 
         case resolve(manifestServer): {
-          const project = await structure.value();
+          const project = await structure.fetch();
           const graph = isDev ? await loadDevGraph() : await loadClientGraph();
           return toServerManifestCode(project, graph, resolvedConfig.base);
         }
@@ -107,17 +105,24 @@ export function blitz(): Plugin<{ env: any }> {
       resolvedConfig = config;
     },
 
-    handleHotUpdate(ctx) {
-      // TODO
-      // structure = null;
-      // project = null;
+    async handleHotUpdate({ file, server }) {
+      // console.log(`hot update: ${file}`);
 
-      console.log(`hot update: ${ctx.file}`);
-      // if (structure?.componentPaths.includes(ctx.file)) {
-      //   console.log("seems contains");
-      // } else {
-      //   console.log(structure?.componentPaths);
-      // }
+      const project = await structure.fetch();
+      const looksLikeLayer = file.startsWith(srcRoutes + "/") && isLayer(file);
+
+      // on new file created
+      if (looksLikeLayer && !project.componentPaths.includes(file)) {
+        // do a clean flush
+        structure.fresh();
+        for (const vmod of vmods) {
+          const module = server.moduleGraph.getModuleById(resolve(vmod));
+          if (module) server.moduleGraph.invalidateModule(module);
+        }
+        server.ws.send({ type: "full-reload" });
+      }
+
+      return [];
     },
 
     configureServer(vite) {
