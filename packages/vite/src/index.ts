@@ -1,8 +1,7 @@
 import type { Plugin, ResolvedConfig } from "vite";
-import type { PluginContext } from "rollup";
 import { manifestClient, manifestServer, resolve } from "./vmod.ts";
 import { getRequestListener } from "@hono/node-server";
-import { resolveProject, scanProjectStructure } from "./scanner.ts";
+import { isLayer, scanProjectStructure } from "./scanner.ts";
 import {
   removeClientServerExports,
   toClientManifestCode,
@@ -11,15 +10,19 @@ import {
 import { loadClientGraph, loadDevGraph } from "./graph.ts";
 import type { Hono } from "hono";
 import { cacheAsync, waitAsync } from "./utils/algorithms.ts";
+import { resolve as resolvePath } from "path";
 
 export function blitz(): Plugin<{ env: any }> {
-  const vmods = [manifestClient, manifestServer];
+  const srcRoutes = resolvePath("./src/routes");
+  // const vmods = [manifestClient, manifestServer];
   let isDev = false;
 
-  const proj = cacheAsync(
-    waitAsync(async (ctx: PluginContext) => {
-      const structure = await scanProjectStructure("./src/routes");
-      return await resolveProject(structure, ctx);
+  const structure = cacheAsync(
+    waitAsync(async () => {
+      console.log("blitz: scanning structure...");
+      const structure = await scanProjectStructure(srcRoutes);
+      console.log("blitz: scanning finished...");
+      return structure;
     }),
   );
 
@@ -30,32 +33,24 @@ export function blitz(): Plugin<{ env: any }> {
     name: "blitz",
     api,
 
-    async resolveId(source, importer, options) {
-      // console.log("resolving", source, importer, options);
+    async resolveId(source) {
       switch (source) {
         case manifestClient:
-          // console.log("triggering proj");
-          await proj.value(this);
           return resolve(manifestClient);
         case manifestServer:
-          // console.log("triggering proj");
-          await proj.value(this);
           return resolve(manifestServer);
       }
     },
 
     async load(id) {
-      // console.log("loading", id);
       switch (id) {
         case resolve(manifestClient): {
-          // console.log("triggering proj");
-          const project = await proj.value(this);
+          const project = await structure.value();
           return toClientManifestCode(project, resolvedConfig.base);
         }
 
         case resolve(manifestServer): {
-          // console.log("triggering proj");
-          const project = await proj.value(this);
+          const project = await structure.value();
           const graph = isDev ? await loadDevGraph() : await loadClientGraph();
           return toServerManifestCode(project, graph, resolvedConfig.base);
         }
@@ -63,15 +58,10 @@ export function blitz(): Plugin<{ env: any }> {
     },
 
     async transform(code, id, options) {
-      // console.log("transform", "/* code */", id);
       // remove action/loader in browser
-      if (!options?.ssr && id.endsWith("index.vue")) {
-        // console.log("I am gonna remove something...", code, id);
-        return await removeClientServerExports(code, {
-          action: [],
-          loader: [],
-          middleware: false,
-        });
+      if (!options?.ssr && id.startsWith(srcRoutes + "/") && isLayer(id)) {
+        console.log("blitz:shaking", id);
+        return await removeClientServerExports(code);
       }
     },
 

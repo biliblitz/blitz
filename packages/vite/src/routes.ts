@@ -1,9 +1,9 @@
 import type { Directory } from "@biliblitz/blitz/server";
-import type { Project } from "./scanner.ts";
+import type { ProjectStructure } from "./scanner.ts";
 import { s } from "./utils/algorithms.ts";
 
 export function generateRoutes(
-  project: Project,
+  project: ProjectStructure,
   base: string,
   imports: (index: number) => string,
 ): string {
@@ -25,7 +25,7 @@ export function generateRoutes(
 
     return `{ ${members.join(", ")} }`;
   };
-  return `[${dfs(project.structure.directory, base)}]`;
+  return `[${dfs(project.directory, base)}]`;
 }
 
 function convertNameToRouterPath(name: string) {

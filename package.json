@@ -26,8 +26,5 @@
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm pretty-quick --staged"
-  },
-  "resolutions": {
-    "vite": "~5.4"
   }
 }

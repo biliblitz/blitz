@@ -1,15 +1,16 @@
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import { readdir, stat } from "node:fs/promises";
-import { analyze } from "./analyze.ts";
 import type { Directory, Route } from "@biliblitz/blitz/server";
-import type { PluginContext } from "rollup";
 
-const isIndex = (filename: string) =>
+export const isIndex = (filename: string) =>
   /^index\.(?:[cm]?[jt]sx?|mdx?|vue)$/i.test(filename);
-const isError = (filename: string) =>
+export const isError = (filename: string) =>
   /^error\.(?:[cm]?[jt]sx?|mdx?|vue)$/i.test(filename);
-const isLayout = (filename: string) =>
+export const isLayout = (filename: string) =>
   /^layout\.(?:[cm]?[jt]sx?|mdx?|vue)$/i.test(filename);
+
+export const isLayer = (filename: string) =>
+  /\/(?:index|layout)\.(?:[cm]?[jt]sx?|mdx?|vue)$/i.test(filename);
 
 export async function scanProjectStructure(entrance: string) {
   const componentPaths: string[] = [];
@@ -56,7 +57,7 @@ export async function scanProjectStructure(entrance: string) {
     return { route, children };
   };
 
-  const directory = await scan(resolve(entrance));
+  const directory = await scan(entrance);
 
   return {
     directory,
@@ -65,50 +66,3 @@ export async function scanProjectStructure(entrance: string) {
 }
 
 export type ProjectStructure = Awaited<ReturnType<typeof scanProjectStructure>>;
-
-export async function resolveProject(
-  structure: ProjectStructure,
-  ctx: PluginContext,
-) {
-  const components = await Promise.all(
-    structure.componentPaths.map(async (filepath, index) => {
-      const resolution = await ctx.resolve(filepath, "blitz:manifest/server", {
-        // @ts-ignore
-        ssr: true,
-        skipSelf: false,
-      });
-      console.log(resolution);
-      if (resolution && !resolution.external) {
-        console.log("going to load");
-        try {
-          const moduleInfo = await ctx.load(resolution);
-          console.log("loading finish");
-          console.log(
-            moduleInfo,
-            // @ts-ignore
-            // ctx._container.moduleGraph.getModuleById(moduleInfo.id),
-          );
-          const ast = moduleInfo.ast;
-          if (ast) {
-            console.log("ast is good");
-            return analyze(ast, index);
-          }
-        } catch (e) {
-          console.error(e);
-        }
-      }
-      // TODO: should panic
-      return { action: [], loader: [], component: false, middleware: false };
-    }),
-  );
-
-  return {
-    raw: components,
-    actions: components.map((c) => c.action),
-    loaders: components.map((c) => c.loader),
-    structure,
-    middlewares: components.map((c) => c.middleware),
-  };
-}
-
-export type Project = Awaited<ReturnType<typeof resolveProject>>;

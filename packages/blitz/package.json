@@ -24,6 +24,10 @@
       "types": "./dist/server/index.d.ts",
       "import": "./dist/server/index.mjs"
     },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.mjs"
+    },
     "./env": {
       "types": "./dist/env.d.ts"
     }

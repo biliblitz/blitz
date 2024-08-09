@@ -1,5 +1,10 @@
-import { createRuntime, MANIFEST_SYMBOL, RUNTIME_SYMBOL } from "./runtime.ts";
-import type { ClientManifest } from "../server/types.ts";
+import {
+  createRuntime,
+  MANIFEST_SYMBOL,
+  RUNTIME_SYMBOL,
+  type Runtime,
+} from "./runtime.ts";
+import type { ClientManifest, Graph } from "../server/types.ts";
 import { createApp, ref, type Component } from "vue";
 import { createHead } from "@unhead/vue";
 import { createRouter, createWebHistory } from "vue-router";
@@ -10,7 +15,7 @@ export type Options = {
 };
 
 export function hydrate(root: Component, { manifest }: Options) {
-  const runtime = createClientRuntime();
+  const [runtime, graph] = createClientRuntime();
 
   const head = createHead();
   const router = createRouter({
@@ -22,16 +27,19 @@ export function hydrate(root: Component, { manifest }: Options) {
     .use(head)
     .use(router)
     .provide(RUNTIME_SYMBOL, ref(runtime))
-    .provide(MANIFEST_SYMBOL, manifest)
+    .provide(MANIFEST_SYMBOL, { ...manifest, ...graph })
     .mount("#app", true);
 }
 
-function createClientRuntime() {
+function createClientRuntime(): [Runtime, Graph] {
   const element = document.querySelector("script[data-blitz=metadata]");
   if (!element || !element.textContent)
     throw new Error("Can't find SSR hydrate data");
 
   const json = JSON.parse(element.textContent) as SerializedRuntime;
 
-  return createRuntime(json.loaders);
+  return [
+    createRuntime(json.loaders),
+    { entry: json.entry, styles: json.styles },
+  ];
 }

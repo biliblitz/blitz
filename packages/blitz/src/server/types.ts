@@ -10,12 +10,12 @@ export type Graph = {
 
 export interface ClientManifest {
   base: string;
-  entry: string;
-  styles: string[];
   routes: RouteRecord[];
 }
 
 export interface ServerManifest extends ClientManifest {
+  entry: string;
+  styles: string[];
   actions: Action[][];
   loaders: Loader[][];
   directory: Directory;

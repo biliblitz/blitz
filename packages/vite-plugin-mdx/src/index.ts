@@ -8,6 +8,7 @@ type FrontMatter = {
   description?: string;
 };
 
+const s = JSON.stringify;
 const isMdx = (x: string) => /\.mdx?$/.test(x.split("?")[0]);
 
 export function blitzMdx(options?: CompileOptions): Plugin {
@@ -46,8 +47,8 @@ export function blitzMdx(options?: CompileOptions): Plugin {
         if (index > -1) {
           mdx.length = index;
           mdx.unshift(
-            `const title = ${JSON.stringify(frontmatter.title || "")};`,
-            `const description = ${JSON.stringify(frontmatter.description || "")};`,
+            `const title = ${s(frontmatter.title || "")};`,
+            `const description = ${s(frontmatter.description || "")};`,
           );
           mdx.push(
             `import { h as _h } from "vue";`,
@@ -55,7 +56,7 @@ export function blitzMdx(options?: CompileOptions): Plugin {
             `export default {`,
             `  props: ["components"],`,
             `  setup(props) {`,
-            `    _useHead({ title, description });`,
+            `    _useHead({ title, meta: [ { name: "description", content: description } ] });`,
             `    const { wrapper: MDXLayout } = props.components || {};`,
             `    return MDXLayout`,
             `      ? () => _h(MDXLayout, props, () => _createMdxContent(props))`,
@@ -69,15 +70,4 @@ export function blitzMdx(options?: CompileOptions): Plugin {
       }
     },
   };
-}
-
-function toMetaCode(frontmatter: FrontMatter) {
-  return [
-    `const title = ${JSON.stringify(frontmatter.title || "")};`,
-    `const description = ${JSON.stringify(frontmatter.description || "")};`,
-    `export const meta = (_ctx, meta) => {
-      meta.title = title;
-      meta.description = description;
-    }`,
-  ].join("\n");
 }

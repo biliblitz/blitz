@@ -1,89 +1,48 @@
 import { transform } from "@swc/core";
-import type { Project } from "./scanner.ts";
-import type { AnalyzeResult } from "./analyze.ts";
 import type { Graph } from "@biliblitz/blitz/server";
 import removeExportsWasm from "@swwind/remove-exports";
 import { generateRoutes } from "./routes.ts";
 import { s } from "./utils/algorithms.ts";
+import type { ProjectStructure } from "./scanner.ts";
 
-export function toClientManifestCode(project: Project, base: string) {
+export function toClientManifestCode(project: ProjectStructure, base: string) {
   return [
     // /** @see https://vitejs.dev/guide/backend-integration.html */
     // `import "vite/modulepreload-polyfill";`,
     `const base = ${s(base)};`,
-    `const routes = ${generateRoutes(project, base, (i) => `() => import(${s(project.structure.componentPaths[i])})`)};`,
+    `const routes = ${generateRoutes(project, base, (i) => `() => import(${s(project.componentPaths[i])})`)};`,
     `export const manifest = { base, routes };`,
   ].join("\n");
 }
 
 export function toServerManifestCode(
-  project: Project,
+  project: ProjectStructure,
   graph: Graph,
   base: string,
 ) {
-  const { actions, loaders, middlewares } = project;
-
   return [
-    ...actions.map(
-      (actions, i) =>
-        `import { ${actions
-          .map(({ name }, j) => `${name} as a${i}$${j}`)
-          .join(", ")} } from "${project.structure.componentPaths[i]}";`,
-    ),
-    ...loaders.map(
-      (loaders, i) =>
-        `import { ${loaders
-          .map(({ name }, j) => `${name} as l${i}$${j}`)
-          .join(", ")} } from "${project.structure.componentPaths[i]}";`,
-    ),
-    ...middlewares.map(
-      (has, i) =>
-        has &&
-        `import { middleware as m${i} } from "${project.structure.componentPaths[i]}";`,
-    ),
-    ...project.structure.componentPaths.map(
-      (path, i) => `import c${i} from "${path}";`,
-    ),
+    `import { unwrapServerLayer } from "@biliblitz/blitz/utils";`,
+    ...project.componentPaths.flatMap((path, i) => [
+      `import c${i} from "${path}";`,
+      `import * as y${i} from "${path}";`,
+      `const [l${i}, a${i}, m${i}] = unwrapServerLayer(y${i});`,
+    ]),
 
-    // assign ref
-    ...actions.flatMap((actions, i) =>
-      actions.map(({ ref }, j) => `a${i}$${j}._ref = "${ref}";`),
-    ),
-    ...loaders.flatMap((loaders, i) =>
-      loaders.map(({ ref }, j) => `l${i}$${j}._ref = "${ref}";`),
-    ),
-
-    // export
     `const base = ${s(base)};`,
     `const entry = ${s(graph.entry)};`,
     `const styles = [${graph.styles.map((x) => s(x)).join(", ")}];`,
     `const routes = ${generateRoutes(project, base, (i) => `c${i}`)};`,
-    `const actions = [${actions
-      .map((a, i) => `[${a.map((_, j) => `a${i}$${j}`).join(", ")}]`)
-      .join(", ")}];`,
-    `const loaders = [${loaders
-      .map((l, i) => `[${l.map((_, j) => `l${i}$${j}`).join(", ")}]`)
-      .join(", ")}];`,
-    `const directory = ${s(project.structure.directory)};`,
-    `const middlewares = [${middlewares
-      .map((has, i) => (has ? `m${i}` : "null"))
-      .join(", ")}];`,
+    `const actions = [${project.componentPaths.map((_, i) => `a${i}`).join(", ")}];`,
+    `const loaders = [${project.componentPaths.map((_, i) => `l${i}`).join(", ")}];`,
+    `const directory = ${s(project.directory)};`,
+    `const middlewares = [${project.componentPaths.map((_, i) => `m${i}`).join(", ")}];`,
 
     `export const manifest = { base, entry, styles, routes, actions, loaders, directory, middlewares };`,
-  ]
-    .map((x) => x || "")
-    .join("\n");
+  ].join("\n");
 }
 
-export async function removeClientServerExports(
-  source: string,
-  result: AnalyzeResult,
-) {
-  const removes = [
-    ...result.action.map((x) => x.name),
-    ...result.loader.map((x) => x.name),
-    ...(result.middleware ? ["middleware"] : []),
-  ];
+export async function removeClientServerExports(source: string) {
+  const removes = ["middleware"];
 
   // console.log("wasm", wasm);
   const { code } = await transform(source, {
@@ -100,17 +59,5 @@ export async function removeClientServerExports(
     // sourceMaps: true,
   });
 
-  return {
-    code: [
-      `import { useAction as _useAction, useLoader as _useLoader } from "@biliblitz/blitz";`,
-      ...result.action.map(
-        (x) =>
-          `export const ${x.name} = () => _useAction("${x.ref}", "${x.method}");`,
-      ),
-      ...result.loader.map(
-        (x) => `export const ${x.name} = () => _useLoader("${x.ref}");`,
-      ),
-      code,
-    ].join("\n"),
-  };
+  return { code };
 }

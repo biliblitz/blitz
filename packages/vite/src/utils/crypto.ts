@@ -24,7 +24,7 @@ export function hashRef(message: string) {
 const imul = Math.imul;
 
 // copy from https://stackoverflow.com/a/52171480/8873690
-export function cyrb53(str: string, seed = 0) {
+function cyrb53(str: string, seed = 0) {
   let h1 = 0xdeadbeef ^ seed,
     h2 = 0x41c6ce57 ^ seed;
   for (let i = 0, ch; i < str.length; i++) {

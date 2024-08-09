@@ -26,6 +26,8 @@ export type ActionHandler<T extends ActionReturnValue = ActionReturnValue> = {
   submit(data: FormData): Promise<void>;
 };
 
+const ACTION_SYMBOL = Symbol("action");
+
 interface DefineAction {
   <T extends ActionReturnValue>(fn: ActionFunction<T>): Action<T>;
   <T extends ActionReturnValue>(
@@ -114,6 +116,7 @@ function action(method: string): DefineAction {
     handler._ref = typeof args[0] === "string" ? (args.shift() as string) : "";
     handler._fn = args.pop() as ActionFunction<T>;
     handler._m = middleware$(...(args as Middleware[]));
+    handler[ACTION_SYMBOL] = true;
     return handler;
   };
 }
@@ -175,3 +178,7 @@ export const delete$ = action("DELETE");
 export const put$ = action("PUT");
 /** See {@link action$} */
 export const patch$ = action("PATCH");
+
+export function isAction(x: unknown): x is Action {
+  return typeof x === "function" && ACTION_SYMBOL in x;
+}

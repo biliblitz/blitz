@@ -14,6 +14,8 @@ export interface Loader<T extends LoaderReturnValue = LoaderReturnValue> {
 }
 export type LoaderHandler<T extends LoaderReturnValue> = ComputedRef<T>;
 
+const LOADER_SYMBOL = Symbol("loader");
+
 /**
  * Perform data-query for frontend
  *
@@ -135,5 +137,10 @@ export function loader$<T extends LoaderReturnValue>(
   handler._ref = typeof funcs[0] === "string" ? (funcs.shift() as string) : "";
   handler._fn = funcs.pop() as LoaderFunction<T>;
   handler._m = middleware$(...(funcs as Middleware[]));
+  handler[LOADER_SYMBOL] = true;
   return handler;
+}
+
+export function isLoader(x: unknown): x is Loader {
+  return typeof x === "function" && LOADER_SYMBOL in x;
 }

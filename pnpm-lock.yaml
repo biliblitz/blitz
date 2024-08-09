@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  vite: ~5.4
-
 importers:
   .:
     devDependencies:
@@ -63,7 +60,7 @@ importers:
         specifier: ^5.4.4
         version: 5.5.4
       vite:
-        specifier: ~5.4
+        specifier: ^5.2.8
         version: 5.4.0(@types/node@20.14.11)
       vite-tsconfig-paths:
         specifier: ^4.3.2
@@ -112,7 +109,7 @@ importers:
         specifier: ^5.4.4
         version: 5.5.3
       vite:
-        specifier: ~5.4
+        specifier: ^5.2.8
         version: 5.4.0(@types/node@20.14.11)
       vite-tsconfig-paths:
         specifier: ^4.3.2
@@ -164,7 +161,7 @@ importers:
         specifier: ^5.4.4
         version: 5.5.4
       vite:
-        specifier: ~5.4
+        specifier: ^5.2.8
         version: 5.4.0(@types/node@20.14.11)
       vite-tsconfig-paths:
         specifier: ^4.3.2
@@ -207,7 +204,7 @@ importers:
         specifier: ^5.4.4
         version: 5.5.4
       vite:
-        specifier: ~5.4
+        specifier: ^5.2.8
         version: 5.4.0(@types/node@20.14.11)
       vite-tsconfig-paths:
         specifier: ^4.3.2
@@ -247,7 +244,7 @@ importers:
         specifier: ^5.4.4
         version: 5.5.3
       vite:
-        specifier: ~5.4
+        specifier: ^5.2.8
         version: 5.4.0(@types/node@20.14.11)
       vite-tsconfig-paths:
         specifier: ^4.3.2
@@ -265,7 +262,7 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ~5.4
+        specifier: ^5
         version: 5.4.0(@types/node@20.14.11)
 
   packages/adapter-static:
@@ -290,7 +287,7 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ~5.4
+        specifier: ^5
         version: 5.4.0(@types/node@20.14.11)
 
   packages/adapter-workers:
@@ -312,7 +309,7 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ~5.4
+        specifier: ^5
         version: 5.4.0(@types/node@20.14.11)
 
   packages/blitz:
@@ -343,7 +340,7 @@ importers:
         specifier: ^5.5.3
         version: 5.5.3
       vite:
-        specifier: ~5.4
+        specifier: ^5.3.4
         version: 5.4.0(@types/node@20.14.11)
 
   packages/vite:
@@ -377,7 +374,7 @@ importers:
         specifier: ^5.5.3
         version: 5.5.3
       vite:
-        specifier: ~5.4
+        specifier: ^5
         version: 5.4.0(@types/node@20.14.11)
 
   packages/vite-plugin-mdx:
@@ -402,7 +399,7 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
       vite:
-        specifier: ~5.4
+        specifier: ^5
         version: 5.4.0(@types/node@20.14.11)
 
 packages:
@@ -1681,7 +1678,7 @@ packages:
       }
     engines: { node: ^18.0.0 || >=20.0.0 }
     peerDependencies:
-      vite: ~5.4
+      vite: ^5.0.0
       vue: ^3.2.25
 
   "@volar/language-core@2.4.0-alpha.18":
@@ -3406,7 +3403,7 @@ packages:
         integrity: sha512-0Vd/a6po6Q+86rPlntHye7F31zA2URZMbH8M3saAZ/xR9QoGN/L21bxEGfXdWmFdNkqPpRdxFT7nmNe12e9/uA==,
       }
     peerDependencies:
-      vite: ~5.4
+      vite: "*"
     peerDependenciesMeta:
       vite:
         optional: true

@@ -1,4 +1,4 @@
-import { copyFile, cp, mkdir, stat, unlink } from "fs/promises";
+import { cp, mkdir } from "node:fs/promises";
 import type { Plugin } from "vite";
 import { getPlatformProxy } from "wrangler";
 
