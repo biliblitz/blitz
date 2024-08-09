@@ -1,6 +1,5 @@
 import { transform } from "@swc/core";
 import type { Graph } from "@biliblitz/blitz/server";
-import removeExportsWasm from "@swwind/remove-exports";
 import { generateRoutes } from "./routes.ts";
 import { s } from "./utils/algorithms.ts";
 import type { ProjectStructure } from "./scanner.ts";
@@ -45,7 +44,7 @@ export async function removeClientServerExports(source: string) {
   const removes = ["middleware"];
 
   // console.log("wasm", wasm);
-  const { code } = await transform(source, {
+  const { code, map } = await transform(source, {
     jsc: {
       parser: {
         syntax: "ecmascript",
@@ -56,8 +55,8 @@ export async function removeClientServerExports(source: string) {
       },
       preserveAllComments: true,
     },
-    // sourceMaps: true,
+    sourceMaps: true,
   });
 
-  return { code };
+  return { code, map };
 }

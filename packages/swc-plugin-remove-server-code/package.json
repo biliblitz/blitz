@@ -1,0 +1,39 @@
+{
+  "name": "@biliblitz/swc-plugin-remove-server-code",
+  "version": "0.0.1",
+  "author": "swwind <i@sww.moe>",
+  "license": "MIT",
+  "keywords": [
+    "swc-plugin"
+  ],
+  "files": [
+    "index.cjs",
+    "index.mjs",
+    "index.d.ts",
+    "remove_server_code.wasm",
+    "README.md"
+  ],
+  "type": "module",
+  "main": "./index.cjs",
+  "types": "./index.d.ts",
+  "module": "./index.mjs",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "require": "./index.cjs"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/biliblitz/blitz.git"
+  },
+  "scripts": {
+    "build": "cargo build-wasi --release && cp ../../target/wasm32-wasi/release/remove_server_code.wasm .",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "@swc/core": "~1.6"
+  },
+  "preferUnplugged": true
+}

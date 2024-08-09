@@ -1,0 +1,12 @@
+[package]
+name = "remove-server-code"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1.0.120"
+swc_core = { version = "0.96.*", features = ["ecma_plugin_transform"] }

@@ -1,0 +1,11 @@
+[workspace]
+resolver = "2"
+members = [
+  "packages/swc-plugin-remove-server-code",
+]
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = "symbols"
