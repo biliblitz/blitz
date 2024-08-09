@@ -31,6 +31,7 @@
     "@biliblitz/blitz": "^0.2.0",
     "@swwind/exbuild": "^1.0.8",
     "@types/node": "^20.14.11",
+    "rollup": "^4.20.0",
     "typescript": "^5.5.3",
     "vite": "^5"
   },

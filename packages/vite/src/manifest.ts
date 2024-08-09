@@ -1,56 +1,48 @@
 import { transform } from "@swc/core";
-import type { Project, ProjectStructure } from "./scanner.ts";
+import type { Project } from "./scanner.ts";
 import type { AnalyzeResult } from "./analyze.ts";
 import type { Graph } from "@biliblitz/blitz/server";
 import removeExportsWasm from "@swwind/remove-exports";
 import { generateRoutes } from "./routes.ts";
 import { s } from "./utils/algorithms.ts";
 
-export function toClientManifestCode(
-  structure: ProjectStructure,
-  project: Project,
-  graph: Graph,
-  base: string,
-) {
+export function toClientManifestCode(project: Project, base: string) {
   return [
     // /** @see https://vitejs.dev/guide/backend-integration.html */
     // `import "vite/modulepreload-polyfill";`,
     `const base = ${s(base)};`,
-    `const entry = ${s(graph.entry)};`,
-    `const styles = [${graph.styles.map((x) => s(x)).join(", ")}];`,
-    `const routes = ${generateRoutes(structure, project, base, (i) => `() => import(${s(structure.componentPaths[i])})`)};`,
-    `export const manifest = { base, entry, styles, routes };`,
+    `const routes = ${generateRoutes(project, base, (i) => `() => import(${s(project.structure.componentPaths[i])})`)};`,
+    `export const manifest = { base, routes };`,
   ].join("\n");
 }
 
 export function toServerManifestCode(
-  structure: ProjectStructure,
   project: Project,
   graph: Graph,
   base: string,
 ) {
-  const { actions, loaders, middlewares, components } = project;
+  const { actions, loaders, middlewares } = project;
 
   return [
     ...actions.map(
       (actions, i) =>
         `import { ${actions
           .map(({ name }, j) => `${name} as a${i}$${j}`)
-          .join(", ")} } from "${structure.componentPaths[i]}";`,
+          .join(", ")} } from "${project.structure.componentPaths[i]}";`,
     ),
     ...loaders.map(
       (loaders, i) =>
         `import { ${loaders
           .map(({ name }, j) => `${name} as l${i}$${j}`)
-          .join(", ")} } from "${structure.componentPaths[i]}";`,
-    ),
-    ...components.map(
-      (has, i) => has && `import c${i} from "${structure.componentPaths[i]}";`,
+          .join(", ")} } from "${project.structure.componentPaths[i]}";`,
     ),
     ...middlewares.map(
       (has, i) =>
         has &&
-        `import { middleware as m${i} } from "${structure.componentPaths[i]}";`,
+        `import { middleware as m${i} } from "${project.structure.componentPaths[i]}";`,
+    ),
+    ...project.structure.componentPaths.map(
+      (path, i) => `import c${i} from "${path}";`,
     ),
 
     // assign ref
@@ -65,14 +57,14 @@ export function toServerManifestCode(
     `const base = ${s(base)};`,
     `const entry = ${s(graph.entry)};`,
     `const styles = [${graph.styles.map((x) => s(x)).join(", ")}];`,
-    `const routes = ${generateRoutes(structure, project, base, (i) => `c${i}`)};`,
+    `const routes = ${generateRoutes(project, base, (i) => `c${i}`)};`,
     `const actions = [${actions
       .map((a, i) => `[${a.map((_, j) => `a${i}$${j}`).join(", ")}]`)
       .join(", ")}];`,
     `const loaders = [${loaders
       .map((l, i) => `[${l.map((_, j) => `l${i}$${j}`).join(", ")}]`)
       .join(", ")}];`,
-    `const directory = ${s(structure.directory)};`,
+    `const directory = ${s(project.structure.directory)};`,
     `const middlewares = [${middlewares
       .map((has, i) => (has ? `m${i}` : "null"))
       .join(", ")}];`,
@@ -118,7 +110,6 @@ export async function removeClientServerExports(
       ...result.loader.map(
         (x) => `export const ${x.name} = () => _useLoader("${x.ref}");`,
       ),
-      result.component ? "" : "export default null;",
       code,
     ].join("\n"),
   };

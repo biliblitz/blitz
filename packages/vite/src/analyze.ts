@@ -1,5 +1,5 @@
-import type { Module } from "@swc/core";
 import { hashRef } from "./utils/crypto.ts";
+import type { ProgramNode } from "rollup";
 
 export type AnalyzeResult = {
   action: {
@@ -11,7 +11,6 @@ export type AnalyzeResult = {
     name: string;
     ref: string;
   }[];
-  component: boolean;
   middleware: boolean;
 };
 
@@ -22,31 +21,22 @@ const methods = {
   patch$: "PATCH",
 } as const;
 
-export function analyze(module: Module, index: number): AnalyzeResult {
+export function analyze(ast: ProgramNode, index: number): AnalyzeResult {
   const result: AnalyzeResult = {
     action: [],
     loader: [],
-    component: false,
     middleware: false,
   };
 
-  for (const item of module.body) {
+  for (const item of ast.body) {
     if (
-      item.type === "ExportDefaultDeclaration" ||
-      item.type === "ExportDefaultExpression"
-    ) {
-      result.component = true;
-      continue;
-    }
-
-    if (
-      item.type === "ExportDeclaration" &&
-      item.declaration.type === "VariableDeclaration" &&
-      !item.declaration.declare
+      item.type === "ExportNamedDeclaration" &&
+      item.declaration &&
+      item.declaration.type === "VariableDeclaration"
     ) {
       for (const decl of item.declaration.declarations) {
         if (decl.id.type === "Identifier") {
-          const name = decl.id.value;
+          const name = decl.id.name;
 
           if (name === "middleware") {
             result.middleware = true;
@@ -58,11 +48,12 @@ export function analyze(module: Module, index: number): AnalyzeResult {
             decl.init.type === "CallExpression" &&
             decl.init.callee.type === "Identifier"
           ) {
-            const func = decl.init.callee.value;
+            const func = decl.init.callee.name;
             const sref =
               decl.init.arguments.length > 0 &&
-              decl.init.arguments[0].expression.type === "StringLiteral" &&
-              decl.init.arguments[0].expression.value;
+              decl.init.arguments[0].type === "Literal" &&
+              typeof decl.init.arguments[0].value === "string" &&
+              decl.init.arguments[0].value;
 
             switch (func) {
               case "action$":

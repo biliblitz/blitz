@@ -8,7 +8,7 @@ export type SerializedRuntime = {
   loaders: LoaderStore;
 };
 
-export function useEntryPoint() {
+function useEntryPoint() {
   const runtime = useRuntime();
   const manifest = useManifest();
 
@@ -49,4 +49,8 @@ export function useEntryPoint() {
       script: [{ type: "module", src: manifest.base + manifest.entry }],
     });
   }
+}
+
+export function useBlitz() {
+  useEntryPoint();
 }

@@ -1,12 +1,8 @@
 import type { Plugin, ResolvedConfig } from "vite";
+import type { PluginContext } from "rollup";
 import { manifestClient, manifestServer, resolve } from "./vmod.ts";
 import { getRequestListener } from "@hono/node-server";
-import {
-  type Project,
-  type ProjectStructure,
-  resolveProject,
-  scanProjectStructure,
-} from "./scanner.ts";
+import { resolveProject, scanProjectStructure } from "./scanner.ts";
 import {
   removeClientServerExports,
   toClientManifestCode,
@@ -14,21 +10,18 @@ import {
 } from "./manifest.ts";
 import { loadClientGraph, loadDevGraph } from "./graph.ts";
 import type { Hono } from "hono";
-import { isVue } from "./utils/ext.ts";
+import { cacheAsync, waitAsync } from "./utils/algorithms.ts";
 
 export function blitz(): Plugin<{ env: any }> {
   const vmods = [manifestClient, manifestServer];
   let isDev = false;
 
-  let structure: ProjectStructure | null = null;
-  let project: Project | null = null;
-  const getStructure = async () => {
-    return (structure =
-      structure || (await scanProjectStructure("./src/routes")));
-  };
-  const getProject = async () => {
-    return (project = project || (await resolveProject(await getStructure())));
-  };
+  const proj = cacheAsync(
+    waitAsync(async (ctx: PluginContext) => {
+      const structure = await scanProjectStructure("./src/routes");
+      return await resolveProject(structure, ctx);
+    }),
+  );
 
   let resolvedConfig: ResolvedConfig;
   let api: { env: any } = { env: null };
@@ -37,59 +30,49 @@ export function blitz(): Plugin<{ env: any }> {
     name: "blitz",
     api,
 
-    resolveId(id) {
-      switch (id) {
+    async resolveId(source, importer, options) {
+      // console.log("resolving", source, importer, options);
+      switch (source) {
         case manifestClient:
+          // console.log("triggering proj");
+          await proj.value(this);
           return resolve(manifestClient);
         case manifestServer:
+          // console.log("triggering proj");
+          await proj.value(this);
           return resolve(manifestServer);
       }
     },
 
     async load(id) {
+      // console.log("loading", id);
       switch (id) {
         case resolve(manifestClient): {
-          const structure = await getStructure();
-          const graph = isDev ? await loadDevGraph() : await loadClientGraph();
-          const project = await getProject();
-          return toClientManifestCode(
-            structure,
-            project,
-            graph,
-            resolvedConfig.base,
-          );
+          // console.log("triggering proj");
+          const project = await proj.value(this);
+          return toClientManifestCode(project, resolvedConfig.base);
         }
 
         case resolve(manifestServer): {
-          const structure = await getStructure();
+          // console.log("triggering proj");
+          const project = await proj.value(this);
           const graph = isDev ? await loadDevGraph() : await loadClientGraph();
-          const project = await getProject();
-          return toServerManifestCode(
-            structure,
-            project,
-            graph,
-            resolvedConfig.base,
-          );
+          return toServerManifestCode(project, graph, resolvedConfig.base);
         }
       }
-
-      return null;
     },
 
     async transform(code, id, options) {
+      // console.log("transform", "/* code */", id);
       // remove action/loader in browser
-      if (!options?.ssr) {
-        const structure = await getStructure();
-        const project = await getProject();
-
-        const index = structure.componentPaths.indexOf(id);
-        if (index > -1) {
-          console.log("I am gonna remove something...", code, id);
-          return await removeClientServerExports(code, project.raw[index]);
-        }
+      if (!options?.ssr && id.endsWith("index.vue")) {
+        // console.log("I am gonna remove something...", code, id);
+        return await removeClientServerExports(code, {
+          action: [],
+          loader: [],
+          middleware: false,
+        });
       }
-
-      return null;
     },
 
     async config(config, env) {
@@ -120,7 +103,7 @@ export function blitz(): Plugin<{ env: any }> {
           appType: "custom",
           build: {
             rollupOptions: {
-              input: ["./src/entry.dev.tsx"],
+              input: [manifestClient],
             },
           },
         };
@@ -133,20 +116,27 @@ export function blitz(): Plugin<{ env: any }> {
 
     handleHotUpdate(ctx) {
       // TODO
-      structure = null;
-      project = null;
+      // structure = null;
+      // project = null;
+
+      console.log(`hot update: ${ctx.file}`);
+      // if (structure?.componentPaths.includes(ctx.file)) {
+      //   console.log("seems contains");
+      // } else {
+      //   console.log(structure?.componentPaths);
+      // }
     },
 
     configureServer(vite) {
       return () => {
         vite.middlewares.use(async (req, res) => {
-          // invalidate old modules
-          for (const vmod of vmods) {
-            const node = vite.moduleGraph.getModuleById(resolve(vmod));
-            if (node) {
-              vite.moduleGraph.invalidateModule(node);
-            }
-          }
+          // // invalidate old modules
+          // for (const vmod of vmods) {
+          //   const node = vite.moduleGraph.getModuleById(resolve(vmod));
+          //   if (node) {
+          //     vite.moduleGraph.invalidateModule(node);
+          //   }
+          // }
 
           const module = await vite.ssrLoadModule("./src/entry.dev.tsx");
           const app = module.default as Hono;

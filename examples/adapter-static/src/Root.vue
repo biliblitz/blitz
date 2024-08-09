@@ -1,5 +1,5 @@
 <script setup>
-import { useEntryPoint } from "@biliblitz/blitz";
+import { useBlitz } from "@biliblitz/blitz";
 import { useHead } from "@unhead/vue";
 
 import "./assets/style.css";
@@ -11,7 +11,7 @@ useHead({
   ],
 });
 
-useEntryPoint();
+useBlitz();
 </script>
 
 <template>

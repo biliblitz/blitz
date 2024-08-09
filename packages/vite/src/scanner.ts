@@ -1,25 +1,17 @@
 import { join, resolve } from "node:path";
-import { readdir, readFile, stat } from "node:fs/promises";
-import { isMdx, isVue } from "./utils/ext.ts";
-import { parse } from "@swc/core";
-import { analyze, type AnalyzeResult } from "./analyze.ts";
+import { readdir, stat } from "node:fs/promises";
+import { analyze } from "./analyze.ts";
 import type { Directory, Route } from "@biliblitz/blitz/server";
-
-async function analyzeCode(code: string, index: number) {
-  const module = await parse(code, { syntax: "typescript", tsx: true });
-  return analyze(module, index);
-}
+import type { PluginContext } from "rollup";
 
 const isIndex = (filename: string) =>
   /^index\.(?:[cm]?[jt]sx?|mdx?|vue)$/i.test(filename);
-// const isError = (filename: string) =>
-//   /^error\.(?:[cm]?[jt]sx?|mdx?|vue)$/i.test(filename);
+const isError = (filename: string) =>
+  /^error\.(?:[cm]?[jt]sx?|mdx?|vue)$/i.test(filename);
 const isLayout = (filename: string) =>
   /^layout\.(?:[cm]?[jt]sx?|mdx?|vue)$/i.test(filename);
 
 export async function scanProjectStructure(entrance: string) {
-  entrance = resolve(entrance);
-
   const componentPaths: string[] = [];
   const registerComponent = (filePath?: string) =>
     filePath ? componentPaths.push(filePath) - 1 : null;
@@ -64,7 +56,7 @@ export async function scanProjectStructure(entrance: string) {
     return { route, children };
   };
 
-  const directory = await scan(entrance);
+  const directory = await scan(resolve(entrance));
 
   return {
     directory,
@@ -74,45 +66,47 @@ export async function scanProjectStructure(entrance: string) {
 
 export type ProjectStructure = Awaited<ReturnType<typeof scanProjectStructure>>;
 
-export async function analyzeLayoutOrIndex(
-  filePath: string,
-  index: number,
-): Promise<AnalyzeResult> {
-  if (isMdx(filePath)) {
-    return {
-      action: [],
-      loader: [],
-      component: true,
-      middleware: false,
-    };
-  }
-
-  // FIXME: finish scanner
-  if (isVue(filePath)) {
-    return {
-      action: [],
-      loader: [],
-      component: true,
-      middleware: false,
-    };
-  }
-
-  const source = await readFile(filePath, "utf8");
-  return await analyzeCode(source, index);
-}
-
-export async function resolveProject(structure: ProjectStructure) {
+export async function resolveProject(
+  structure: ProjectStructure,
+  ctx: PluginContext,
+) {
   const components = await Promise.all(
-    structure.componentPaths.map((filepath, index) =>
-      analyzeLayoutOrIndex(filepath, index),
-    ),
+    structure.componentPaths.map(async (filepath, index) => {
+      const resolution = await ctx.resolve(filepath, "blitz:manifest/server", {
+        // @ts-ignore
+        ssr: true,
+        skipSelf: false,
+      });
+      console.log(resolution);
+      if (resolution && !resolution.external) {
+        console.log("going to load");
+        try {
+          const moduleInfo = await ctx.load(resolution);
+          console.log("loading finish");
+          console.log(
+            moduleInfo,
+            // @ts-ignore
+            // ctx._container.moduleGraph.getModuleById(moduleInfo.id),
+          );
+          const ast = moduleInfo.ast;
+          if (ast) {
+            console.log("ast is good");
+            return analyze(ast, index);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      // TODO: should panic
+      return { action: [], loader: [], component: false, middleware: false };
+    }),
   );
 
   return {
     raw: components,
     actions: components.map((c) => c.action),
     loaders: components.map((c) => c.loader),
-    components: components.map((c) => c.component),
+    structure,
     middlewares: components.map((c) => c.middleware),
   };
 }
