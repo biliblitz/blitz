@@ -74,7 +74,7 @@ export function blitz(): Plugin<{ env: any }> {
             target: "esnext",
             outDir: "dist/client",
             rollupOptions: {
-              input: ["./src/entry.client.tsx"],
+              input: ["./src/entry.client.ts"],
               output: {
                 entryFileNames: "build/p-[hash].js",
                 chunkFileNames: "build/p-[hash].js",
@@ -128,15 +128,7 @@ export function blitz(): Plugin<{ env: any }> {
     configureServer(vite) {
       return () => {
         vite.middlewares.use(async (req, res) => {
-          // // invalidate old modules
-          // for (const vmod of vmods) {
-          //   const node = vite.moduleGraph.getModuleById(resolve(vmod));
-          //   if (node) {
-          //     vite.moduleGraph.invalidateModule(node);
-          //   }
-          // }
-
-          const module = await vite.ssrLoadModule("./src/entry.dev.tsx");
+          const module = await vite.ssrLoadModule("./src/entry.dev.ts");
           const app = module.default as Hono;
 
           const listener = getRequestListener((req) =>

@@ -7,8 +7,6 @@
     "noEmit": true,
     "strict": true,
     "allowJs": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "vue",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,

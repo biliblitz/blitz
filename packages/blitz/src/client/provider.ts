@@ -45,7 +45,7 @@ function useEntryPoint() {
       useHead({
         script: [
           { type: "module", src: manifest.base + "@vite/client" },
-          { type: "module", src: manifest.base + "src/entry.client.tsx" },
+          { type: "module", src: manifest.base + "src/entry.client.ts" },
         ],
       });
     } else {

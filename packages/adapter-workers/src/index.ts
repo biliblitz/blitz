@@ -31,7 +31,7 @@ export function workersAdapter(): Plugin {
             target: "esnext",
             outDir: "dist/workers",
             rollupOptions: {
-              input: "./src/entry.workers.tsx",
+              input: "./src/entry.workers.ts",
               output: {
                 entryFileNames: "server.js",
                 assetFileNames: "build/assets/[hash].[ext]",

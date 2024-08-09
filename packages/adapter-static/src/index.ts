@@ -77,7 +77,7 @@ export function staticAdapter(options: Options): Plugin {
 }
 
 const staticAdapterEntryCode = (options: Options) => `
-import server from "./src/entry.static.tsx";
+import server from "./src/entry.static.ts";
 import { manifest } from "blitz:manifest/server";
 import { generate } from "@biliblitz/adapter-static";
 

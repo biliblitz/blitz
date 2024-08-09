@@ -10,7 +10,7 @@ export function nodejsAdapter(): Plugin {
           target: "esnext",
           outDir: "dist/nodejs",
           rollupOptions: {
-            input: "./src/entry.nodejs.tsx",
+            input: "./src/entry.nodejs.ts",
             output: {
               entryFileNames: "server.js",
               assetFileNames: "build/assets/[hash].[ext]",

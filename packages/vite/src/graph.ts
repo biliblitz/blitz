@@ -14,12 +14,12 @@ export async function loadClientGraph(): Promise<Graph> {
     await readFile(viteManifestPath, "utf8"),
   ) as Record<string, ManifestChunk>;
 
-  const entry = viteManifest["src/entry.client.tsx"].file;
-  const styles = viteManifest["src/entry.client.tsx"].css || [];
+  const entry = viteManifest["src/entry.client.ts"].file;
+  const styles = viteManifest["src/entry.client.ts"].css || [];
 
   return { entry, styles };
 }
 
 export async function loadDevGraph(): Promise<Graph> {
-  return { entry: "src/entry.client.tsx", styles: [] };
+  return { entry: "src/entry.client.ts", styles: [] };
 }

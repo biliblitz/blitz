@@ -1,4 +1,4 @@
-import server from "./entry.server.tsx";
+import server from "./entry.server.ts";
 
 import { getAssetFromKV } from "@cloudflare/kv-asset-handler";
 import manifestJSON from "__STATIC_CONTENT_MANIFEST";
