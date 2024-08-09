@@ -6,5 +6,5 @@ import { workersDev } from "@biliblitz/adapter-workers";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  plugins: [blitz(), vue(), unheadAddon(), tsconfigPaths(), workersDev()],
+  plugins: [vue(), blitz(), unheadAddon(), tsconfigPaths(), workersDev()],
 });

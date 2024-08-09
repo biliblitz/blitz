@@ -6,5 +6,5 @@ import unheadAddon from "@unhead/addons/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  plugins: [vue(), blitz(), blitzMdx(), unheadAddon(), tsconfigPaths()],
+  plugins: [vue(), blitzMdx(), blitz(), unheadAddon(), tsconfigPaths()],
 });

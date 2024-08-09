@@ -2,8 +2,9 @@
   "type": "module",
   "scripts": {
     "build": "pnpm build:pkgs && pnpm build:example",
-    "build:pkgs": "pnpm build:blitz && pnpm build:vite && pnpm build:vite-plugin-mdx && pnpm build:adapter-nodejs && pnpm build:adapter-static && pnpm build:adapter-workers",
+    "build:pkgs": "pnpm build:blitz && pnpm build:swc-plugin-remove-server-code && pnpm build:vite && pnpm build:vite-plugin-mdx && pnpm build:adapter-nodejs && pnpm build:adapter-static && pnpm build:adapter-workers",
     "build:blitz": "cd packages/blitz && pnpm build",
+    "build:swc-plugin-remove-server-code": "cd packages/swc-plugin-remove-server-code && pnpm build",
     "build:vite": "cd packages/vite && pnpm build",
     "build:vite-plugin-mdx": "cd packages/vite-plugin-mdx && pnpm build",
     "build:adapter-nodejs": "cd packages/adapter-nodejs && pnpm build",

@@ -19,9 +19,9 @@ export function blitz(): Plugin<{ env: any }> {
 
   const structure = cacheAsync(
     waitAsync(async () => {
-      console.log("blitz: scanning structure...");
+      // console.log("blitz: scanning structure...");
       const structure = await scanProjectStructure(srcRoutes);
-      console.log("blitz: scanning finished...");
+      // console.log("blitz: scanning finished...");
       return structure;
     }),
   );
@@ -59,9 +59,12 @@ export function blitz(): Plugin<{ env: any }> {
 
     async transform(code, id, options) {
       // remove action/loader in browser
-      if (!options?.ssr && id.startsWith(srcRoutes + "/") && isLayer(id)) {
-        console.log("blitz:shaking", id);
-        return await removeClientServerExports(code);
+      const [path, params] = id.split("?");
+      if (!options?.ssr && path.startsWith(srcRoutes + "/") && isLayer(path)) {
+        if (!params?.includes("type=style")) {
+          // console.log("blitz:shaking", id);
+          return await removeClientServerExports(code);
+        }
       }
     },
 

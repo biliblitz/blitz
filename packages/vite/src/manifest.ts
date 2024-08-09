@@ -3,6 +3,7 @@ import type { Graph } from "@biliblitz/blitz/server";
 import { generateRoutes } from "./routes.ts";
 import { s } from "./utils/algorithms.ts";
 import type { ProjectStructure } from "./scanner.ts";
+import removeServerCode from "@biliblitz/swc-plugin-remove-server-code";
 
 export function toClientManifestCode(project: ProjectStructure, base: string) {
   return [
@@ -41,22 +42,19 @@ export function toServerManifestCode(
 }
 
 export async function removeClientServerExports(source: string) {
-  const removes = ["middleware"];
-
-  // console.log("wasm", wasm);
+  // console.log("before >>>");
+  // console.log(source);
   const { code, map } = await transform(source, {
     jsc: {
-      parser: {
-        syntax: "ecmascript",
-        jsx: false,
-      },
-      experimental: {
-        plugins: [removeExportsWasm({ removes })],
-      },
+      parser: { syntax: "ecmascript", jsx: false },
+      experimental: { plugins: [removeServerCode()] },
+      target: "esnext",
       preserveAllComments: true,
     },
     sourceMaps: true,
   });
+  // console.log("after <<<");
+  // console.log(code);
 
   return { code, map };
 }

@@ -52,7 +52,7 @@ export function createServer(App: Component, { manifest }: ServerOptions) {
       const ctx = {};
       const appHTML = await renderToString(app, ctx);
       const payload = await renderSSRHead(head, { omitLineBreaks: true });
-      console.log(ctx);
+      // console.log(ctx);
 
       return c.html(
         `<!DOCTYPE html>` +
