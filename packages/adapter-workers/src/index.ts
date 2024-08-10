@@ -41,7 +41,10 @@ export function workersAdapter(): Plugin {
             copyPublicDir: false,
             minify: true,
           },
-          ssr: { noExternal: true },
+          ssr: {
+            target: "webworker",
+            noExternal: true,
+          },
         };
       }
     },

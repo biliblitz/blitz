@@ -14,7 +14,7 @@ export type Options = {
   manifest: ClientManifest;
 };
 
-export function hydrate(root: Component, { manifest }: Options) {
+export function createClientApp(root: Component, { manifest }: Options) {
   const [runtime, graph] = createClientRuntime();
 
   const head = createHead();
@@ -23,12 +23,13 @@ export function hydrate(root: Component, { manifest }: Options) {
     history: createWebHistory(manifest.base),
   });
 
-  createApp(root)
+  const app = createApp(root)
     .use(head)
     .use(router)
     .provide(RUNTIME_SYMBOL, ref(runtime))
-    .provide(MANIFEST_SYMBOL, { ...manifest, ...graph })
-    .mount("#app", true);
+    .provide(MANIFEST_SYMBOL, { ...manifest, ...graph });
+
+  return { app, router, head };
 }
 
 function createClientRuntime(): [Runtime, Graph] {
