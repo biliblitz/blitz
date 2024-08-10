@@ -12,7 +12,7 @@ export function workersDev(): Plugin {
       // console.log("wrangler proxy is working...");
       for (const plugin of config.plugins) {
         if (plugin.name === "blitz" && plugin.api) {
-          plugin.api.env = proxy.env;
+          plugin.api.fetch = { env: proxy.env, ctx: proxy.ctx };
         }
       }
     },
@@ -50,7 +50,7 @@ export function workersAdapter(): Plugin {
     },
 
     async closeBundle() {
-      await mkdir("./dist/workers/assets");
+      await mkdir("./dist/workers/assets", { recursive: true });
       await cp("./dist/client/build", "./dist/workers/assets/build", {
         recursive: true,
       });

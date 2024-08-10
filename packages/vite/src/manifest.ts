@@ -1,7 +1,7 @@
 import { transform } from "@swc/core";
 import type { Graph } from "@biliblitz/blitz/server";
 import { generateRoutes } from "./routes.ts";
-import { s } from "./utils/algorithms.ts";
+import { s } from "./utils.ts";
 import type { ProjectStructure } from "./scanner.ts";
 import removeServerCode from "@biliblitz/swc-plugin-remove-server-code";
 

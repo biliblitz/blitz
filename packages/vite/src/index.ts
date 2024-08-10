@@ -9,10 +9,10 @@ import {
 } from "./manifest.ts";
 import { loadClientGraph, loadDevGraph } from "./graph.ts";
 import type { Hono } from "hono";
-import { cacheAsync, waitAsync } from "./utils/algorithms.ts";
+import { cacheAsync, waitAsync } from "./utils.ts";
 import { resolve as resolvePath } from "path";
 
-export function blitz(): Plugin<{ env: any }> {
+export function blitz(): Plugin<{ fetch?: { env: any; ctx: any } }> {
   const srcRoutes = resolvePath("./src/routes");
   const vmods = [manifestClient, manifestServer];
   let isDev = false;
@@ -25,7 +25,7 @@ export function blitz(): Plugin<{ env: any }> {
   );
 
   let resolvedConfig: ResolvedConfig;
-  let api: { env: any } = { env: null };
+  let api: { fetch?: { env: any; ctx: any } } = {};
 
   return {
     name: "blitz",
@@ -132,7 +132,9 @@ export function blitz(): Plugin<{ env: any }> {
           const app = module.default as Hono;
 
           const listener = getRequestListener((req) =>
-            api.env ? app.fetch(req, api.env) : app.fetch(req),
+            api.fetch
+              ? app.fetch(req, api.fetch.env, api.fetch.ctx)
+              : app.fetch(req),
           );
           await listener(req, res);
         });

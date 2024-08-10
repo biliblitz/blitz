@@ -1,6 +1,6 @@
 import type { Directory } from "@biliblitz/blitz/server";
 import type { ProjectStructure } from "./scanner.ts";
-import { s } from "./utils/algorithms.ts";
+import { s } from "./utils.ts";
 
 export function generateRoutes(
   project: ProjectStructure,
