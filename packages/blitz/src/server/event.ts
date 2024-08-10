@@ -55,3 +55,4 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
 
 export type FetchEvent = ReturnType<typeof createFetchEvent>;
 export type LoaderStore = [string, LoaderReturnValue][];
+export type LoaderStoreMap = Map<string, LoaderReturnValue>;

@@ -1,4 +1,8 @@
-import type { FetchEvent, LoaderStore } from "../server/event.ts";
+import type {
+  FetchEvent,
+  LoaderStore,
+  LoaderStoreMap,
+} from "../server/event.ts";
 import { inject, type Ref } from "vue";
 import type { ClientManifest, Graph } from "../server/types.ts";
 
@@ -14,11 +18,11 @@ export function createServerRuntime(event: FetchEvent) {
   return createRuntime(event.loaders);
 }
 
-export const RUNTIME_SYMBOL = Symbol("runtime");
+export const LOADERS_SYMBOL = Symbol("loaders");
 export const MANIFEST_SYMBOL = Symbol("manifest");
 
-export function useRuntime() {
-  return inject<Ref<Runtime>>(RUNTIME_SYMBOL)!;
+export function useLoaders() {
+  return inject<Ref<LoaderStoreMap>>(LOADERS_SYMBOL)!;
 }
 
 export function useManifest() {

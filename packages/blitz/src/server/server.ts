@@ -1,6 +1,6 @@
 import {
+  LOADERS_SYMBOL,
   MANIFEST_SYMBOL,
-  RUNTIME_SYMBOL,
   type Runtime,
 } from "../client/runtime.ts";
 import type { ServerManifest } from "./types.ts";
@@ -14,7 +14,7 @@ import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { RedirectException } from "./exception.ts";
 import { renderToString } from "vue/server-renderer";
-import { createSSRApp, ref, type Component } from "vue";
+import { createSSRApp, shallowRef, type Component } from "vue";
 import { createServerHead } from "@unhead/vue";
 import { renderSSRHead } from "@unhead/ssr";
 import { createMemoryHistory, createRouter } from "vue-router";
@@ -45,9 +45,9 @@ export function createServer(App: Component, { manifest }: ServerOptions) {
       });
       app.use(head);
       app.use(router);
-      app.provide(RUNTIME_SYMBOL, ref(runtime));
+      app.provide(LOADERS_SYMBOL, shallowRef(new Map(runtime.loaders)));
       app.provide(MANIFEST_SYMBOL, manifest);
-      router.replace(c.req.path);
+      await router.replace(c.req.path);
       await router.isReady();
       const ctx = {};
       const appHTML = await renderToString(app, ctx);

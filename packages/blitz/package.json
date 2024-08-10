@@ -36,17 +36,17 @@
     "build": "rm -rf dist && tsc --build && cp src/env.d.ts dist && exbuild"
   },
   "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "@unhead/ssr": "^1.9.16",
     "@unhead/vue": "^1.9.16",
     "hono": "^4",
     "vue": "^3",
-    "vue-router": "^4.4.3"
+    "vue-router": "^4"
   },
   "devDependencies": {
     "@swwind/exbuild": "^1.0.8",
     "@types/node": "^20.14.11",
-    "typescript": "^5.5.3",
+    "typescript": "^5.5.4",
     "vite": "^5.3.4"
   }
 }

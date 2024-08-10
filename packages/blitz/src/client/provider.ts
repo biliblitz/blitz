@@ -1,6 +1,6 @@
 import { useHead } from "@unhead/vue";
 import type { LoaderStore } from "../server/router.ts";
-import { useManifest, useRuntime } from "./runtime.ts";
+import { useLoaders, useManifest } from "./runtime.ts";
 import { isDev, isSSR } from "../utils/envs.ts";
 import { computed } from "vue";
 
@@ -11,7 +11,7 @@ export type SerializedRuntime = {
 };
 
 function useEntryPoint() {
-  const runtime = useRuntime();
+  const store = useLoaders();
   const manifest = useManifest();
 
   useHead({
@@ -27,7 +27,7 @@ function useEntryPoint() {
         const object: SerializedRuntime = {
           entry: manifest.entry,
           styles: manifest.styles,
-          loaders: runtime.value.loaders,
+          loaders: [...store.value],
         };
 
         return [

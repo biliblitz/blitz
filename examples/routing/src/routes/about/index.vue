@@ -1,5 +1,5 @@
 <template>
   <div class="box">
-    <div>/index.vue</div>
+    <div>/about/index.vue</div>
   </div>
 </template>

@@ -87,6 +87,9 @@ export function blitz(): Plugin<{ fetch?: { env: any; ctx: any } }> {
             modulePreload: true,
             copyPublicDir: false,
           },
+          optimizeDeps: {
+            include: ["vue", "vue-router", "@unhead/vue", "@biliblitz/blitz"],
+          },
         };
       }
 
@@ -97,8 +100,11 @@ export function blitz(): Plugin<{ fetch?: { env: any; ctx: any } }> {
           appType: "custom",
           build: {
             rollupOptions: {
-              input: [manifestClient],
+              input: ["./src/entry.client.ts"],
             },
+          },
+          optimizeDeps: {
+            include: ["vue", "vue-router", "@unhead/vue", "@biliblitz/blitz"],
           },
         };
       }
@@ -115,17 +121,17 @@ export function blitz(): Plugin<{ fetch?: { env: any; ctx: any } }> {
       const looksLikeLayer = inRoutes(file) && isLayer(file);
 
       // on new file created
-      if (looksLikeLayer && !project.componentPaths.includes(file)) {
-        // do a clean flush
-        structure.fresh();
-        for (const vmod of vmods) {
-          const module = server.moduleGraph.getModuleById(resolve(vmod));
-          if (module) server.moduleGraph.invalidateModule(module);
-        }
+      if (looksLikeLayer) {
         server.ws.send({ type: "full-reload" });
+        // do a clean flush
+        if (!project.componentPaths.includes(file)) {
+          structure.fresh();
+          for (const vmod of vmods) {
+            const module = server.moduleGraph.getModuleById(resolve(vmod));
+            if (module) server.moduleGraph.invalidateModule(module);
+          }
+        }
       }
-
-      return [];
     },
 
     configureServer(vite) {

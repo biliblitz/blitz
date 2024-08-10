@@ -7,7 +7,7 @@ import { fetchLoaders } from "./loader.ts";
 import type { ActionResponse } from "../server/router.ts";
 import { ref as _ref, type Ref } from "vue";
 import { useRouter } from "vue-router";
-import { useRuntime } from "./runtime.ts";
+import { useLoaders } from "./runtime.ts";
 
 export async function fetchAction<T>(
   ref: string,
@@ -30,7 +30,7 @@ export function useAction<T extends ActionReturnValue>(
   method: string,
 ): ActionHandler<T> {
   const router = useRouter();
-  const runtime = useRuntime();
+  const store = useLoaders();
   const state = _ref<ActionState<T>>({
     status: "idle",
     data: null,
@@ -49,7 +49,7 @@ export function useAction<T extends ActionReturnValue>(
         const data = await fetchLoaders(location.href);
 
         if (data.ok === "loader") {
-          runtime.value = { loaders: data.loaders };
+          store.value = new Map([...store.value, ...data.loaders]);
         } else if (data.ok === "redirect") {
           await router.push(data.redirect);
         } else if (data.ok === "error") {

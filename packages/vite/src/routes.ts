@@ -32,7 +32,7 @@ function convertNameToRouterPath(name: string) {
   if (name.startsWith("[[") && name.endsWith("]]"))
     return `:${name.slice(2, -2)}+`;
   if (name.startsWith("[") && name.endsWith("]"))
-    return `:${name.slice(1, -2)}`;
+    return `:${name.slice(1, -1)}`;
   if (name.startsWith("(") && name.endsWith(")")) return "";
   return `${name}`;
 }

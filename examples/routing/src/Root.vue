@@ -12,6 +12,21 @@ useHead({
 useBlitz();
 </script>
 
+<style>
+.box {
+  border: 2px solid red;
+  padding: 5px;
+}
+
+.loader {
+  border: 2px solid lime;
+  padding: 5px;
+}
+</style>
+
 <template>
-  <router-view />
+  <div class="box">
+    <div>Root</div>
+    <router-view />
+  </div>
 </template>

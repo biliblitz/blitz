@@ -1,7 +1,7 @@
 import {
   createRuntime,
+  LOADERS_SYMBOL,
   MANIFEST_SYMBOL,
-  RUNTIME_SYMBOL,
   type Runtime,
 } from "./runtime.ts";
 import type { ClientManifest, Graph } from "../server/types.ts";
@@ -22,6 +22,12 @@ export function createClientApp(root: Component, { manifest }: Options) {
   const router = createRouter({
     routes: manifest.routes,
     history: createWebHistory(manifest.base),
+    scrollBehavior(to, _from, savedPosition) {
+      if (to.hash) {
+        return { el: to.hash, behavior: "smooth" };
+      }
+      return savedPosition || { top: 0 };
+    },
   });
 
   router.beforeResolve(navigateGuard());
@@ -29,7 +35,7 @@ export function createClientApp(root: Component, { manifest }: Options) {
   const app = createApp(root)
     .use(head)
     .use(router)
-    .provide(RUNTIME_SYMBOL, shallowRef(runtime))
+    .provide(LOADERS_SYMBOL, shallowRef(new Map(runtime.loaders)))
     .provide(MANIFEST_SYMBOL, { ...manifest, ...graph });
 
   return { app, router, head };
