@@ -5,10 +5,11 @@ import {
   type Runtime,
 } from "./runtime.ts";
 import type { ClientManifest, Graph } from "../server/types.ts";
-import { createApp, ref, type Component } from "vue";
+import { createApp, shallowRef, type Component } from "vue";
 import { createHead } from "@unhead/vue";
 import { createRouter, createWebHistory } from "vue-router";
 import type { SerializedRuntime } from "./provider.ts";
+import { navigateGuard } from "./navigate.ts";
 
 export type Options = {
   manifest: ClientManifest;
@@ -23,10 +24,12 @@ export function createClientApp(root: Component, { manifest }: Options) {
     history: createWebHistory(manifest.base),
   });
 
+  router.beforeResolve(navigateGuard());
+
   const app = createApp(root)
     .use(head)
     .use(router)
-    .provide(RUNTIME_SYMBOL, ref(runtime))
+    .provide(RUNTIME_SYMBOL, shallowRef(runtime))
     .provide(MANIFEST_SYMBOL, { ...manifest, ...graph });
 
   return { app, router, head };

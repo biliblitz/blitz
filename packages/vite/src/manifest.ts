@@ -4,6 +4,7 @@ import { generateRoutes } from "./routes.ts";
 import { s } from "./utils.ts";
 import type { ProjectStructure } from "./scanner.ts";
 import removeServerCode from "@biliblitz/swc-plugin-remove-server-code";
+import { hashRef } from "@biliblitz/blitz/utils";
 
 export function toClientManifestCode(project: ProjectStructure, base: string) {
   return [
@@ -25,7 +26,7 @@ export function toServerManifestCode(
     ...project.componentPaths.flatMap((path, i) => [
       `import c${i} from "${path}";`,
       `import * as y${i} from "${path}";`,
-      `const [l${i}, a${i}, m${i}] = unwrapServerLayer(y${i});`,
+      `const [l${i}, a${i}, m${i}] = unwrapServerLayer(y${i}, "${hashRef(path)}");`,
     ]),
 
     `const base = ${s(base)};`,
@@ -41,13 +42,13 @@ export function toServerManifestCode(
   ].join("\n");
 }
 
-export async function removeClientServerExports(source: string) {
+export async function removeClientServerExports(source: string, salt: string) {
   // console.log("before >>>");
   // console.log(source);
   const { code, map } = await transform(source, {
     jsc: {
       parser: { syntax: "ecmascript", jsx: false },
-      experimental: { plugins: [removeServerCode()] },
+      experimental: { plugins: [removeServerCode({ salt })] },
       target: "esnext",
       preserveAllComments: true,
     },

@@ -11,11 +11,14 @@ import { loadClientGraph, loadDevGraph } from "./graph.ts";
 import type { Hono } from "hono";
 import { cacheAsync, waitAsync } from "./utils.ts";
 import { resolve as resolvePath } from "path";
+import { hashRef } from "@biliblitz/blitz/utils";
 
 export function blitz(): Plugin<{ fetch?: { env: any; ctx: any } }> {
   const srcRoutes = resolvePath("./src/routes");
   const vmods = [manifestClient, manifestServer];
   let isDev = false;
+
+  const inRoutes = (path: string) => path.startsWith(srcRoutes + "/");
 
   const structure = cacheAsync(
     waitAsync(async () => {
@@ -58,10 +61,10 @@ export function blitz(): Plugin<{ fetch?: { env: any; ctx: any } }> {
     async transform(code, id, options) {
       // remove action/loader in browser
       const [path, params] = id.split("?");
-      if (!options?.ssr && path.startsWith(srcRoutes + "/") && isLayer(path)) {
+      if (!options?.ssr && inRoutes(path) && isLayer(path)) {
         if (!params?.includes("type=style")) {
           // console.log("blitz:shaking", id);
-          return await removeClientServerExports(code);
+          return await removeClientServerExports(code, hashRef(path));
         }
       }
     },
@@ -109,7 +112,7 @@ export function blitz(): Plugin<{ fetch?: { env: any; ctx: any } }> {
       // console.log(`hot update: ${file}`);
 
       const project = await structure.fetch();
-      const looksLikeLayer = file.startsWith(srcRoutes + "/") && isLayer(file);
+      const looksLikeLayer = inRoutes(file) && isLayer(file);
 
       // on new file created
       if (looksLikeLayer && !project.componentPaths.includes(file)) {

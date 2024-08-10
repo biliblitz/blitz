@@ -3,7 +3,10 @@ import { isLoader, type Loader } from "../server/loader.ts";
 import type { Middleware } from "../server/middleware.ts";
 import { hashRef } from "./crypto.ts";
 
-export function unwrapServerLayer(exports: Record<string, unknown>) {
+export function unwrapServerLayer(
+  exports: Record<string, unknown>,
+  salt: string,
+) {
   const loaders: Loader[] = [];
   const actions: Action[] = [];
   let middleware: Middleware | null = null;
@@ -17,14 +20,14 @@ export function unwrapServerLayer(exports: Record<string, unknown>) {
     }
 
     if (isLoader(value)) {
-      const idx = loaders.push(value);
-      value._ref = value._ref || hashRef(`loader-${idx}-${key}`);
+      value._ref = value._ref || hashRef(`${salt}-${key}`);
+      loaders.push(value);
       continue;
     }
 
     if (isAction(value)) {
-      const idx = actions.push(value);
-      value._ref = value._ref || hashRef(`action-${idx}-${key}`);
+      value._ref = value._ref || hashRef(`${salt}-${key}`);
+      actions.push(value);
       continue;
     }
 

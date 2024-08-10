@@ -43,11 +43,11 @@ export function createServer(App: Component, { manifest }: ServerOptions) {
         routes: manifest.routes,
         history: createMemoryHistory(manifest.base),
       });
-      router.replace(c.req.path);
       app.use(head);
       app.use(router);
       app.provide(RUNTIME_SYMBOL, ref(runtime));
       app.provide(MANIFEST_SYMBOL, manifest);
+      router.replace(c.req.path);
       await router.isReady();
       const ctx = {};
       const appHTML = await renderToString(app, ctx);

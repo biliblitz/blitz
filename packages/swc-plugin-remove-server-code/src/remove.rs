@@ -191,20 +191,20 @@ impl VisitMut for RemoveVisitor {
     }
 }
 
-impl RemoveVisitor {
-    pub fn from_analyze(analyze: AnalyzeVisitor) -> Self {
-        let removes = resolve_remove_relations(analyze.relations, analyze.global.iter().cloned());
-        let loaders = analyze
+impl From<AnalyzeVisitor> for RemoveVisitor {
+    fn from(value: AnalyzeVisitor) -> Self {
+        let removes = resolve_remove_relations(value.relations, value.global.iter().cloned());
+        let loaders = value
             .loaders
             .into_iter()
             .map(|x| (x.id.clone(), x))
             .collect();
-        let actions = analyze
+        let actions = value
             .actions
             .into_iter()
             .map(|x| (x.id.clone(), x))
             .collect();
-        let middleware = analyze.middleware.and_then(|x| Some(x.id));
+        let middleware = value.middleware.and_then(|x| Some(x.id));
 
         Self {
             removes,

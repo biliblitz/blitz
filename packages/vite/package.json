@@ -25,7 +25,6 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@biliblitz/blitz": "^0.2.0",
     "@swwind/exbuild": "^1.0.8",
     "@types/node": "^20.14.11",
     "hono": "^4.5.4",
@@ -34,6 +33,7 @@
     "vite": "^5"
   },
   "dependencies": {
+    "@biliblitz/blitz": "^0.2.0",
     "@biliblitz/swc-plugin-remove-server-code": "^0.0.1",
     "@hono/node-server": "^1.12.0",
     "@swc/core": "~1.6"

@@ -28,3 +28,15 @@ pub fn hash_ref(message: &str) -> String {
     buffer[4..].copy_from_slice(&y.to_be_bytes());
     to_base64(&buffer)[..7].to_string()
 }
+
+#[cfg(test)]
+mod test {
+    use super::hash_ref;
+
+    #[test]
+    fn test_hash_ref() {
+        assert_eq!(hash_ref("114514"), "RcKMQW7");
+        assert_eq!(hash_ref("1919810"), "63Kw4p3");
+        assert_eq!(hash_ref("ZW6S8L8-useRandom"), "hO+ivOO");
+    }
+}

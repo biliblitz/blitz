@@ -35,11 +35,21 @@ impl Relation {
 
 #[derive(Default)]
 pub struct AnalyzeVisitor {
+    pub salt: String,
     pub global: HashSet<Id>,
     pub loaders: Vec<Loader>,
     pub actions: Vec<Action>,
     pub relations: Vec<Relation>,
     pub middleware: Option<Relation>,
+}
+
+impl AnalyzeVisitor {
+    pub fn new(salt: String) -> Self {
+        AnalyzeVisitor {
+            salt,
+            ..Default::default()
+        }
+    }
 }
 
 pub fn analyze_pat_relations(pat: &Pat, deps: &Vec<Id>) -> Vec<Relation> {
@@ -100,7 +110,8 @@ impl Visit for AnalyzeVisitor {
                         let name = decl.name.as_ident().and_then(|x| Some(&x.id));
 
                         if let Some(name) = name {
-                            if name.sym.to_string() == "middleware" {
+                            let name_string = name.sym.to_string();
+                            if name_string == "middleware" {
                                 self.middleware = Some(Relation {
                                     id: name.to_id(),
                                     depends: count_idents(&decl.init),
@@ -117,17 +128,15 @@ impl Visit for AnalyzeVisitor {
                                     .first()
                                     .and_then(|x| x.expr.as_lit())
                                     .and_then(|x| if let Lit::Str(x) = x { Some(x) } else { None })
-                                    .and_then(|x| Some(x.value.to_string()));
+                                    .and_then(|x| Some(x.value.to_string()))
+                                    .unwrap_or_else(|| {
+                                        hash_ref(&format!("{}-{}", self.salt, name_string))
+                                    });
 
                                 if let Some(func) = func {
                                     let s = func.sym.to_string();
 
                                     if s == "loader$" {
-                                        let sref = sref.unwrap_or_else(|| {
-                                            // TODO: fix hash here
-                                            hash_ref(&format!("loader-0-{}", name))
-                                        });
-
                                         self.loaders.push(Loader {
                                             id: name.to_id(),
                                             name: sref,
@@ -141,11 +150,6 @@ impl Visit for AnalyzeVisitor {
                                         || s == "patch$"
                                         || s == "put$"
                                     {
-                                        let sref = sref.unwrap_or_else(|| {
-                                            // TODO: fix hash here
-                                            hash_ref(&format!("action-0-{}", name))
-                                        });
-
                                         self.actions.push(Action {
                                             id: name.to_id(),
                                             name: sref,
