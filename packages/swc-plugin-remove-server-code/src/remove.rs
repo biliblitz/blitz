@@ -1,7 +1,6 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
 use swc_core::{
-    atoms::Atom,
     common::DUMMY_SP,
     ecma::{
         ast::{
@@ -55,8 +54,8 @@ impl VisitMut for RemoveVisitor {
         let mut has_loader = false;
         let mut has_action = false;
 
-        let use_loader = Ident::new(Atom::new("_useLoader"), DUMMY_SP);
-        let use_action = Ident::new(Atom::new("_useAction"), DUMMY_SP);
+        let use_loader = Ident::from("_useLoader");
+        let use_action = Ident::from("_useAction");
 
         n.retain_mut(|n| match n {
             ModuleItem::ModuleDecl(ModuleDecl::Import(decl)) => {
@@ -165,7 +164,7 @@ impl VisitMut for RemoveVisitor {
                     local: use_loader,
                     imported: Some(ModuleExportName::Ident(Ident::from("useLoader"))),
                     is_type_only: false,
-                }))
+                }));
             }
             if has_action {
                 specifiers.push(ImportSpecifier::Named(ImportNamedSpecifier {
@@ -173,7 +172,7 @@ impl VisitMut for RemoveVisitor {
                     local: use_action,
                     imported: Some(ModuleExportName::Ident(Ident::from("useAction"))),
                     is_type_only: false,
-                }))
+                }));
             }
 
             n.insert(
@@ -186,7 +185,7 @@ impl VisitMut for RemoveVisitor {
                     with: None,
                     phase: Default::default(),
                 })),
-            )
+            );
         }
     }
 }
