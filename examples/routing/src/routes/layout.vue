@@ -12,6 +12,10 @@
       <router-link to="/user/alice/">User Alice</router-link>
       <span> | </span>
       <router-link to="/user/bob/">User Bob</router-link>
+      <span> | </span>
+      <router-link to="/post/alice/public/">Post A</router-link>
+      <span> | </span>
+      <router-link to="/post/bob/private/">Post B</router-link>
     </div>
     <router-view />
   </div>

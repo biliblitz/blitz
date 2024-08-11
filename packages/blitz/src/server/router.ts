@@ -126,9 +126,11 @@ export function createHonoRouter({ route, children }: Directory) {
     const name = dirname.slice(1, -1);
     app.route(`/:${name}/`, createHonoRouter(child));
   }
-  // FIXME: untested
-  for (const [_, child] of catches) {
-    app.route("/:_{^.+$}/", createHonoRouter(child));
+  // TODO: I can't make hono work.
+  for (const [dirname, child] of catches) {
+    // console.warn("using catch-all route is not supported right now");
+    const name = dirname.slice(2, -2);
+    app.route(`/:${name}{.+}/`, createHonoRouter(child));
   }
 
   return app;
