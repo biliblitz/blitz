@@ -2,6 +2,7 @@ import type { RouteRecord } from "vue-router";
 import type { Action } from "./action.ts";
 import type { Loader } from "./loader.ts";
 import type { Middleware } from "./middleware.ts";
+import type { PathsFunction } from "./paths.ts";
 
 export type Graph = {
   entry: string;
@@ -15,6 +16,7 @@ export interface ClientManifest {
 
 export interface ServerManifest extends ClientManifest {
   entry: string;
+  paths: (PathsFunction | null)[];
   styles: string[];
   actions: Action[][];
   loaders: Loader[][];

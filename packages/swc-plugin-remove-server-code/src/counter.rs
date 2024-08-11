@@ -18,8 +18,8 @@ impl Visit for CounterVisitor {
     }
 }
 
-pub fn count_idents<T: VisitWith<CounterVisitor>>(t: &T) -> Vec<Id> {
+pub fn count_idents<T: VisitWith<CounterVisitor>>(t: &T) -> HashSet<Id> {
     let mut visitor = CounterVisitor::default();
     t.visit_with(&mut visitor);
-    visitor.identifiers.into_iter().collect()
+    visitor.identifiers
 }

@@ -1,6 +1,7 @@
 import { isAction, type Action } from "../server/action.ts";
 import { isLoader, type Loader } from "../server/loader.ts";
 import type { Middleware } from "../server/middleware.ts";
+import type { PathsFunction } from "../server/paths.ts";
 import { hashRef } from "./crypto.ts";
 
 export function unwrapServerLayer(
@@ -10,9 +11,15 @@ export function unwrapServerLayer(
   const loaders: Loader[] = [];
   const actions: Action[] = [];
   let middleware: Middleware | null = null;
+  let paths: PathsFunction | null = null;
 
   for (const [key, value] of Object.entries(exports)) {
     if (key === "default") continue;
+
+    if (key === "paths") {
+      paths = value as PathsFunction;
+      continue;
+    }
 
     if (key === "middleware") {
       middleware = value as Middleware;
@@ -34,5 +41,5 @@ export function unwrapServerLayer(
     console.warn(`unknown export: ${key}`, value, isLoader(value));
   }
 
-  return [loaders, actions, middleware];
+  return [loaders, actions, middleware, paths];
 }

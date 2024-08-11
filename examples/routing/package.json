@@ -4,9 +4,10 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "vue-tsc --build && pnpm run build:client && pnpm run build:nodejs",
+    "build": "vue-tsc --build && pnpm run build:client && pnpm run build:nodejs && pnpm run build:static",
     "build:client": "vite build --manifest",
     "build:nodejs": "vite build --ssr -c adapters/nodejs/vite.config.ts",
+    "build:static": "vite build --ssr -c adapters/static/vite.config.ts",
     "start": "node server.js",
     "dev": "vite"
   },
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@biliblitz/adapter-nodejs": "workspace:^",
+    "@biliblitz/adapter-static": "workspace:^",
     "@biliblitz/vite": "workspace:^",
     "@types/node": "^20.12.7",
     "@unhead/addons": "^1.9.16",

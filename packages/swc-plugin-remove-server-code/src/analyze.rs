@@ -21,14 +21,14 @@ pub struct Action {
 #[derive(Clone)]
 pub struct Relation {
     pub id: Id,
-    pub depends: Vec<Id>,
+    pub depends: HashSet<Id>,
 }
 
-impl Relation {
-    fn from_ident(ident: &Ident) -> Self {
+impl From<&Ident> for Relation {
+    fn from(value: &Ident) -> Self {
         Self {
-            id: ident.to_id(),
-            depends: Vec::new(),
+            id: value.to_id(),
+            depends: HashSet::new(),
         }
     }
 }
@@ -40,7 +40,7 @@ pub struct AnalyzeVisitor {
     pub loaders: Vec<Loader>,
     pub actions: Vec<Action>,
     pub relations: Vec<Relation>,
-    pub middleware: Option<Relation>,
+    pub additional: HashSet<Id>,
 }
 
 impl AnalyzeVisitor {
@@ -52,7 +52,7 @@ impl AnalyzeVisitor {
     }
 }
 
-pub fn analyze_pat_relations(pat: &Pat, deps: &Vec<Id>) -> Vec<Relation> {
+pub fn analyze_pat_relations(pat: &Pat, deps: &HashSet<Id>) -> Vec<Relation> {
     match pat {
         Pat::Ident(x) => vec![Relation {
             id: x.id.to_id(),
@@ -72,7 +72,7 @@ pub fn analyze_pat_relations(pat: &Pat, deps: &Vec<Id>) -> Vec<Relation> {
                 ObjectPatProp::KeyValue(x) => analyze_pat_relations(&x.value, deps),
                 ObjectPatProp::Assign(x) => {
                     let mut rest = count_idents(&x.value);
-                    rest.extend(deps.iter().cloned());
+                    rest.extend(deps.clone());
 
                     vec![Relation {
                         id: x.key.to_id(),
@@ -84,7 +84,7 @@ pub fn analyze_pat_relations(pat: &Pat, deps: &Vec<Id>) -> Vec<Relation> {
             .collect(),
         Pat::Assign(x) => {
             let mut rest = count_idents(&x.right);
-            rest.extend(deps.iter().cloned());
+            rest.extend(deps.clone());
 
             analyze_pat_relations(&x.left, &rest)
         }
@@ -100,7 +100,7 @@ impl Visit for AnalyzeVisitor {
         match n {
             ModuleItem::ModuleDecl(ModuleDecl::Import(decl)) => {
                 for i in &decl.specifiers {
-                    self.relations.push(Relation::from_ident(&i.local()));
+                    self.relations.push(Relation::from(i.local()));
                 }
             }
 
@@ -111,11 +111,8 @@ impl Visit for AnalyzeVisitor {
 
                         if let Some(name) = name {
                             let name_string = name.sym.to_string();
-                            if name_string == "middleware" {
-                                self.middleware = Some(Relation {
-                                    id: name.to_id(),
-                                    depends: count_idents(&decl.init),
-                                });
+                            if name_string == "middleware" || name_string == "paths" {
+                                self.additional.insert(name.to_id());
                                 continue;
                             }
 

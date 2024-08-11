@@ -1,8 +1,6 @@
-export type StaticEnv = {
-  /** parent possible params */
-  params: Map<string, string>;
-};
-export type StaticFunction = (env: StaticEnv) => string[] | Promise<string[]>;
+export type PathsFunction = (
+  env: Record<string, string>,
+) => string[] | Promise<string[]>;
 
 /**
  * Static params enumerator for SSG (Static Site Generate).
@@ -18,6 +16,6 @@ export type StaticFunction = (env: StaticEnv) => string[] | Promise<string[]>;
  * })
  * ```
  */
-export function static$(fn: StaticFunction) {
+export function paths$(fn: PathsFunction) {
   return fn;
 }

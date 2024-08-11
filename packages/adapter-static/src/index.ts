@@ -95,27 +95,34 @@ export async function generate(
   const outdir = "dist/static";
   const pathnames = [] as string[];
 
-  async function dfs({ route, children }: Directory, current: string = "") {
+  async function dfs(
+    { route, children }: Directory,
+    env: Record<string, string> = {},
+    current: string = "",
+  ) {
     if (route.index !== null) pathnames.push(current);
     for (const [dirname, child] of children) {
       if (dirname.startsWith("[") && dirname.endsWith("]")) {
-        // if (child.route.static === null)
-        //   throw new Error(
-        //     `static.ts is missing for route "${current + dirname + "/"}"`,
-        //   );
-        // const param = dirname === "[...]" ? "$" : dirname.slice(1, -1);
-        // const static1 = manifest.statics[child.route.static];
-        // const possibles = await static1(env);
-        // for (const possible of possibles) {
-        //   env.params.set(param, possible);
-        //   await dfs(child, current + possible + "/");
-        // }
-        // env.params.delete(param);
-        throw new Error("Todo");
+        const paths =
+          child.route.layout == null
+            ? null
+            : manifest.paths[child.route.layout];
+        if (!paths) {
+          throw new Error(
+            "dynamic routes must have `export const paths = ...` in layout",
+          );
+        }
+        const name =
+          dirname.startsWith("[[") && dirname.endsWith("]]")
+            ? dirname.slice(2, -2)
+            : dirname.slice(1, -1);
+        for (const path of await paths(env)) {
+          await dfs(child, { ...env, [name]: path }, current + path + "/");
+        }
       } else if (dirname.startsWith("(") && dirname.endsWith(")")) {
-        await dfs(child, current);
+        await dfs(child, { ...env }, current);
       } else {
-        await dfs(child, current + dirname + "/");
+        await dfs(child, { ...env }, current + dirname + "/");
       }
     }
   }

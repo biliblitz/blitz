@@ -283,6 +283,9 @@ importers:
       "@biliblitz/adapter-nodejs":
         specifier: workspace:^
         version: link:../../packages/adapter-nodejs
+      "@biliblitz/adapter-static":
+        specifier: workspace:^
+        version: link:../../packages/adapter-static
       "@biliblitz/vite":
         specifier: workspace:^
         version: link:../../packages/vite

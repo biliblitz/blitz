@@ -44,7 +44,7 @@ pub struct RemoveVisitor {
     removes: HashSet<Id>,
     loaders: HashMap<Id, Loader>,
     actions: HashMap<Id, Action>,
-    middleware: Option<Id>,
+    additional: HashSet<Id>,
 }
 
 impl VisitMut for RemoveVisitor {
@@ -126,8 +126,8 @@ impl VisitMut for RemoveVisitor {
                                 return true;
                             }
 
-                            // shake middleware
-                            if self.middleware.clone().is_some_and(|x| x == name) {
+                            // shake middleware & paths
+                            if self.additional.contains(&name) {
                                 return false;
                             }
                         }
@@ -192,7 +192,7 @@ impl VisitMut for RemoveVisitor {
 
 impl From<AnalyzeVisitor> for RemoveVisitor {
     fn from(value: AnalyzeVisitor) -> Self {
-        let removes = resolve_remove_relations(value.relations, value.global.iter().cloned());
+        let removes = resolve_remove_relations(value.relations, value.global);
         let loaders = value
             .loaders
             .into_iter()
@@ -203,29 +203,26 @@ impl From<AnalyzeVisitor> for RemoveVisitor {
             .into_iter()
             .map(|x| (x.id.clone(), x))
             .collect();
-        let middleware = value.middleware.and_then(|x| Some(x.id));
+        let additional = value.additional;
 
         Self {
             removes,
             loaders,
             actions,
-            middleware,
+            additional,
         }
     }
 }
 
 /// Get all relation ids that should be remove
-fn resolve_remove_relations(
-    relations: Vec<Relation>,
-    global: impl IntoIterator<Item = Id>,
-) -> HashSet<Id> {
-    let mut queue: VecDeque<Vec<Id>> = VecDeque::new();
+fn resolve_remove_relations(relations: Vec<Relation>, global: HashSet<Id>) -> HashSet<Id> {
+    let mut queue: VecDeque<HashSet<Id>> = VecDeque::new();
     let mut relations = relations
         .into_iter()
         .map(|x| (x.id, x.depends))
         .collect::<HashMap<_, _>>();
 
-    for id in global.into_iter() {
+    for id in global {
         if let Some(depends) = relations.remove(&id) {
             queue.push_back(depends);
         }
@@ -240,4 +237,174 @@ fn resolve_remove_relations(
     }
 
     relations.into_keys().collect()
+}
+
+#[cfg(test)]
+mod test {
+    use std::collections::{HashMap, HashSet};
+
+    use swc_core::{
+        atoms::Atom,
+        common::SyntaxContext,
+        ecma::{transforms::testing::test_inline, visit::as_folder},
+    };
+
+    use crate::{
+        analyze::{Action, Loader},
+        remove::RemoveVisitor,
+    };
+
+    test_inline!(
+        Default::default(),
+        |_| as_folder(RemoveVisitor {
+            removes: HashSet::new(),
+            loaders: HashMap::new(),
+            actions: HashMap::new(),
+            additional: HashSet::new()
+        }),
+        remove_visitor_should_not_change_console_log,
+        r#"console.log("hello world");"#,
+        r#"console.log("hello world");"#
+    );
+
+    test_inline!(
+        Default::default(),
+        |_| as_folder(RemoveVisitor {
+            removes: HashSet::from([(Atom::from("x"), SyntaxContext::from_u32(0))]),
+            loaders: HashMap::new(),
+            actions: HashMap::new(),
+            additional: HashSet::new()
+        }),
+        remove_visitor_should_remove_removes,
+        r#"const x = 114514, y = 1919810;"#,
+        r#"const y = 1919810;"#
+    );
+
+    test_inline!(
+        Default::default(),
+        |_| as_folder(RemoveVisitor {
+            removes: HashSet::from([
+                (Atom::from("x"), SyntaxContext::from_u32(0)),
+                (Atom::from("y"), SyntaxContext::from_u32(0)),
+            ]),
+            loaders: HashMap::new(),
+            actions: HashMap::new(),
+            additional: HashSet::new()
+        }),
+        remove_visitor_should_remove_objects,
+        r#"const { x = 233, z: { y } } = ref();"#,
+        r#""#
+    );
+
+    test_inline!(
+        Default::default(),
+        |_| as_folder(RemoveVisitor {
+            removes: HashSet::from([
+                (Atom::from("x"), SyntaxContext::from_u32(0)),
+                (Atom::from("y"), SyntaxContext::from_u32(0)),
+            ]),
+            loaders: HashMap::new(),
+            actions: HashMap::new(),
+            additional: HashSet::new()
+        }),
+        remove_visitor_should_keep_objects,
+        r#"const { x = 233, z: { y }, ...o } = ref();"#,
+        r#"const { x = 233, z: { y }, ...o } = ref();"#
+    );
+
+    test_inline!(
+        Default::default(),
+        |_| as_folder(RemoveVisitor {
+            removes: HashSet::from([
+                (Atom::from("a"), SyntaxContext::from_u32(0)),
+                (Atom::from("b"), SyntaxContext::from_u32(0)),
+                (Atom::from("c"), SyntaxContext::from_u32(0)),
+                (Atom::from("d"), SyntaxContext::from_u32(0)),
+                (Atom::from("e"), SyntaxContext::from_u32(0)),
+            ]),
+            loaders: HashMap::new(),
+            actions: HashMap::new(),
+            additional: HashSet::new()
+        }),
+        remove_visitor_should_remove_imports,
+        r#"
+        import { a } from "vue";
+        import { a as b } from "vue";
+        import c from "vue";
+        import * as d from "vue";
+        import { e, f } from "vue";
+        import "./style.css";
+        "#,
+        r#"
+        import { f } from "vue";
+        import "./style.css";
+        "#
+    );
+
+    test_inline!(
+        Default::default(),
+        |_| as_folder(RemoveVisitor {
+            removes: HashSet::new(),
+            loaders: HashMap::from([(
+                (Atom::from("useRandom"), SyntaxContext::from_u32(0)),
+                Loader {
+                    id: (Atom::from("useRandom"), SyntaxContext::from_u32(0)),
+                    name: String::from("abcdefg")
+                }
+            )]),
+            actions: HashMap::new(),
+            additional: HashSet::new()
+        }),
+        remove_visitor_should_replace_loaders,
+        r#"export const useRandom = loader$(() => Math.random());"#,
+        r#"
+        import { useLoader as _useLoader } from "@biliblitz/blitz";
+        export const useRandom = () => _useLoader("abcdefg");
+        "#
+    );
+
+    test_inline!(
+        Default::default(),
+        |_| as_folder(RemoveVisitor {
+            removes: HashSet::new(),
+            loaders: HashMap::new(),
+            actions: HashMap::from([(
+                (Atom::from("useRandom"), SyntaxContext::from_u32(0)),
+                Action {
+                    id: (Atom::from("useRandom"), SyntaxContext::from_u32(0)),
+                    name: String::from("abcdefg"),
+                    method: String::from("POST")
+                }
+            )]),
+            additional: HashSet::new()
+        }),
+        remove_visitor_should_replace_actions,
+        r#"export const useRandom = action$(() => Math.random());"#,
+        r#"
+        import { useAction as _useAction } from "@biliblitz/blitz";
+        export const useRandom = () => _useAction("abcdefg", "POST");
+        "#
+    );
+
+    test_inline!(
+        Default::default(),
+        |_| as_folder(RemoveVisitor {
+            removes: HashSet::new(),
+            loaders: HashMap::new(),
+            actions: HashMap::new(),
+            additional: HashSet::from([
+                (Atom::from("paths"), SyntaxContext::from_u32(0)),
+                (Atom::from("middleware"), SyntaxContext::from_u32(0)),
+            ])
+        }),
+        remove_visitor_should_remove_additional,
+        r#"
+        export const middleware = middleware$(async (c, next) => { next(); });
+        export const paths = () => ["alice", "bob"];
+        export const other = 114514;
+        "#,
+        r#"
+        export const other = 114514;
+        "#
+    );
 }

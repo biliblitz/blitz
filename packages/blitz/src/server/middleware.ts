@@ -1,9 +1,6 @@
 import type { Context, Next } from "hono";
 
-export interface Middleware {
-  (c: Context, next: Next): Promise<void>;
-  _ref?: string;
-}
+export type Middleware = (c: Context, next: Next) => Promise<void>;
 
 /**
  * Middleware for nesting routes.

@@ -26,11 +26,12 @@ export function toServerManifestCode(
     ...project.componentPaths.flatMap((path, i) => [
       `import c${i} from "${path}";`,
       `import * as y${i} from "${path}";`,
-      `const [l${i}, a${i}, m${i}] = unwrapServerLayer(y${i}, "${hashRef(path)}");`,
+      `const [l${i}, a${i}, m${i}, p${i}] = unwrapServerLayer(y${i}, "${hashRef(path)}");`,
     ]),
 
     `const base = ${s(base)};`,
     `const entry = ${s(graph.entry)};`,
+    `const paths = [${project.componentPaths.map((_, i) => `p${i}`).join(", ")}];`,
     `const styles = [${graph.styles.map((x) => s(x)).join(", ")}];`,
     `const routes = ${generateRoutes(project, base, (i) => `c${i}`)};`,
     `const actions = [${project.componentPaths.map((_, i) => `a${i}`).join(", ")}];`,
@@ -38,7 +39,7 @@ export function toServerManifestCode(
     `const directory = ${s(project.directory)};`,
     `const middlewares = [${project.componentPaths.map((_, i) => `m${i}`).join(", ")}];`,
 
-    `export const manifest = { base, entry, styles, routes, actions, loaders, directory, middlewares };`,
+    `export const manifest = { base, entry, paths, styles, routes, actions, loaders, directory, middlewares };`,
   ].join("\n");
 }
 
