@@ -1,6 +1,6 @@
 {
   "name": "@biliblitz/vite",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A blitzing minimal backend-framework for Preact (Vite plugins)",
   "type": "module",
   "files": [
@@ -25,7 +25,7 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@biliblitz/blitz": "^0.2.0"
+    "@biliblitz/blitz": "^0.3.0"
   },
   "devDependencies": {
     "@swwind/exbuild": "^1.0.8",

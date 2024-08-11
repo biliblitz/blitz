@@ -326,14 +326,14 @@ importers:
   packages/adapter-static:
     dependencies:
       hono:
-        specifier: ^4.2.3
-        version: 4.5.0
+        specifier: ^4
+        version: 4.5.4
       kolorist:
         specifier: ^1.8.0
         version: 1.8.0
     devDependencies:
       "@biliblitz/blitz":
-        specifier: ^0.2.0
+        specifier: ^0.3.0
         version: link:../blitz
       "@swwind/exbuild":
         specifier: ^1.0.8
@@ -355,7 +355,7 @@ importers:
         version: 3.68.0(@cloudflare/workers-types@4.20240729.0)
     devDependencies:
       "@biliblitz/blitz":
-        specifier: ^0.2.0
+        specifier: ^0.3.0
         version: link:../blitz
       "@swwind/exbuild":
         specifier: ^1.0.8
@@ -410,7 +410,7 @@ importers:
   packages/vite:
     dependencies:
       "@biliblitz/blitz":
-        specifier: ^0.2.0
+        specifier: ^0.3.0
         version: link:../blitz
       "@biliblitz/swc-plugin-remove-server-code":
         specifier: ^0.0.1

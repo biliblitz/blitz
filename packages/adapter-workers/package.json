@@ -25,7 +25,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@biliblitz/blitz": "^0.2.0",
+    "@biliblitz/blitz": "^0.3.0",
     "@swwind/exbuild": "^1.0.8",
     "@types/node": "^20.14.11",
     "typescript": "^5.5.4",

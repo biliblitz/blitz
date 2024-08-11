@@ -24,15 +24,17 @@
     "build": "rm -rf dist && tsc --build && exbuild"
   },
   "license": "MIT",
+  "peerDependencies": {
+    "hono": "^4"
+  },
   "devDependencies": {
-    "@biliblitz/blitz": "^0.2.0",
+    "@biliblitz/blitz": "^0.3.0",
     "@swwind/exbuild": "^1.0.8",
     "@types/node": "^20.14.11",
     "typescript": "^5.5.4",
     "vite": "^5"
   },
   "dependencies": {
-    "hono": "^4.2.3",
     "kolorist": "^1.8.0"
   }
 }
