@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { useBlitz } from "@biliblitz/blitz";
 import { useHead } from "@unhead/vue";
 

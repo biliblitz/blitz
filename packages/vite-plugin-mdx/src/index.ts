@@ -13,6 +13,7 @@ const isMdx = (x: string) => /\.mdx?$/.test(x.split("?")[0]);
 
 export function blitzMdx(options?: CompileOptions): Plugin {
   options ??= {};
+  options.jsx = false;
   options.jsxImportSource ??= "vue";
   options.elementAttributeNameCase = "html";
 

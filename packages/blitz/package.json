@@ -1,7 +1,7 @@
 {
   "name": "@biliblitz/blitz",
   "version": "0.3.0",
-  "description": "A blitzing minimal backend-framework for Preact",
+  "description": "A blitzing minimal backend-framework for Vue",
   "type": "module",
   "files": [
     "src",

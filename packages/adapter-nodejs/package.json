@@ -1,7 +1,7 @@
 {
   "name": "@biliblitz/adapter-nodejs",
   "version": "0.0.1",
-  "description": "A blitzing minimal backend-framework for Preact (Vite plugin for nodejs)",
+  "description": "A blitzing minimal backend-framework for Vue (Vite plugin for nodejs)",
   "type": "module",
   "files": [
     "src",

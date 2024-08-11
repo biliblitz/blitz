@@ -1,7 +1,7 @@
 {
   "name": "@biliblitz/adapter-workers",
   "version": "0.0.1",
-  "description": "A blitzing minimal backend-framework for Preact (Vite plugin for cloudflare workers)",
+  "description": "A blitzing minimal backend-framework for Vue (Vite plugin for cloudflare workers)",
   "type": "module",
   "files": [
     "src",
