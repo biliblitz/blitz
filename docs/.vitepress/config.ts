@@ -15,7 +15,10 @@ export default defineConfig({
     sidebar: [
       {
         text: "教程",
-        items: [{ text: "快速开始", link: "/tutorial/start" }],
+        items: [
+          { text: "快速开始", link: "/tutorial/start" },
+          { text: "为什么选择 Blitz", link: "/tutorial/why" },
+        ],
       },
       {
         text: "设计",

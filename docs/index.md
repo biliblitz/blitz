@@ -4,15 +4,15 @@ layout: home
 
 hero:
   name: "Blitz"
-  text: "A blitzingly fast, game changing, next generation meta framework for preact."
-  tagline: 现在购买立减 -100%
+  text: "基于 Vue 的轻量化全栈框架"
+  tagline: 我最讨厌的就是一大堆的配置文件了
   actions:
     - theme: brand
       text: 立即开始
       link: /tutorial/start
     - theme: alt
-      text: 为什么要用这个
-      link: /tutorial/start
+      text: 为什么选择 Blitz
+      link: /tutorial/why
 
 features:
   - title: File structure based routings

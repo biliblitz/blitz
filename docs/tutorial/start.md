@@ -1,32 +1,7 @@
 # 开始
 
-首先选择一份模板，可以是 [`minimal`][minimal]，[`recommend`][recommend] 或者 [`full`][full] 中的一个。点击连接可以查看每个版本的特性列表。选择好之后就将下面指令中的 `recommend` 替换为你希望的分支。
+当前没有什么工具可以直接给你创建一个新的项目，但是你可以从本仓库的 `examples/minimal` 中自行 fork 出去一个。
 
-```bash
-# 将项目拷贝到 blitz-example 文件夹
-git clone -b recommend --depth 1 https://github.com/biliblitz/blitz-template blitz-example
-```
+这个模板里面有些依赖写的是 `workspace:^`，所以你最好 `install` 之前手动改一下。
 
-接着进入 `blitz-example` 文件夹，做一些初始操作。
-
-1. 删除旧版本 lock 文件，确保安装最新版本的依赖（可选）
-
-   ```bash
-   rm -rf pnpm-lock.yaml
-   ```
-
-2. 安装依赖
-
-   ```bash
-   pnpm install # or npm, yarn
-   ```
-
-3. 重新初始化 git 项目（可选）
-
-   ```bash
-   rm -rf .git && git init
-   ```
-
-[full]: https://github.com/biliblitz/blitz-template/tree/full
-[minimal]: https://github.com/biliblitz/blitz-template/tree/minimal
-[recommend]: https://github.com/biliblitz/blitz-template/tree/recommend
+最小化的模板中只包含了能让 Blitz 正常工作的基本配置，如果你想要安装其他更多的工具，可以参考本文档中的其他页面。

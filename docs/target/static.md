@@ -4,10 +4,16 @@
 
 ## 引入
 
-首先创建 `adapters/static/vite.config.ts` 文件，写入如下内容。
+首先安装新的依赖。
+
+```sh
+npm i -D @biliblitz/adapter-static
+```
+
+之后创建 `adapters/static/vite.config.ts` 文件，写入如下内容。
 
 ```js
-import { staticAdapter } from "@biliblitz/vite/adapters/static";
+import { staticAdapter } from "@biliblitz/adapter-static";
 import { defineConfig, mergeConfig } from "vite";
 import baseConfig from "../../vite.config.ts";
 
@@ -24,7 +30,7 @@ export default mergeConfig(
 );
 ```
 
-接着，创建 `src/entry.static.tsx` 文件，作为服务端渲染的入口。
+创建 `src/entry.static.tsx` 文件，作为服务端渲染的入口。
 
 ```tsx
 import server from "./entry.server.tsx";
@@ -37,33 +43,7 @@ export default server;
 ```json
 {
   "scripts": {
-    "build:static": "vite build --outDir dist/static --ssr -c adapters/static/vite.config.ts"
-  }
-}
-```
-
-最后，可以添加 `server-static.js`，可以在构建完成之后在本地进行预览（可选）。
-
-```js
-import { Hono } from "hono";
-import { serve } from "@hono/node-server";
-import { serveStatic } from "@hono/node-server/serve-static";
-
-const app = new Hono();
-
-app.use(serveStatic({ root: "./dist/static/" }));
-
-serve(app, (info) => {
-  console.log(`Listening on http://localhost:${info.port}/`);
-});
-```
-
-并且添加启动预览静态构建的脚本（可选）。
-
-```json
-{
-  "scripts": {
-    "start:static": "node server-static.js"
+    "build:static": "vite build --ssr -c adapters/static/vite.config.ts"
   }
 }
 ```
@@ -76,14 +56,25 @@ serve(app, (info) => {
 npm run build:client && npm run build:static
 ```
 
+## 启动
+
+因为是静态文件，直接使用你喜欢的工具启动就好了。
+
+```sh
+# 最简单粗暴
+python -m http.server -d ./dist/static -b "::"
+# 如果你真的很喜欢 nodejs
+npx serve ./dist/static
+```
+
 ## 配置
 
 在 `adapters/static/vite.config.ts` 中可以编辑选项。
 
 - `origin` - 目标部署网站的 Host，例如 `https://example.github.io`，**注意结尾没有斜杠（`/`）！**
-- `sitemap` - 是否生成 sitemap（默认 true）。
+- `sitemap` - 是否生成 sitemap（默认 `true`）。
 
-如果你生成了 sitemap，记得编辑 `public/robots.txt`，添加下面的内容，指向生成的 sitemap 文件。
+如果你生成了 sitemap，记得编辑 `public/robots.txt`，添加下面的内容，指向生成的 sitemap 文件。这样谷歌等搜索引擎才会正常工作。
 
 ```
 User-agent: *
@@ -108,3 +99,5 @@ export default mergeConfig(
   }),
 );
 ```
+
+一般来说体验应该会和开发环境一致，如果你有遇到什么问题，可以及时反馈。
