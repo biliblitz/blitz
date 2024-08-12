@@ -23,10 +23,10 @@ export default defineConfig({
       {
         text: "设计",
         items: [
-          { text: "Routing", link: "/design/routing" },
+          { text: "路由系统", link: "/design/routing" },
           { text: "Loader", link: "/design/loader" },
           { text: "Action", link: "/design/action" },
-          { text: "Middleware", link: "/design/middleware" },
+          { text: "中间件", link: "/design/middleware" },
         ],
       },
       {

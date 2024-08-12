@@ -48,6 +48,34 @@ export default server;
 }
 ```
 
+## 添加 SSG 函数
+
+对于某些动态的请求路径（例如 `[name]` 和 `[[name]]`），你需要在其中的 `layout.xxx` 中导出名为 `paths` 的函数，用于静态生成的时候填充这些字段。
+
+例如你应该编辑 `src/routes/user/[name]/layout.vue`，添加如下内容。
+
+```vue
+<script lang="ts">
+import { paths$ } from "@biliblitz/blitz/server";
+import { db } from "~/utils/database.ts";
+
+export const paths = paths$(async () => {
+  const users = await db.listUser();
+  return users.map((user) => user.name);
+});
+</script>
+```
+
+假如你还需要父级的动态路由的数据，可以通过第一个参数获取。
+
+```ts
+// src/routes/[first]/[last]/layout.vue
+export const paths = paths$(async (c) => {
+  const users = await db.listUserByFirstName(c.first);
+  return users.map((user) => user.lastName);
+});
+```
+
 ## 构建
 
 需要先构建 `build:client`，才可以构建 `build:static`。

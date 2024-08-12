@@ -1,65 +1,80 @@
 # Action
 
-Action 用于描述一次对于服务器的 POST 请求。
+Action 用于描述一次对于服务器的修改请求，可以是 POST、DELETE、PATCH 或者 PUT 方法。
 
 ## 简述
 
-- Action 仅可以声明于 `app/routes` 文件夹下的 `index.tsx` 或者 `layout.tsx` 文件中；
-- 使用 `action$` 函数进行定义，该函数会返回一个钩子函数用于引用请求的结果；
-- 定义的所有 Action 必须从该文件中导出；
+- Action 仅可以声明于 `src/routes` 文件夹下的 `index.xxx` 或者 `layout.xxx` 文件中；
+- 使用 `action$` 函数进行定义，该函数会返回一个钩子函数用于发送请求和获取结果；
+- 请不要修改 `action$` 的名称，编译器魔法会检查这个标识符来寻找 Action；
+- 定义的所有 Action 必须从该文件中导出。
 
 ## 示例
 
-```tsx
-import { action$ } from "@biliblitz/blitz/server";
+```vue
+<!-- src/routes/index.vue -->
 
-// 使用 action$ 进行定义
-export const useLogin = action$(async (evt: FetchEvent) => {
-  const formData = await evt.request.formData();
+<template>
+  <Form :action="login">
+    <input type="text" name="username" />
+    <input type="password" name="password" />
+    <button type="submit">Log in</button>
+  </Form>
+</template>
+
+<script lang="ts">
+import { action$, RedirectException } from "@biliblitz/blitz/server";
+
+// 使用 action$ 进行定义并导出
+export const useLogin = action$(async (c) => {
+  const formData = await c.req.formData();
 
   const username = formData.get("username");
   const password = formData.get("password");
 
   if (username === "alice" && password === "Passw0rd!") {
-    evt.headers.append("Set-Cookie", "user=alice");
-    throw new URL("/home", evt.request.url);
+    c.header("Set-Cookie", "user=alice");
+    return { ok: true };
   }
 
   return { ok: false };
 });
+</script>
 
-export default () => {
-  const login = useLogin(); // ActionHandler<{ ok: boolean }>
+<script setup lang="ts">
+import { Form, watchAction } from "@biliblitz/blitz";
 
-  return (
-    <Form action={login}>
-      <input type="text" name="username" />
-      <input type="password" name="password" />
-      <button type="submit">Log in</button>
-    </Form>
-  );
-};
+const login = useLogin(); // ActionHandler<{ ok: boolean }>
+
+// 你可以用 watchAction 函数手动绑定监听
+watchAction(login, {
+  success(data) {
+    alert(data.ok ? "login success" : "login fail");
+  },
+  error(e) {
+    alert("error: " + e.message);
+  },
+});
+</script>
 ```
 
 ## API
 
-### `ActionHandler<T>.state: ActionState`
+```ts
+interface ActionHandler<T> {
+  // 获取 Action 实例当前的状态和数据。
+  status: ActionState<T>;
+  // 手动发起一次 POST 请求
+  submit(formData: FormData): Promise<void>;
+}
 
-获取 Action 实例当前的状态和数据。
-
-### `ActionHandler<T>.submit(data: FormData): Promise<void>`
-
-手动发起一次 POST 请求，使用 [`Form`](./form.md) 可以自动化提交的行为。该
-Promise 会在请求处理结束之后返回。
-
-### `ActionState.state: "idle" | "waiting" | "error" | "ok"`
-
-表示 Action 实例当前的状态。
-
-### `ActionState.data: T | null`
-
-存放 Action 数据，仅当 `.state` 为 `"ok"` 的时候有值，其余情况为 `null`。
-
-### `ActionState.error: Error | null`
-
-存放 Error 对象，仅当 `.state` 为 `"error"` 的时候有值，其余情况为 `null`。
+type ActionState<T> =
+  // 初始状态
+  | { state: "idle"; data: null; error: null }
+  // 发送请求之后
+  | { state: "waiting"; data: null; error: null }
+  // 收到 200 响应之后
+  | { state: "ok"; data: T; error: null }
+  // 如果任意一个途中出了问题
+  | { state: "error"; data: null; error: Error };
+```
