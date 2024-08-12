@@ -10,6 +10,7 @@ export type LoaderFunction<T extends LoaderReturnValue = LoaderReturnValue> = (
 ) => T | Promise<T>;
 export interface Loader<T extends LoaderReturnValue = LoaderReturnValue> {
   (): LoaderHandler<T>;
+  _m?: Middleware;
   _fn?: LoaderFunction<T>;
   _ref?: string;
 }

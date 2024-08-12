@@ -23,8 +23,10 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
 
     async runLayer(id: number) {
       for (const loader of manifest.loaders[id]) {
-        const data = await loader._fn!(context);
-        loaderStore.set(loader._ref!, data);
+        await loader._m!(context, async () => {
+          const data = await loader._fn!(context);
+          loaderStore.set(loader._ref!, data);
+        });
       }
       layers.push(id);
     },
@@ -36,7 +38,11 @@ export function createFetchEvent(context: Context, manifest: ServerManifest) {
     },
 
     async runAction<T extends ActionReturnValue>(action: Action<T>) {
-      return await action._fn!(context);
+      let value: T = null as T;
+      await action._m!(context, async () => {
+        value = await action._fn!(context);
+      });
+      return value;
     },
 
     findAction<T extends ActionReturnValue>(ref: string) {
