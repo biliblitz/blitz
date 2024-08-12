@@ -4,6 +4,8 @@ import type { Loader } from "./loader.ts";
 import type { Middleware } from "./middleware.ts";
 import type { PathsFunction } from "./paths.ts";
 
+export interface Env {}
+
 export type Graph = {
   entry: string;
   styles: string[];

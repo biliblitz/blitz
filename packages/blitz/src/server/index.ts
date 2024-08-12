@@ -12,4 +12,4 @@ export type { Loader } from "./loader.ts";
 export type { Middleware } from "./middleware.ts";
 export type { PathsFunction } from "./paths.ts";
 
-export type { ServerManifest, Graph, Route, Directory } from "./types.ts";
+export type { Env, ServerManifest, Graph, Route, Directory } from "./types.ts";

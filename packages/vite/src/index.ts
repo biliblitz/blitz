@@ -122,7 +122,10 @@ export function blitz(): Plugin<{ fetch?: { env: any; ctx: any } }> {
 
       // on new file created
       if (looksLikeLayer) {
-        server.ws.send({ type: "full-reload" });
+        // we don't full-reload full page for speed.
+        // if user finds "loader not found", one should manually reload page.
+        // server.ws.send({ type: "full-reload" });
+
         // do a clean flush
         if (!project.componentPaths.includes(file)) {
           structure.fresh();

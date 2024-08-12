@@ -1,6 +1,10 @@
 import type { Context, Next } from "hono";
+import type { Env } from "./types.ts";
 
-export type Middleware = (c: Context, next: Next) => Promise<void>;
+export type Middleware = (
+  c: Context<{ Bindings: Env }>,
+  next: Next,
+) => Promise<void>;
 
 /**
  * Middleware for nesting routes.
@@ -27,7 +31,7 @@ export type Middleware = (c: Context, next: Next) => Promise<void>;
  * // Note: export this middleware is not needed.
  * const verifyLogin = middleware$(async (c, next) => {
  *   if (await notLogin())
- *     throw new RedirectException(new URL("/login", c.req.url));
+ *     throw new RedirectException("/login");
  *   await next();
  * });
  * // you can directly use it here

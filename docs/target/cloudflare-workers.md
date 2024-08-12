@@ -34,6 +34,7 @@ export default mergeConfig(
 创建 `src/entry.workers.ts` 文件，作为服务端渲染的入口。
 
 ```ts
+import type { Env } from "@biliblitz/blitz/server";
 import server from "./entry.server.ts";
 
 import { getAssetFromKV } from "@cloudflare/kv-asset-handler";
@@ -57,16 +58,24 @@ export default {
 } satisfies ExportedHandler<Env>;
 ```
 
-创建 `src/workers.d.ts`，添加一些全局类型声明。
+创建 `src/workers-env.d.ts`，添加一些全局类型声明。
+
+```ts
+import type { Env } from "@biliblitz/blitz/server";
+
+declare module "@biliblitz/blitz/server" {
+  export interface Env {
+    __STATIC_CONTENT: KVNamespace<string>;
+  }
+}
+```
+
+创建 `src/workers-assets.d.ts`，添加如下内容。
 
 ```ts
 declare module "__STATIC_CONTENT_MANIFEST" {
   declare const x: string;
   export default x;
-}
-
-interface Env {
-  __STATIC_CONTENT: KVNamespace<string>;
 }
 ```
 
@@ -135,5 +144,3 @@ npm run start
 ## 说明
 
 你应该可以在开发环境和生产环境都能够正常使用 cloudflare 的各种功能（例如 KV、D1 等），如果遇到什么非预期的不工作等问题，请及时反馈。
-
-另外，`loader$` 和 `action$` 中的 `Context` 还无法使用全局声明的 `Env` 变量，请等待后续更新。

@@ -2,10 +2,11 @@ import { useAction } from "../client/action.ts";
 import type { Context } from "hono";
 import { middleware$, type Middleware } from "./middleware.ts";
 import type { Ref } from "vue";
+import type { Env } from "./types.ts";
 
 export type ActionReturnValue = {} | null;
 export type ActionFunction<T extends ActionReturnValue = ActionReturnValue> = (
-  c: Context,
+  c: Context<{ Bindings: Env }>,
 ) => T | Promise<T>;
 export interface Action<T extends ActionReturnValue = ActionReturnValue> {
   (): ActionHandler<T>;

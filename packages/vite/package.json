@@ -1,6 +1,6 @@
 {
   "name": "@biliblitz/vite",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A blitzing minimal backend-framework for Vue (Vite plugins)",
   "type": "module",
   "files": [

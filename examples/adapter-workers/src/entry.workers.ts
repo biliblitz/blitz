@@ -1,3 +1,4 @@
+import type { Env } from "@biliblitz/blitz/server";
 import server from "./entry.server.ts";
 
 import { getAssetFromKV } from "@cloudflare/kv-asset-handler";

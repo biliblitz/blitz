@@ -2,10 +2,11 @@ import type { Context } from "hono";
 import { useLoader } from "../client/loader.ts";
 import { middleware$, type Middleware } from "./middleware.ts";
 import type { ComputedRef } from "vue";
+import type { Env } from "./types.ts";
 
 export type LoaderReturnValue = {} | null;
 export type LoaderFunction<T extends LoaderReturnValue = LoaderReturnValue> = (
-  c: Context,
+  c: Context<{ Bindings: Env }>,
 ) => T | Promise<T>;
 export interface Loader<T extends LoaderReturnValue = LoaderReturnValue> {
   (): LoaderHandler<T>;
