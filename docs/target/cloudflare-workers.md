@@ -83,7 +83,7 @@ compatibility_flags = ["nodejs_compat"]
 bucket = "./dist/workers/assets"
 ```
 
-编辑 `vite.config.ts`，添加 `workersDev()` 插件到列表中。
+编辑 `vite.config.ts`，添加 `workersDev()` 到插件列表中。
 
 <!-- prettier-ignore -->
 ```ts

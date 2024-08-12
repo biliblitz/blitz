@@ -35,6 +35,7 @@ export default defineConfig({
           { text: "Nodejs", link: "/target/nodejs" },
           { text: "Static", link: "/target/static" },
           { text: "Cloudflare Pages", link: "/target/cloudflare-pages" },
+          { text: "Cloudflare Workers", link: "/target/cloudflare-workers" },
         ],
       },
       {

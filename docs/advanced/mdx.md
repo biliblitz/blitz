@@ -1,21 +1,28 @@
 # Markdown & MDX
 
-MDX 是将 Markdown 文档编译成 JSX 文件的技术，在 blitz 中 index 和 layout 部分可以使用 MDX 进行编写。
+MDX 是将 Markdown 文档编译成 JS 文件的技术。
+
+在 Blitz 中，`index.xxx` 和 `layout.xxx` 部分可以使用 MDX 进行编写。
 
 ## 开始
 
 编辑 `vite.config.ts`，写入以下内容
 
+<!-- prettier-ignore -->
 ```js
-import { blitzMdx } from "@biliblitz/vite";
+import { blitzMdx } from "@biliblitz/vite-plugin-mdx";
+
 export default defineConfig({
   plugins: [
     /* ... */
     blitzMdx({
-      remarkPlugins: /* remark plugins */ [],
-      rehypePlugins: /* rehype plugins */ [],
-      jsxImportSource: "preact",
+      jsxImportSource: "vue",
+      remarkPlugins: [/* remark plugins */],
+      rehypePlugins: [/* rehype plugins */],
     }),
+    /* 记得放在 blitz 前面 */
+    blitz(),
+    /* ... */
   ],
   /* ... */
 });
@@ -37,12 +44,12 @@ title: Welcome page
 
 ## 高级操作
 
-如果你想要将 MDX 文件中的 `<a />` 统一替换成 `<Link />`，或者其他需要替换的 HTML 标签，则可以使用 `@mdx-js/preact` 模块。
+如果你想要将 MDX 文件中的 `<a />` 统一替换成 `<Link />`，或者其他需要替换的 HTML 标签，则可以使用 `@mdx-js/vue` 模块。
 
-首先安装 `@mdx-js/preact` 模块。
+首先安装 `@mdx-js/vue` 模块。
 
 ```bash
-pnpm add @mdx-js/preact
+npm i @mdx-js/vue
 ```
 
 编辑 `vite.config.json`，添加如下内容。
@@ -53,32 +60,29 @@ export default defineConfig({
     /* ... */
     blitzMdx({
       /* ... */
-      providerImportSource: "@mdx-js/preact",
+      providerImportSource: "@mdx-js/vue",
     }),
   ],
 });
 ```
 
-接着编辑 `app/root.tsx`，找到 `<RouterOutlet />`，并在其外层添加一个 `<MDXProvider />`。
+接着编辑 `src/Root.vue`，找到 `<router-view />`，在其外层套一个 `<MDXProvider />`。
 
-```jsx
-import { Link } from "@biliblitz/blitz";
+```vue
+<script setup lang="ts">
+import { Link } from "~/components/Link.vue";
+import { MDXProvider } from "@mdx-js/vue";
+// ...
+</script>
 
-export default () => {
-  return (
-    <BlitzCityProvider lang="en">
-      <head>{/* ... */}</head>
-      <body>
-        <MDXProvider components={{ a: Link }}>
-          <RouterOutlet />
-        </MDXProvider>
-      </body>
-    </BlitzCityProvider>
-  );
-};
+<template>
+  <MDXProvider :components="{ a: Link }">
+    <router-view />
+  </MDXProvider>
+</template>
 ```
 
-之后重新启动 `vite` 服务器，或者重新构建即可。
+之后，所有 MDX 文件里面的 `a` 标签都会自动换成 `Link` 进行渲染了。
 
 ## 常用插件
 
@@ -89,7 +93,7 @@ export default () => {
 首先安装 `remark-gfm` 模块。
 
 ```bash
-pnpm add -D remark-gfm
+npm i -D remark-gfm
 ```
 
 之后编辑 `vite.config.ts`，在 `remarkPlugins` 中添加 `remarkGfm`。
@@ -113,7 +117,7 @@ export default defineConfig({
 有时候需要支持数学公式，可以使用 `remark-math` 和 `rehype-katex`。
 
 ```bash
-pnpm add -D remark-math rehype-katex katex
+npm i -D remark-math rehype-katex katex
 ```
 
 之后可能需要手动干预 katex 版本，因为 `rehype-katex` 依赖的 `katex` 版本可能跟手动安装的版本不同。
@@ -129,10 +133,10 @@ pnpm add -D remark-math rehype-katex katex
 }
 ```
 
-之后使用 `pnpm install` 同步即可。
+之后使用 `npm install` 同步即可。
 
 ```bash
-pnpm install
+npm install
 ```
 
 完成之后编辑 `vite.config.ts`，分别添加 `remark-math` 和 `rehype-katex` 插件。
@@ -153,7 +157,7 @@ export default defineConfig({
 });
 ```
 
-最后编辑 `app/root.tsx`，在最开始引入 `katex` 的样式文件即可。
+最后编辑 `src/Root.vue`，在最开始引入 `katex` 的样式文件即可。
 
 ```jsx
 import "katex/dist/katex.min.css";
@@ -166,7 +170,7 @@ import "katex/dist/katex.min.css";
 首先安装 `rehype-prism-plus` 模块。
 
 ```bash
-pnpm add -D rehype-prism-plus prismjs
+npm i -D rehype-prism-plus prismjs
 ```
 
 之后编辑 `vite.config.ts`，添加该插件，同时写入配置信息。
