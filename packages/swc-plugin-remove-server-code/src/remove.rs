@@ -72,24 +72,18 @@ impl VisitMut for RemoveVisitor {
                             if let Some(loader) = self.loaders.get(&name) {
                                 // x.init = () => _useLoader("name");
                                 x.init = Some(Box::new(Expr::Arrow(ArrowExpr {
-                                    span: DUMMY_SP,
-                                    params: Vec::new(),
                                     body: Box::new(BlockStmtOrExpr::Expr(Box::new(Expr::Call(
                                         CallExpr {
-                                            span: DUMMY_SP,
                                             callee: Callee::Expr(Box::new(Expr::Ident(
                                                 use_loader.clone(),
                                             ))),
                                             args: vec![ExprOrSpread::from(Expr::from(
                                                 loader.name.clone(),
                                             ))],
-                                            type_args: None,
+                                            ..Default::default()
                                         },
                                     )))),
-                                    is_async: false,
-                                    is_generator: false,
-                                    type_params: None,
-                                    return_type: None,
+                                    ..Default::default()
                                 })));
 
                                 has_loader = true;
@@ -99,11 +93,8 @@ impl VisitMut for RemoveVisitor {
                             if let Some(action) = self.actions.get(&name) {
                                 // x.init = () => _useAction("name", "method");
                                 x.init = Some(Box::new(Expr::Arrow(ArrowExpr {
-                                    span: DUMMY_SP,
-                                    params: Vec::new(),
                                     body: Box::new(BlockStmtOrExpr::Expr(Box::new(Expr::Call(
                                         CallExpr {
-                                            span: DUMMY_SP,
                                             callee: Callee::Expr(Box::new(Expr::Ident(
                                                 use_action.clone(),
                                             ))),
@@ -113,13 +104,10 @@ impl VisitMut for RemoveVisitor {
                                                     action.method.clone(),
                                                 )),
                                             ],
-                                            type_args: None,
+                                            ..Default::default()
                                         },
                                     )))),
-                                    is_async: false,
-                                    is_generator: false,
-                                    type_params: None,
-                                    return_type: None,
+                                    ..Default::default()
                                 })));
 
                                 has_action = true;

@@ -1,6 +1,6 @@
 {
   "name": "@biliblitz/swc-plugin-remove-server-code",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "swwind <i@sww.moe>",
   "license": "MIT",
   "keywords": [
@@ -33,7 +33,7 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@swc/core": "~1.6"
+    "@swc/core": "~1.7"
   },
   "preferUnplugged": true
 }
