@@ -52,10 +52,13 @@ jobs:
           for dir in ./packages/* ; do
             if [ -f "$dir/package.json" ]; then
               pushd "$dir"
-              npm publish --provenance --access public 2> >(tee -a error.log >&2)
-              if [ "$?" == "0" ] || grep -q "previously published" error.log; then
-                echo success or already published
+              npm publish --provenance --access public 2> error.log
+              if [ "$?" == "0" ]; then
+                cat error.log
+              elif grep -q "previously published" error.log; then
+                echo "skip as already published"
               else
+                cat error.log
                 exit 1
               fi
               popd
