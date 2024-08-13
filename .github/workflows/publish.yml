@@ -43,10 +43,10 @@ jobs:
           pnpm build:pkgs
       - name: Publish to NPM
         env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           for dir in ./packages/* ; do
             if [ -f "$dir/package.json" ]; then
-              ( cd "$dir" && npm publish --access public || true )
+              ( cd "$dir" && npm publish --provenance --access public )
             fi
           done
