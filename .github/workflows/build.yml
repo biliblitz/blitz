@@ -40,3 +40,13 @@ jobs:
       run: |
         cargo test
         pnpm build
+    - name: Publish to NPM
+      if: startsWith(github.event.head_commit.message, 'release')
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: |
+        for dir in ./packages/* ; do
+          if [ -f "$dir/package.json" ]; then
+            ( cd "$dir" && npm publish --access public )
+          fi
+        done
