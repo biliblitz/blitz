@@ -24,8 +24,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
-        with:
-          save-if: ${{ github.ref == 'refs/heads/master' }}
       - uses: pnpm/action-setup@v2
         with:
           version: 9.6.0
@@ -42,3 +40,56 @@ jobs:
         run: |
           cargo test
           pnpm build
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: NPM_TOKEN
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, 'release') }}
+    permissions:
+      contents: read
+      id-token: write
+
+    strategy:
+      matrix:
+        node-version: [20]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.6.0
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          registry-url: "https://registry.npmjs.org/"
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+      - name: Install
+        run: |
+          rustup target add wasm32-wasi
+          pnpm install
+      - name: Build Packages
+        run: pnpm build:pkgs
+      - name: Publish to NPM
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set +e
+          for dir in ./packages/* ; do
+            if [ -f "$dir/package.json" ]; then
+              pushd "$dir"
+              npm publish --provenance --access public 2> error.log
+              if [ "$?" == "0" ]; then
+                cat error.log
+              elif grep -q "previously published" error.log; then
+                echo "skip as already published"
+              else
+                cat error.log
+                exit 1
+              fi
+              popd
+            fi
+          done
