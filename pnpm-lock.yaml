@@ -187,6 +187,9 @@ importers:
       "@biliblitz/blitz":
         specifier: workspace:^
         version: link:../../packages/blitz
+      "@unhead/ssr":
+        specifier: ^1.9.16
+        version: 1.9.16
       "@unhead/vue":
         specifier: ^1.9.16
         version: 1.9.16(vue@3.4.35(typescript@5.5.4))
