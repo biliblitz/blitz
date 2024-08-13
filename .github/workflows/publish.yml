@@ -1,20 +1,20 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: Node.js CI
+name: Publish
 
 on:
   push:
-    branches: ["master"]
-  pull_request:
     branches: ["master"]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
+    environment: NPM_TOKEN
+    if: ${{ startsWith(github.event.head_commit.message, 'release') }}
 
     strategy:
       matrix:
@@ -24,8 +24,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
-        with:
-          save-if: ${{ github.ref == 'refs/heads/master' }}
       - uses: pnpm/action-setup@v2
         with:
           version: 9.6.0
@@ -41,4 +39,13 @@ jobs:
       - name: Build & Test
         run: |
           cargo test
-          pnpm build
+          pnpm build:pkgs
+      - name: Publish to NPM
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          for dir in ./packages/* ; do
+            if [ -f "$dir/package.json" ]; then
+              ( cd "$dir" && npm publish --access public )
+            fi
+          done
