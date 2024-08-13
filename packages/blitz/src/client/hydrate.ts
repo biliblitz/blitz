@@ -5,9 +5,7 @@ import {
   type Runtime,
 } from "./runtime.ts";
 import type { ClientManifest, Graph } from "../server/types.ts";
-import { createApp, shallowRef, type Component } from "vue";
-import { createHead } from "@unhead/vue";
-import { createRouter, createWebHistory } from "vue-router";
+import { shallowRef, type Plugin } from "vue";
 import type { SerializedRuntime } from "./provider.ts";
 import { navigateGuard } from "./navigate.ts";
 
@@ -15,30 +13,24 @@ export type Options = {
   manifest: ClientManifest;
 };
 
-export function createClientApp(root: Component, { manifest }: Options) {
+export function createBlitz({ manifest }: Options): Plugin {
   const [runtime, graph] = createClientRuntime();
 
-  const head = createHead();
-  const router = createRouter({
-    routes: manifest.routes,
-    history: createWebHistory(manifest.base),
-    scrollBehavior(to, _from, savedPosition) {
-      if (to.hash) {
-        return { el: to.hash, behavior: "smooth" };
+  return {
+    install(app) {
+      const router = app.config.globalProperties.$router;
+
+      if (!router) {
+        throw new Error("Must use blitz after use router.");
       }
-      return savedPosition || { top: 0 };
+
+      router.beforeResolve(navigateGuard());
+
+      app
+        .provide(LOADERS_SYMBOL, shallowRef(new Map(runtime.loaders)))
+        .provide(MANIFEST_SYMBOL, { ...manifest, ...graph });
     },
-  });
-
-  router.beforeResolve(navigateGuard());
-
-  const app = createApp(root)
-    .use(head)
-    .use(router)
-    .provide(LOADERS_SYMBOL, shallowRef(new Map(runtime.loaders)))
-    .provide(MANIFEST_SYMBOL, { ...manifest, ...graph });
-
-  return { app, router, head };
+  };
 }
 
 function createClientRuntime(): [Runtime, Graph] {
