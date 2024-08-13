@@ -14,6 +14,7 @@
   "dependencies": {
     "@biliblitz/blitz": "workspace:^",
     "@hono/node-server": "^1.10.1",
+    "@unhead/ssr": "^1.9.16",
     "@unhead/vue": "^1.9.16",
     "hono": "^4.2.3",
     "vue": "^3",

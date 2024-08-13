@@ -3,21 +3,17 @@ import {
   MANIFEST_SYMBOL,
   type Runtime,
 } from "../client/runtime.ts";
-import type { ServerManifest } from "./types.ts";
+import type { Env, ServerManifest } from "./types.ts";
 import {
   type ErrorResponse,
   type RedirectResponse,
   createHonoRouter,
 } from "./router.ts";
 import { type FetchEvent, createFetchEvent } from "./event.ts";
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { RedirectException } from "./exception.ts";
-import { renderToString } from "vue/server-renderer";
-import { createSSRApp, shallowRef, type Component } from "vue";
-import { createServerHead } from "@unhead/vue";
-import { renderSSRHead } from "@unhead/ssr";
-import { createMemoryHistory, createRouter } from "vue-router";
+import { shallowRef, type Plugin } from "vue";
 
 export type ServerOptions = {
   manifest: ServerManifest;
@@ -32,39 +28,35 @@ declare module "hono" {
   }
 }
 
-export function createServer(App: Component, { manifest }: ServerOptions) {
-  const app = new Hono();
+type Options = {
+  runtime: Runtime;
+  manifest: ServerManifest;
+};
+
+export function createServerBlitz({ runtime, manifest }: Options): Plugin {
+  return {
+    install(app) {
+      app
+        .provide(LOADERS_SYMBOL, shallowRef(new Map(runtime.loaders)))
+        .provide(MANIFEST_SYMBOL, manifest);
+    },
+  };
+}
+
+export type ServerRenderer = (
+  ctx: Context<{ Bindings: Env }>,
+  runtime: Runtime,
+) => Response | Promise<Response>;
+
+export function createServer(
+  render: ServerRenderer,
+  { manifest }: ServerOptions,
+) {
+  const app = new Hono<{ Bindings: Env }>();
 
   app.use(async (c, next) => {
     c.setRenderer(async (runtime) => {
-      const app = createSSRApp(App);
-      const head = createServerHead();
-      const router = createRouter({
-        routes: manifest.routes,
-        history: createMemoryHistory(manifest.base),
-      });
-      app.use(head);
-      app.use(router);
-      app.provide(LOADERS_SYMBOL, shallowRef(new Map(runtime.loaders)));
-      app.provide(MANIFEST_SYMBOL, manifest);
-      await router.replace(c.req.path);
-      await router.isReady();
-      const ctx = {};
-      const appHTML = await renderToString(app, ctx);
-      const payload = await renderSSRHead(head, { omitLineBreaks: true });
-      // console.log(ctx);
-
-      return c.html(
-        `<!DOCTYPE html>` +
-          `<html${payload.htmlAttrs}>` +
-          `<head>${payload.headTags}</head>` +
-          `<body${payload.bodyAttrs}>` +
-          `${payload.bodyTagsOpen}` +
-          `<div id="app">${appHTML}</div>` +
-          `${payload.bodyTags}` +
-          `</body>` +
-          `</html>`,
-      );
+      return await render(c, runtime);
     });
     c.set("event", createFetchEvent(c, manifest));
 

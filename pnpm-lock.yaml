@@ -31,6 +31,9 @@ importers:
       "@hono/node-server":
         specifier: ^1.10.1
         version: 1.12.0
+      "@unhead/ssr":
+        specifier: ^1.9.16
+        version: 1.9.16
       "@unhead/vue":
         specifier: ^1.9.16
         version: 1.9.16(vue@3.4.35(typescript@5.5.4))
@@ -80,6 +83,9 @@ importers:
       "@hono/node-server":
         specifier: ^1.10.1
         version: 1.12.0
+      "@unhead/ssr":
+        specifier: ^1.9.16
+        version: 1.9.16
       "@unhead/vue":
         specifier: ^1.9.16
         version: 1.9.16(vue@3.4.35(typescript@5.5.4))
@@ -129,6 +135,9 @@ importers:
       "@cloudflare/kv-asset-handler":
         specifier: ^0.3.4
         version: 0.3.4
+      "@unhead/ssr":
+        specifier: ^1.9.16
+        version: 1.9.16
       "@unhead/vue":
         specifier: ^1.9.16
         version: 1.9.16(vue@3.4.35(typescript@5.5.4))
@@ -221,6 +230,9 @@ importers:
       "@biliblitz/blitz":
         specifier: workspace:^
         version: link:../../packages/blitz
+      "@unhead/ssr":
+        specifier: ^1.9.16
+        version: 1.9.16
       "@unhead/vue":
         specifier: ^1.9.16
         version: 1.9.16(vue@3.4.35(typescript@5.5.4))

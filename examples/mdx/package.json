@@ -11,6 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@biliblitz/blitz": "workspace:^",
+    "@unhead/ssr": "^1.9.16",
     "@unhead/vue": "^1.9.16",
     "vue": "^3",
     "vue-router": "^4.4.3"

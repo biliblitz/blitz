@@ -3,7 +3,7 @@ export { action$, delete$, put$, patch$ } from "./action.ts";
 export { paths$ } from "./paths.ts";
 export { middleware$ } from "./middleware.ts";
 
-export { createServer } from "./server.ts";
+export { createServer, createServerBlitz } from "./server.ts";
 
 export { HTTPException, RedirectException } from "./exception.ts";
 

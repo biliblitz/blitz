@@ -22,7 +22,7 @@ export function navigateGuard(): NavigationGuard {
 
     const store = useLoaders();
 
-    console.log("navigate to", to.fullPath, "from", from.fullPath);
+    // console.log("navigate to", to.fullPath, "from", from.fullPath);
 
     try {
       const loaders = await fetchLoaders(location.origin + to.fullPath);
