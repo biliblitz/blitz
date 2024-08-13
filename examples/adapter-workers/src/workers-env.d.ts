@@ -1,7 +1,4 @@
-import type { Env } from "@biliblitz/blitz/server";
-
-declare module "@biliblitz/blitz/server" {
-  export interface Env {
-    __STATIC_CONTENT: KVNamespace<string>;
-  }
+declare module "__STATIC_CONTENT_MANIFEST" {
+  declare const x: string;
+  export default x;
 }

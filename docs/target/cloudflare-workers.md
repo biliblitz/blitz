@@ -34,12 +34,18 @@ export default mergeConfig(
 创建 `src/entry.workers.ts` 文件，作为服务端渲染的入口。
 
 ```ts
+import { getAssetFromKV } from "@cloudflare/kv-asset-handler";
+import manifestJSON from "__STATIC_CONTENT_MANIFEST";
 import type { Env } from "@biliblitz/blitz/server";
 import server from "./entry.server.ts";
 
-import { getAssetFromKV } from "@cloudflare/kv-asset-handler";
-import manifestJSON from "__STATIC_CONTENT_MANIFEST";
 const assetManifest = JSON.parse(manifestJSON);
+
+declare module "@biliblitz/blitz/server" {
+  interface Env {
+    __STATIC_CONTENT: KVNamespace<string>;
+  }
+}
 
 export default {
   async fetch(req, env, ctx) {
@@ -59,18 +65,6 @@ export default {
 ```
 
 创建 `src/workers-env.d.ts`，添加一些全局类型声明。
-
-```ts
-import type { Env } from "@biliblitz/blitz/server";
-
-declare module "@biliblitz/blitz/server" {
-  export interface Env {
-    __STATIC_CONTENT: KVNamespace<string>;
-  }
-}
-```
-
-创建 `src/workers-assets.d.ts`，添加如下内容。
 
 ```ts
 declare module "__STATIC_CONTENT_MANIFEST" {

@@ -128,8 +128,6 @@ function action(method: string): DefineAction {
  * ## Examples
  *
  * ```js
- * import { Form } from "@swwind/firefly";
- *
  * export const useLogin = action$(async (c) => {
  *   const formData = await c.req.formData();
  *   const username = formData.get("username");
@@ -141,35 +139,30 @@ function action(method: string): DefineAction {
  *
  *   throw new HTTPException(401, { message: "Invalid username/password" });
  * });
+ * ```
  *
- * export default component$(() => {
- *   const login = useLogin();
- *   // to send automatically
- *   <Form action={login}>
+ * In your setup
+ *
+ * ```vue
+ * <script setup>
+ * import { Form, watchAction } from "@biliblitz/blitz";
+ * const login = useLogin(); // ActionHandler<{ username: string }>
+ *
+ * watchAction(login, { success(data) { ... }, error(e) { ... } });
+ * </script>
+ *
+ * <template>
+ *   <Form :action="login">
  *     <input type="text" name="username" />
  *     <input type="password" name="password" />
  *   </Form>
- *   // to send manually
- *   <button onClick={() => login.submit(new FormData())} />
- * });
+ * <template>
  * ```
  *
  * Add an action name if you want.
  *
  * ```js
- * export const useLogin = action$("my-action", async (c) => {
- *   // ...
- * });
- * ```
- *
- * Add middlewares if you want.
- *
- * ```js
- * const auth = middleware$( ... );
- * const verify = middleware$( ... );
- * export const useLogin = action$(auth, verify, async (c) => {
- *   // ...
- * });
+ * export const useLogin = action$("my-action", async (c) => { ... });
  * ```
  */
 export const action$ = action("POST");

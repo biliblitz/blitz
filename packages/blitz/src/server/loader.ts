@@ -32,23 +32,16 @@ const LOADER_SYMBOL = Symbol("loader");
  *
  * And
  *
- * ```jsx
- * // index.tsx
- * import { useUser } from "./loader.ts";
- * export default function () {
- *   const user = useUser(); // => ReadonlySignal<{ username: string }>
- *   return <span>username = {user.value.username}</span>
- * }
+ * ```vue
+ * <script setup>
+ * const user = useUser(); // => ComputedRef<{ username: string }>
+ * </script>
  * ```
  *
- * ## Linking Middleware
+ * Add an action name if you want.
  *
  * ```js
- * import middleware from "./middleware.ts";
- * export const useUser = loader$((evt) => {
- *   // get return value of middleware
- *   const value = evt.load(middleware);
- * });
+ * export const useUser = loader$("username", async (c) => { ... });
  * ```
  */
 export function loader$<T extends LoaderReturnValue>(
