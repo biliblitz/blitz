@@ -42,7 +42,7 @@ jobs:
           pnpm build:pkgs
       - name: Publish to NPM
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           for dir in ./packages/* ; do
             if [ -f "$dir/package.json" ]; then
