@@ -54,7 +54,7 @@ jobs:
               pushd "$dir"
               npm publish --provenance --access public 2> >(tee -a error.log >&2)
               if [ "$?" == "0" ] || grep -q "previously published" error.log; then
-                # success or already published
+                echo success or already published
               else
                 exit 1
               fi
