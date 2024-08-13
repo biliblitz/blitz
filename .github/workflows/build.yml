@@ -41,7 +41,7 @@ jobs:
         cargo test
         pnpm build
     - name: Publish to NPM
-      if: startsWith(github.event.head_commit.message, 'release')
+      if: ${{ github.event_name == 'push' && startsWith(github.event.head_commit.message, 'release') }}
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
