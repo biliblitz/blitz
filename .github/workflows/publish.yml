@@ -48,8 +48,16 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          set +e
           for dir in ./packages/* ; do
             if [ -f "$dir/package.json" ]; then
-              ( cd "$dir" && npm publish --provenance --access public )
+              pushd "$dir"
+              npm publish --provenance --access public 2> >(tee -a error.log >&2)
+              if [ "$?" == "0" ] || grep -q "previously published" error.log; then
+                # success or already published
+              else
+                exit 1
+              fi
+              popd
             fi
           done
