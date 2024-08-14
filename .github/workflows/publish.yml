@@ -6,13 +6,13 @@ name: Publish NPM
 on:
   push:
     branches: ["master"]
-    tags: ["v*"]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   publish:
+    if: ${{ startsWith(github.event.head_commit.message, 'release') }}
     runs-on: ubuntu-latest
     environment: NPM_TOKEN
     permissions:
