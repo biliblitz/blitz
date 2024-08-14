@@ -39,7 +39,7 @@ export default defineConfig({
       },
       {
         text: "高级",
-        items: [{ text: "MDX", link: "/advanced/mdx" }],
+        items: [{ text: "Markdown & MDX", link: "/advanced/mdx" }],
       },
     ],
 

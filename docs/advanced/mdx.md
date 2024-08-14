@@ -2,20 +2,42 @@
 
 MDX 是将 Markdown 文档编译成 JS 文件的技术。
 
-在 Blitz 中，`index.xxx` 和 `layout.xxx` 部分可以使用 MDX 进行编写。
+在 Blitz 中，`index.xxx` 和 `layout.xxx` 部分可以使用 Markdown 进行编写。
 
-## 开始
+目前 Blitz 有三套将 Markdown 编译成 JS 的方案，取决于你喜欢哪一种。
+
+| 方案名称 | Markdown 编译器           | 编译目标 |
+| -------- | ------------------------- | -------- |
+| mdx      | unified (remark + rehype) | JSX      |
+| mdit     | markdown-it               | Vue SFC  |
+| markdown | unified (remark + rehype) | Vue SFC  |
+
+## 方案 mdx
+
+[MDX](https://mdxjs.com/) 是将 Markdown 文件编译成任意支持 JSX 的前端框架的方案，基于 unified 全家桶。
+
+由于 Vue 对于 JSX 的支持并不是很好，这种方案虽然能用，但是会让 Vue 抛出一大堆 warning，**不太建议使用**。
+
+此外，最好不要搭配 `@vitejs/plugin-vue-jsx` 插件，除非你能忍受巨慢无比的编译速度。
+
+### 安装
+
+添加新的依赖。
+
+```sh
+npm i -D @biliblitz/vite-plugin-mdx
+```
 
 编辑 `vite.config.ts`，写入以下内容
 
 <!-- prettier-ignore -->
 ```js
-import { blitzMdx } from "@biliblitz/vite-plugin-mdx";
+import { mdx } from "@biliblitz/vite-plugin-mdx";
 
 export default defineConfig({
   plugins: [
     /* ... */
-    blitzMdx({
+    mdx({
       jsxImportSource: "vue",
       remarkPlugins: [/* remark plugins */],
       rehypePlugins: [/* rehype plugins */],
@@ -30,7 +52,7 @@ export default defineConfig({
 
 创建 `index.mdx` 或者 `layout.mdx`，然后写入以下内容
 
-```mdx
+```md
 ---
 title: Welcome page
 ---
@@ -42,75 +64,109 @@ title: Welcome page
 
 重启 `vite` 服务器，或者重新构建即可看到效果。
 
-## 高级操作
+## 方案 mdit
 
-如果你想要将 MDX 文件中的 `<a />` 统一替换成 `<Link />`，或者其他需要替换的 HTML 标签，则可以使用 `@mdx-js/vue` 模块。
+使用基于 [`@mdit-vue`](https://github.com/mdit-vue/mdit-vue) 全家桶的 Markdown 到 Vue SFC 的编译方案。
 
-首先安装 `@mdx-js/vue` 模块。
+这套方案对于 Vue 兼容比较完善，基本可以稳定使用，**较为推荐**。
 
-```bash
-npm i @mdx-js/vue
+### 安装
+
+添加新的依赖。
+
+```sh
+npm i -D @biliblitz/vite-plugin-mdit
 ```
 
-编辑 `vite.config.json`，添加如下内容。
+编辑 `vite.config.ts`，写入以下内容
 
+<!-- prettier-ignore -->
 ```js
-export default defineConfig({
-  plugins: [
-    /* ... */
-    blitzMdx({
-      /* ... */
-      providerImportSource: "@mdx-js/vue",
-    }),
-  ],
-});
-```
-
-接着编辑 `src/Root.vue`，找到 `<router-view />`，在其外层套一个 `<MDXProvider />`。
-
-```vue
-<script setup lang="ts">
-import { Link } from "~/components/Link.vue";
-import { MDXProvider } from "@mdx-js/vue";
-// ...
-</script>
-
-<template>
-  <MDXProvider :components="{ a: Link }">
-    <router-view />
-  </MDXProvider>
-</template>
-```
-
-之后，所有 MDX 文件里面的 `a` 标签都会自动换成 `Link` 进行渲染了。
-
-## 常用插件
-
-### GFM
-
-支持更多的 Markdown 语法，比较常用。
-
-首先安装 `remark-gfm` 模块。
-
-```bash
-npm i -D remark-gfm
-```
-
-之后编辑 `vite.config.ts`，在 `remarkPlugins` 中添加 `remarkGfm`。
-
-```js
-import remarkGfm from "remark-gfm";
+import vue from "@vitejs/plugin-vue";
+import { mdit } from "@biliblitz/vite-plugin-mdit";
 
 export default defineConfig({
   plugins: [
+    /* 记得放在 vue 和 blitz 前面 */
+    mdit({ plugins: [/* ... */] }),
+    /* vue 插件需要添加额外参数 */
+    vue({ include: [ /\.vue$/, /\.md$/ ] }),
+    blitz(),
     /* ... */
-    blitzMdx({
-      /* ... */
-      remarkPlugins: [remarkGfm],
-    }),
   ],
+  /* ... */
 });
 ```
+
+创建 `index.md` 或者 `layout.md`，然后写入以下内容
+
+```md
+---
+title: Welcome page
+---
+
+# {{ title }}
+
+**Hello** _world_!!!
+```
+
+重启 `vite` 服务器，或者重新构建即可看到效果。
+
+## 方案 markdown
+
+这套方案是参考 [`rehype-vue-sfc`](https://github.com/antfu/rehype-vue-sfc) 项目，基于 unified 全家桶，将 Markdown 文件编译成 Vue SFC 的实现。
+
+该方案因为比较原始，可能会遇到一些奇奇怪怪的问题，需要用户自己具备调试 unified 全家桶的能力。如果你觉得这没有问题，这将会是不错的一套解决方案。
+
+### 安装
+
+添加新的依赖。
+
+```sh
+npm i -D @biliblitz/vite-plugin-markdown
+```
+
+编辑 `vite.config.ts`，写入以下内容
+
+<!-- prettier-ignore -->
+```js
+import vue from "@vitejs/plugin-vue";
+import { markdown } from "@biliblitz/vite-plugin-markdown";
+
+export default defineConfig({
+  plugins: [
+    /* 记得放在 vue 和 blitz 前面 */
+    markdown({
+      remarkPlugins: [/* ... */],
+      rehypePlugins: [/* ... */],
+      remarkRehypeOptions: { /* ... */ },
+    }),
+    /* vue 插件需要添加额外参数 */
+    vue({ include: [ /\.vue$/, /\.md$/ ] }),
+    blitz(),
+    /* ... */
+  ],
+  /* ... */
+});
+```
+
+创建 `index.md` 或者 `layout.md`，然后写入以下内容
+
+```md
+---
+title: Welcome page
+---
+
+# {{ title }}
+
+**Hello** _world_!!!
+```
+
+重启 `vite` 服务器，或者重新构建即可看到效果。
+
+## 常用 unified 插件
+
+因为我记性比较差，所以我把我用过的东西丢在这里。
 
 ### KaTeX
 
@@ -148,7 +204,7 @@ import rehypeKatex from "rehype-katex";
 export default defineConfig({
   plugins: [
     /* ... */
-    blitzMdx({
+    markdown({
       /* ... */
       remarkPlugins: [remarkMath],
       rehypePlugins: [rehypeKatex],
@@ -163,7 +219,7 @@ export default defineConfig({
 import "katex/dist/katex.min.css";
 ```
 
-### 代码高亮
+### 代码高亮 (Prism)
 
 代码高亮可以使用 `rehype-prism-plus` 插件。
 
@@ -196,3 +252,9 @@ import "prismjs/themes/prism-[theme].min.css";
 ```
 
 如果你要支持 `rehype-prism-plus` 所提供的高亮代码行的功能，可能需要自行编写样式。
+
+### 代码高亮 (Shiki)
+
+[Shiki](https://shiki.style/) 是一个新的语法高亮工具，体验上比一些老掉牙的东西应该会好很多。
+
+分别提供 `markdown-it` 和 `rehype` 的插件，查看文档自己安装即可。
