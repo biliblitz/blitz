@@ -1,0 +1,30 @@
+{
+  "name": "@example/markdown",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "vue-tsc --build && pnpm run build:client",
+    "build:client": "vite build --manifest",
+    "dev": "vite"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@biliblitz/blitz": "workspace:^",
+    "@unhead/ssr": "^1.9.16",
+    "@unhead/vue": "^1.9.16",
+    "vue": "^3",
+    "vue-router": "^4.4.3"
+  },
+  "devDependencies": {
+    "@biliblitz/vite": "workspace:^",
+    "@biliblitz/vite-plugin-markdown": "workspace:^",
+    "@types/node": "^20.12.7",
+    "@unhead/addons": "^1.9.16",
+    "@vitejs/plugin-vue": "^5.1.2",
+    "typescript": "^5.5.4",
+    "vite": "^5.2.8",
+    "vite-tsconfig-paths": "^4.3.2",
+    "vue-tsc": "^2.0.29"
+  }
+}
