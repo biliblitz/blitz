@@ -3,8 +3,7 @@ import { defineConfig } from "vitepress";
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Blitz",
-  description:
-    "A blitzingly fast, game changing, next generation meta framework for preact.",
+  description: "基于 Vue 的轻量化全栈框架",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
