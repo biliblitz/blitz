@@ -9,7 +9,7 @@ Loader 用于获取加载该页面所需的相关数据。
 - 请不要修改 `loader$` 的名称，编译器魔法会检查这个标识符来寻找 Loader；
 - 定义的所有 Loader 必须从该文件中导出；
 
-## 示例
+## 基本使用示例
 
 ```vue
 <!-- src/routes/index.vue -->
@@ -37,4 +37,22 @@ export const useUsername = loader$(async (c) => {
 // 引用钩子函数获取 loader 在服务端运行的结果
 const username = useUsername(); // ComputedRef<{ username: string }>
 </script>
+```
+
+## 搭配中间件
+
+你可以在 `loader$` 函数前面搭配任意多个中间件。这些中间件只会在该 `loader$` 被调用的时候被使用。
+
+```js
+import { middleware$, loader$ } from "@biliblitz/blitz/server";
+
+const logger = middleware$(async (_c, next) => {
+  console.log("before logger");
+  await next(); // Remember to call this!
+  console.log("after logger");
+});
+
+export const useUser = loader$(logger, async (c) => {
+  return { user: "Alice" };
+});
 ```

@@ -1,20 +1,23 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: Node.js CI
+name: Publish NPM
 
 on:
   push:
     branches: ["master"]
-  pull_request:
-    branches: ["master"]
+    tags: ["*"]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
+    environment: NPM_TOKEN
+    permissions:
+      contents: read
+      id-token: write
 
     strategy:
       matrix:
@@ -30,14 +33,34 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
+          registry-url: "https://registry.npmjs.org/"
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
       - name: Install
         run: |
           rustup target add wasm32-wasi
           pnpm install
-      - name: Build & Test
+      - name: Build Packages
         run: |
           cargo test
           pnpm build
-          pnpm docs:build
+      - name: Publish to NPM
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set +e
+          for dir in ./packages/* ; do
+            if [ -f "$dir/package.json" ]; then
+              pushd "$dir"
+              npm publish --provenance --access public 2> error.log
+              if [ "$?" == "0" ]; then
+                cat error.log
+              elif grep -q "previously published" error.log; then
+                echo "skip as already published"
+              else
+                cat error.log
+                exit 1
+              fi
+              popd
+            fi
+          done

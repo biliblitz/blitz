@@ -63,7 +63,7 @@ watchAction(login, {
 ```ts
 interface ActionHandler<T> {
   // 获取 Action 实例当前的状态和数据。
-  status: ActionState<T>;
+  status: Ref<ActionState<T>>;
   // 手动发起一次 POST 请求
   submit(formData: FormData): Promise<void>;
 }
