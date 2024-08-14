@@ -3,7 +3,7 @@ import { unified, type PluggableList } from "unified";
 import { VFile } from "vfile";
 import { matter } from "vfile-matter";
 import remarkParse from "remark-parse";
-import remarkRehype from "remark-rehype";
+import remarkRehype, { type Options } from "remark-rehype";
 import rehypeRaw from "rehype-raw";
 import rehypeStringify from "rehype-stringify";
 import { rehypeVueSfc } from "./sfc.ts";
@@ -14,6 +14,7 @@ export type MarkdownOptions = {
 
   remarkPlugins?: PluggableList;
   rehypePlugins?: PluggableList;
+  remarkRehypeOptions?: Options;
 };
 
 const onlypath =
@@ -48,7 +49,10 @@ export function markdown(options: MarkdownOptions = {}): Plugin {
         const sfc = await unified()
           .use(remarkParse)
           .use(options.remarkPlugins ?? [])
-          .use(remarkRehype, { allowDangerousHtml: true })
+          .use(remarkRehype, {
+            ...options.remarkRehypeOptions,
+            allowDangerousHtml: true,
+          })
           .use(rehypeRaw)
           .use(options.rehypePlugins ?? [])
           .use(rehypeVueSfc, {
