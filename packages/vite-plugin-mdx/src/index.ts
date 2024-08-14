@@ -11,14 +11,14 @@ type FrontMatter = {
 const s = JSON.stringify;
 const isMdx = (x: string) => /\.mdx?$/.test(x.split("?")[0]);
 
-export function blitzMdx(options?: CompileOptions): Plugin {
+export function mdx(options?: CompileOptions): Plugin {
   options ??= {};
   options.jsx = false;
   options.jsxImportSource ??= "vue";
   options.elementAttributeNameCase = "html";
 
   return {
-    name: "blitz-mdx",
+    name: "blitz:mdx",
 
     shouldTransformCachedModule(options) {
       if (isMdx(options.id)) {

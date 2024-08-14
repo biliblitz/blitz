@@ -2,15 +2,18 @@
   "type": "module",
   "scripts": {
     "build": "pnpm build:pkgs && pnpm build:example",
-    "build:pkgs": "pnpm build:blitz && pnpm build:swc-plugin-remove-server-code && pnpm build:vite && pnpm build:vite-plugin-mdx && pnpm build:adapter-nodejs && pnpm build:adapter-static && pnpm build:adapter-workers",
+    "build:pkgs": "pnpm build:blitz && pnpm build:swc-plugin-remove-server-code && pnpm build:vite && pnpm build:vite-plugin-mdx && pnpm build:vite-plugin-mdit && pnpm build:adapter-nodejs && pnpm build:adapter-static && pnpm build:adapter-workers",
     "build:blitz": "cd packages/blitz && pnpm build",
     "build:swc-plugin-remove-server-code": "cd packages/swc-plugin-remove-server-code && pnpm build",
     "build:vite": "cd packages/vite && pnpm build",
     "build:vite-plugin-mdx": "cd packages/vite-plugin-mdx && pnpm build",
+    "build:vite-plugin-mdit": "cd packages/vite-plugin-mdit && pnpm build",
     "build:adapter-nodejs": "cd packages/adapter-nodejs && pnpm build",
     "build:adapter-static": "cd packages/adapter-static && pnpm build",
     "build:adapter-workers": "cd packages/adapter-workers && pnpm build",
-    "build:example": "pnpm build:example:minimal && pnpm build:example:routing && pnpm build:example:adapter-static && pnpm build:example:adapter-workers",
+    "build:example": "pnpm build:example:mdx && pnpm build:example:mdit && pnpm build:example:minimal && pnpm build:example:routing && pnpm build:example:adapter-static && pnpm build:example:adapter-workers",
+    "build:example:mdx": "cd examples/mdx && pnpm build",
+    "build:example:mdit": "cd examples/mdit && pnpm build",
     "build:example:minimal": "cd examples/minimal && pnpm build",
     "build:example:routing": "cd examples/routing && pnpm build",
     "build:example:adapter-nodejs": "cd examples/adapter-nodejs && pnpm build",
@@ -27,6 +30,7 @@
     "vitepress": "^1.3.2"
   },
   "resolutions": {
+    "vue": "3.4.35",
     "vue-router": "4.4.3"
   },
   "simple-git-hooks": {
