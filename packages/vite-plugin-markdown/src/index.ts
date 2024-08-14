@@ -6,7 +6,7 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import rehypeRaw from "rehype-raw";
 import rehypeStringify from "rehype-stringify";
-import rehypeVueSfc from "rehype-vue-sfc";
+import { rehypeVueSfc } from "./sfc.ts";
 
 export type MarkdownOptions = {
   include?: (string | RegExp)[];
@@ -29,17 +29,14 @@ export function markdown(options: MarkdownOptions = {}): Plugin {
   const includes = onlypath((id) => include.some((x) => matches(x, id)));
   const excludes = onlypath((id) => exclude.some((x) => matches(x, id)));
 
-  const pipeline = unified()
-    .use(remarkParse)
-    .use(options.remarkPlugins ?? [])
-    .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeRaw)
-    .use(options.rehypePlugins ?? [])
-    .use(rehypeVueSfc)
-    .use(rehypeStringify);
-
   return {
     name: "blitz:markdown",
+
+    shouldTransformCachedModule(options) {
+      if (includes(options.id) && !excludes(options.id)) {
+        return false;
+      }
+    },
 
     async transform(code, id) {
       if (includes(id) && !excludes(id)) {
@@ -48,21 +45,27 @@ export function markdown(options: MarkdownOptions = {}): Plugin {
         matter(source, { strip: true });
         const frontmatter = source.data.matter || {};
 
-        const sfc = await pipeline.process(source);
-        return {
-          code: [
-            `<script>
+        const sfc = await unified()
+          .use(remarkParse)
+          .use(options.remarkPlugins ?? [])
+          .use(remarkRehype, { allowDangerousHtml: true })
+          .use(rehypeRaw)
+          .use(options.rehypePlugins ?? [])
+          .use(rehypeVueSfc, {
+            script: `
               const frontmatter = ${JSON.stringify(frontmatter).replaceAll("/", "\\/")};
               const title = frontmatter.title ?? "";
               const description = frontmatter.description ?? "";
-            </script>`,
-            `<script setup>
+            `,
+            scriptSetup: `
               import { useHead as _useHead } from "@unhead/vue";
               _useHead({ title, meta: [{ name: "description", content: description }] });
-            </script>`,
-            String(sfc),
-          ].join("\n"),
-        };
+            `,
+          })
+          .use(rehypeStringify)
+          .process(source);
+
+        return { code: String(sfc) };
       }
     },
   };
