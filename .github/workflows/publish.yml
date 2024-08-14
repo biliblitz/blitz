@@ -6,7 +6,7 @@ name: Publish NPM
 on:
   push:
     branches: ["master"]
-    tags: ["*"]
+    tags: ["v*"]
 
 env:
   CARGO_TERM_COLOR: always
