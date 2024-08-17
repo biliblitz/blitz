@@ -52,7 +52,7 @@ export const rehypeVueSfc: Plugin<[Options?], Root, Root> = (options = {}) => {
         children: [],
       };
 
-      script.children.push({ type: "text", value: options.script });
+      script.children.unshift({ type: "text", value: options.script });
     }
 
     if (options.scriptSetup) {
@@ -63,7 +63,10 @@ export const rehypeVueSfc: Plugin<[Options?], Root, Root> = (options = {}) => {
         children: [],
       };
 
-      scriptSetup.children.push({ type: "text", value: options.scriptSetup });
+      scriptSetup.children.unshift({
+        type: "text",
+        value: options.scriptSetup,
+      });
     }
 
     root.children = [template];
