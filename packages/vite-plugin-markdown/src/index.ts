@@ -15,6 +15,9 @@ export type MarkdownOptions = {
   remarkPlugins?: PluggableList;
   rehypePlugins?: PluggableList;
   remarkRehypeOptions?: Options;
+
+  script?: (frontmatter: any) => string;
+  scriptSetup?: (frontmatter: any) => string;
 };
 
 const onlypath =
@@ -29,6 +32,20 @@ export function markdown(options: MarkdownOptions = {}): Plugin {
   const exclude = options.exclude ?? [];
   const includes = onlypath((id) => include.some((x) => matches(x, id)));
   const excludes = onlypath((id) => exclude.some((x) => matches(x, id)));
+
+  const script =
+    options.script ??
+    ((frontmatter: any) => `
+      const frontmatter = ${JSON.stringify(frontmatter).replaceAll("/", "\\/")};
+      const title = frontmatter.title ?? "";
+      const description = frontmatter.description ?? "";
+    `);
+  const scriptSetup =
+    options.scriptSetup ??
+    ((_frontmatter: any) => `
+      import { useHead as _useHead } from "@unhead/vue";
+      _useHead({ title, meta: [{ name: "description", content: description }] });
+    `);
 
   return {
     name: "blitz:markdown",
@@ -56,15 +73,8 @@ export function markdown(options: MarkdownOptions = {}): Plugin {
           .use(rehypeRaw)
           .use(options.rehypePlugins ?? [])
           .use(rehypeVueSfc, {
-            script: `
-              const frontmatter = ${JSON.stringify(frontmatter).replaceAll("/", "\\/")};
-              const title = frontmatter.title ?? "";
-              const description = frontmatter.description ?? "";
-            `,
-            scriptSetup: `
-              import { useHead as _useHead } from "@unhead/vue";
-              _useHead({ title, meta: [{ name: "description", content: description }] });
-            `,
+            script: script(frontmatter),
+            scriptSetup: scriptSetup(frontmatter),
           })
           .use(rehypeStringify)
           .process(source);
