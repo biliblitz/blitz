@@ -27,7 +27,7 @@ I'd rather write a simple one for myself.
 
 [vue]: https://vuejs.org/
 [hono]: https://hono.dev/
-[docs]: ./docs/index.md
+[docs]: https://firefly-1tk.pages.dev/
 [qwik]: https://qwik.dev/
 [remix]: https://remix.run/
 [unhead]: https://unhead.unjs.io/
