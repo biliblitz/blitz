@@ -21,6 +21,6 @@ const blitz = createBlitz({ manifest });
 
 const app = createSSRApp(Root).use(head).use(router).use(blitz);
 
-await router.isReady();
-
-app.mount("#app", true);
+router.isReady().then(() => {
+  app.mount("#app", true);
+});
