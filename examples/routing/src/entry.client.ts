@@ -1,7 +1,7 @@
 import { manifest } from "blitz:manifest/client";
 import { createHead } from "@unhead/vue";
 import { createRouter, createWebHistory } from "vue-router";
-import { createApp } from "vue";
+import { createSSRApp } from "vue";
 import { createBlitz } from "@biliblitz/blitz";
 
 import Root from "./Root.vue";
@@ -19,4 +19,8 @@ const router = createRouter({
 });
 const blitz = createBlitz({ manifest });
 
-createApp(Root).use(head).use(router).use(blitz).mount("#app", true);
+const app = createSSRApp(Root).use(head).use(router).use(blitz);
+
+await router.isReady();
+
+app.mount("#app", true);

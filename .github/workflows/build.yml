@@ -34,7 +34,7 @@ jobs:
           cache: "pnpm"
       - name: Install
         run: |
-          rustup target add wasm32-wasi
+          rustup target add wasm32-wasip1
           pnpm install
       - name: Build & Test
         run: |
