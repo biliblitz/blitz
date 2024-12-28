@@ -44,14 +44,24 @@ function useEntryPoint() {
       // dev specific entry
       useHead({
         script: [
-          { type: "module", src: manifest.base + "@vite/client" },
-          { type: "module", src: manifest.base + "src/entry.client.ts" },
+          { type: "module", defer: true, src: manifest.base + "@vite/client" },
+          {
+            type: "module",
+            defer: true,
+            src: manifest.base + "src/entry.client.ts",
+          },
         ],
       });
     } else {
       // prod entry
       useHead({
-        script: [{ type: "module", src: manifest.base + manifest.entry }],
+        script: [
+          {
+            type: "module",
+            defer: true,
+            src: manifest.base + manifest.entry,
+          },
+        ],
       });
     }
   }
