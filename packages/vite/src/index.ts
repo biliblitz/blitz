@@ -2,11 +2,8 @@ import type { Plugin, ResolvedConfig } from "vite";
 import { manifestClient, manifestServer, resolve } from "./vmod.ts";
 import { getRequestListener } from "@hono/node-server";
 import { isLayer, scanProjectStructure } from "./scanner.ts";
-import {
-  removeClientServerExports,
-  toClientManifestCode,
-  toServerManifestCode,
-} from "./manifest.ts";
+import { toClientManifestCode, toServerManifestCode } from "./manifest.ts";
+import { removeClientServerExports } from "./remove-server-code.ts";
 import { loadClientGraph, loadDevGraph } from "./graph.ts";
 import type { Hono } from "hono";
 import { cacheAsync, waitAsync } from "./utils.ts";
@@ -64,7 +61,7 @@ export function blitz(): Plugin<{ fetch?: { env: any; ctx: any } }> {
       if (!options?.ssr && inRoutes(path) && isLayer(path)) {
         if (!params?.includes("type=style")) {
           // console.log("blitz:shaking", id);
-          return await removeClientServerExports(code, hashRef(path));
+          return await removeClientServerExports(code, hashRef(path), path);
         }
       }
     },

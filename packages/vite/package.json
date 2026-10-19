@@ -21,7 +21,8 @@
     }
   },
   "scripts": {
-    "build": "rm -rf dist && tsc --build"
+    "build": "rm -rf dist && tsc --build",
+    "test": "pnpm build && node --test test/*.test.mjs"
   },
   "license": "MIT",
   "peerDependencies": {
@@ -31,14 +32,13 @@
   "devDependencies": {
     "@types/node": "^22.0.0",
     "hono": "^4.5.4",
-    "rollup": "^4.20.0",
     "typescript": "~6.0.3",
     "vite": "^8.3.4"
   },
   "dependencies": {
-    "@biliblitz/swc-plugin-remove-server-code": "workspace:^",
     "@hono/node-server": "^1.12.0",
-    "@swc/core": "~1.7"
+    "magic-string": "^1.4.3",
+    "oxc-walker": "^1.1.1"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"

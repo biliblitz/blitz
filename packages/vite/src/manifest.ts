@@ -1,9 +1,7 @@
-import { transform } from "@swc/core";
 import type { Graph } from "@biliblitz/blitz/server";
 import { generateRoutes } from "./routes.ts";
 import { s } from "./utils.ts";
 import type { ProjectStructure } from "./scanner.ts";
-import removeServerCode from "@biliblitz/swc-plugin-remove-server-code";
 import { hashRef } from "@biliblitz/blitz/utils";
 
 export function toClientManifestCode(project: ProjectStructure, base: string) {
@@ -41,22 +39,4 @@ export function toServerManifestCode(
 
     `export const manifest = { base, entry, paths, styles, routes, actions, loaders, directory, middlewares };`,
   ].join("\n");
-}
-
-export async function removeClientServerExports(source: string, salt: string) {
-  // console.log("before >>>");
-  // console.log(source);
-  const { code, map } = await transform(source, {
-    jsc: {
-      parser: { syntax: "ecmascript", jsx: false },
-      experimental: { plugins: [removeServerCode({ salt })] },
-      target: "esnext",
-      preserveAllComments: true,
-    },
-    sourceMaps: true,
-  });
-  // console.log("after <<<");
-  // console.log(code);
-
-  return { code, map };
 }

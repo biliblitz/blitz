@@ -9,9 +9,6 @@ on:
   pull_request:
     branches: ["master"]
 
-env:
-  CARGO_TERM_COLOR: always
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,7 +20,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: Swatinem/rust-cache@v2
       - uses: pnpm/action-setup@v4
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -32,10 +28,9 @@ jobs:
           cache: "pnpm"
       - name: Install
         run: |
-          rustup target add wasm32-wasip1
           pnpm install --frozen-lockfile
       - name: Build & Test
         run: |
-          cargo test
+          pnpm test
           pnpm build
           pnpm docs:build

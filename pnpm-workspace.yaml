@@ -3,7 +3,6 @@ packages:
   - "examples/*"
 
 allowBuilds:
-  "@swc/core": true
   esbuild: true
   simple-git-hooks: true
   workerd: true

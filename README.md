@@ -22,11 +22,15 @@ Use Node.js 22.12+ (or 20.19+) and the pnpm version pinned in `package.json`.
 ```sh
 corepack enable
 pnpm install --frozen-lockfile
-rustup target add wasm32-wasip1
-cargo test
+pnpm test
 pnpm build
 pnpm docs:build
 ```
+
+Client route transforms live in `packages/vite/src/remove-server-code.ts`. They
+use Vite's Oxc parser, scope tracking, and MagicString to strip server code while
+preserving client dependencies and source maps. `pnpm test` covers these transforms
+and exercises both the dev server and production builds against SSR loaders.
 
 Internal package dependencies use `workspace:^`. Always use `pnpm pack` or
 `pnpm publish` so these become ordinary version ranges in published packages
