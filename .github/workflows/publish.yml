@@ -5,16 +5,16 @@ name: Publish NPM
 
 on:
   push:
-    branches: ["master"]
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
   publish:
-    if: ${{ startsWith(github.event.head_commit.message, 'release') }}
     runs-on: ubuntu-latest
-    environment: NPM_TOKEN
-    permissions:
-      contents: read
-      id-token: write
 
     strategy:
       matrix:
@@ -42,7 +42,5 @@ jobs:
           pnpm test
           pnpm build
       - name: Publish to NPM
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          pnpm --filter "./packages/**" -r publish --provenance --access public
+          pnpm --filter "./packages/**" -r publish --provenance --access public --no-git-checks
