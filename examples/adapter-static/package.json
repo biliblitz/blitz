@@ -6,7 +6,7 @@
   "scripts": {
     "build": "vue-tsc --build && pnpm run build:client && pnpm run build:static",
     "build:client": "vite build --manifest",
-    "build:static": "vite build --ssr -c adapters/static/vite.config.ts",
+    "build:static": "vite build -c adapters/static/vite.config.ts",
     "start": "node server.js",
     "dev": "vite"
   },

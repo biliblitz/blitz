@@ -6,7 +6,7 @@
   "scripts": {
     "build": "vue-tsc --build && pnpm run build:client && pnpm run build:workers",
     "build:client": "vite build --manifest",
-    "build:workers": "vite build --ssr -c adapters/workers/vite.config.ts",
+    "build:workers": "vite build -c adapters/workers/vite.config.ts",
     "start": "wrangler dev",
     "dev": "vite"
   },
