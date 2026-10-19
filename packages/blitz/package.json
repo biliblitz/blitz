@@ -14,26 +14,26 @@
     "url": "git+https://github.com/biliblitz/blitz.git"
   },
   "types": "./dist/client/index.d.ts",
-  "module": "./dist/client/index.mjs",
+  "module": "./dist/client/index.js",
   "exports": {
     ".": {
       "types": "./dist/client/index.d.ts",
-      "import": "./dist/client/index.mjs"
+      "import": "./dist/client/index.js"
     },
     "./server": {
       "types": "./dist/server/index.d.ts",
-      "import": "./dist/server/index.mjs"
+      "import": "./dist/server/index.js"
     },
     "./utils": {
       "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.mjs"
+      "import": "./dist/utils/index.js"
     },
     "./env": {
       "types": "./dist/env.d.ts"
     }
   },
   "scripts": {
-    "build": "rm -rf dist && tsc --build && cp src/env.d.ts dist && exbuild"
+    "build": "rm -rf dist && tsc --build && cp src/env.d.ts dist"
   },
   "license": "MIT",
   "peerDependencies": {
@@ -44,7 +44,6 @@
     "vue-router": "^4"
   },
   "devDependencies": {
-    "@swwind/exbuild": "^1.0.8",
     "@types/node": "^22.0.0",
     "typescript": "~5.9.3",
     "vite": "^8.3.4"

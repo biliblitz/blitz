@@ -623,9 +623,6 @@ importers:
 
   packages/adapter-nodejs:
     devDependencies:
-      "@swwind/exbuild":
-        specifier: ^1.0.8
-        version: 1.0.8
       typescript:
         specifier: ~5.9.3
         version: 5.9.3
@@ -645,9 +642,6 @@ importers:
       "@biliblitz/blitz":
         specifier: workspace:^
         version: link:../blitz
-      "@swwind/exbuild":
-        specifier: ^1.0.8
-        version: 1.0.8
       "@types/node":
         specifier: ^22.0.0
         version: 22.20.5
@@ -667,9 +661,6 @@ importers:
       "@biliblitz/blitz":
         specifier: workspace:^
         version: link:../blitz
-      "@swwind/exbuild":
-        specifier: ^1.0.8
-        version: 1.0.8
       "@types/node":
         specifier: ^22.0.0
         version: 22.20.5
@@ -698,9 +689,6 @@ importers:
         specifier: ^4
         version: 4.6.4(vue@3.5.44(typescript@5.9.3))
     devDependencies:
-      "@swwind/exbuild":
-        specifier: ^1.0.8
-        version: 1.0.8
       "@types/node":
         specifier: ^22.0.0
         version: 22.20.5
@@ -732,9 +720,6 @@ importers:
         specifier: ~1.7
         version: 1.7.10
     devDependencies:
-      "@swwind/exbuild":
-        specifier: ^1.0.8
-        version: 1.0.8
       "@types/node":
         specifier: ^22.0.0
         version: 22.20.5
@@ -778,9 +763,6 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
     devDependencies:
-      "@swwind/exbuild":
-        specifier: ^1.0.8
-        version: 1.0.8
       "@types/node":
         specifier: ^22.0.0
         version: 22.20.5
@@ -812,9 +794,6 @@ importers:
         specifier: ^14.1.0
         version: 14.1.0
     devDependencies:
-      "@swwind/exbuild":
-        specifier: ^1.0.8
-        version: 1.0.8
       "@types/node":
         specifier: ^22.0.0
         version: 22.20.5
@@ -837,9 +816,6 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
     devDependencies:
-      "@swwind/exbuild":
-        specifier: ^1.0.8
-        version: 1.0.8
       "@types/node":
         specifier: ^22.0.0
         version: 22.20.5
@@ -2268,15 +2244,6 @@ packages:
         integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==,
       }
 
-  "@swc/core-darwin-arm64@1.6.7":
-    resolution:
-      {
-        integrity: sha512-sNb+ghP2OhZyUjS7E5Mf3PqSvoXJ5gY6GBaH2qp8WQxx9VL7ozC4HVo6vkeFJBN5cmYqUCLnhrM3HU4W+7yMSA==,
-      }
-    engines: { node: ">=10" }
-    cpu: [arm64]
-    os: [darwin]
-
   "@swc/core-darwin-arm64@1.7.10":
     resolution:
       {
@@ -2284,15 +2251,6 @@ packages:
       }
     engines: { node: ">=10" }
     cpu: [arm64]
-    os: [darwin]
-
-  "@swc/core-darwin-x64@1.6.7":
-    resolution:
-      {
-        integrity: sha512-LQwYm/ATYN5fYSYVPMfComPiFo5i8jh75h1ASvNWhXtS+/+k1dq1zXTJWZRuojd5NXgW3bb6mJtJ2evwYIgYbA==,
-      }
-    engines: { node: ">=10" }
-    cpu: [x64]
     os: [darwin]
 
   "@swc/core-darwin-x64@1.7.10":
@@ -2304,15 +2262,6 @@ packages:
     cpu: [x64]
     os: [darwin]
 
-  "@swc/core-linux-arm-gnueabihf@1.6.7":
-    resolution:
-      {
-        integrity: sha512-kEDzVhNci38LX3kdY99t68P2CDf+2QFDk5LawVamXH0iN5DRAO/+wjOhxL8KOHa6wQVqKEt5WrhD+Rrvk/34Yw==,
-      }
-    engines: { node: ">=10" }
-    cpu: [arm]
-    os: [linux]
-
   "@swc/core-linux-arm-gnueabihf@1.7.10":
     resolution:
       {
@@ -2321,16 +2270,6 @@ packages:
     engines: { node: ">=10" }
     cpu: [arm]
     os: [linux]
-
-  "@swc/core-linux-arm64-gnu@1.6.7":
-    resolution:
-      {
-        integrity: sha512-SyOBUGfl31xLGpIJ/Jd6GKHtkfZyHBXSwFlK7FmPN//MBQLtTBm4ZaWTnWnGo4aRsJwQdXWDKPyqlMBtnIl1nQ==,
-      }
-    engines: { node: ">=10" }
-    cpu: [arm64]
-    os: [linux]
-    libc: [glibc]
 
   "@swc/core-linux-arm64-gnu@1.7.10":
     resolution:
@@ -2342,16 +2281,6 @@ packages:
     os: [linux]
     libc: [glibc]
 
-  "@swc/core-linux-arm64-musl@1.6.7":
-    resolution:
-      {
-        integrity: sha512-1fOAXkDFbRfItEdMZPxT3du1QWYhgToa4YsnqTujjE8EqJW8K27hIcHRIkVuzp7PNhq8nLBg0JpJM4g27EWD7g==,
-      }
-    engines: { node: ">=10" }
-    cpu: [arm64]
-    os: [linux]
-    libc: [musl]
-
   "@swc/core-linux-arm64-musl@1.7.10":
     resolution:
       {
@@ -2361,16 +2290,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     libc: [musl]
-
-  "@swc/core-linux-x64-gnu@1.6.7":
-    resolution:
-      {
-        integrity: sha512-Gp7uCwPsNO5ATxbyvfTyeNCHUGD9oA+xKMm43G1tWCy+l07gLqWMKp7DIr3L3qPD05TfAVo3OuiOn2abpzOFbw==,
-      }
-    engines: { node: ">=10" }
-    cpu: [x64]
-    os: [linux]
-    libc: [glibc]
 
   "@swc/core-linux-x64-gnu@1.7.10":
     resolution:
@@ -2382,16 +2301,6 @@ packages:
     os: [linux]
     libc: [glibc]
 
-  "@swc/core-linux-x64-musl@1.6.7":
-    resolution:
-      {
-        integrity: sha512-QeruGBZJ15tadqEMQ77ixT/CYGk20MtlS8wmvJiV+Wsb8gPW5LgCjtupzcLLnoQzDG54JGNCeeZ0l/T8NYsOvA==,
-      }
-    engines: { node: ">=10" }
-    cpu: [x64]
-    os: [linux]
-    libc: [musl]
-
   "@swc/core-linux-x64-musl@1.7.10":
     resolution:
       {
@@ -2402,15 +2311,6 @@ packages:
     os: [linux]
     libc: [musl]
 
-  "@swc/core-win32-arm64-msvc@1.6.7":
-    resolution:
-      {
-        integrity: sha512-ouRqgSnT95lTCiU/6kJRNS5b1o+p8I/V9jxtL21WUj/JOVhsFmBErqQ0MZyCu514noWiR5BIqOrZXR8C1Knx6Q==,
-      }
-    engines: { node: ">=10" }
-    cpu: [arm64]
-    os: [win32]
-
   "@swc/core-win32-arm64-msvc@1.7.10":
     resolution:
       {
@@ -2418,15 +2318,6 @@ packages:
       }
     engines: { node: ">=10" }
     cpu: [arm64]
-    os: [win32]
-
-  "@swc/core-win32-ia32-msvc@1.6.7":
-    resolution:
-      {
-        integrity: sha512-eZAP/EmJ0IcfgAx6B4/SpSjq3aT8gr0ooktfMqw/w0/5lnNrbMl2v+2kvxcneNcF7bp8VNcYZnoHlsP+LvmVbA==,
-      }
-    engines: { node: ">=10" }
-    cpu: [ia32]
     os: [win32]
 
   "@swc/core-win32-ia32-msvc@1.7.10":
@@ -2438,15 +2329,6 @@ packages:
     cpu: [ia32]
     os: [win32]
 
-  "@swc/core-win32-x64-msvc@1.6.7":
-    resolution:
-      {
-        integrity: sha512-QOdE+7GQg1UQPS6p0KxzJOh/8GLbJ5zI1vqKArCCB0unFqUfKIjYb2TaH0geEBy3w9qtXxe3ZW6hzxtZSS9lDg==,
-      }
-    engines: { node: ">=10" }
-    cpu: [x64]
-    os: [win32]
-
   "@swc/core-win32-x64-msvc@1.7.10":
     resolution:
       {
@@ -2455,18 +2337,6 @@ packages:
     engines: { node: ">=10" }
     cpu: [x64]
     os: [win32]
-
-  "@swc/core@1.6.7":
-    resolution:
-      {
-        integrity: sha512-BBzORL9qWz5hZqAZ83yn+WNaD54RH5eludjqIOboolFOK/Pw+2l00/H77H4CEBJnzCIBQszsyqtITmrn4evp0g==,
-      }
-    engines: { node: ">=10" }
-    peerDependencies:
-      "@swc/helpers": "*"
-    peerDependenciesMeta:
-      "@swc/helpers":
-        optional: true
 
   "@swc/core@1.7.10":
     resolution:
@@ -2491,13 +2361,6 @@ packages:
       {
         integrity: sha512-wBJA+SdtkbFhHjTMYH+dEH1y4VpfGdAc2Kw/LK09i9bXd/K6j6PkDcFCEzb6iVfZMkPRrl/q0e3toqTAJdkIVA==,
       }
-
-  "@swwind/exbuild@1.0.8":
-    resolution:
-      {
-        integrity: sha512-ZrC52IEVI9eLgyFFXOkNuuQzZGxDrby+qKXN5tDL9QPPgrlAFK6Mzb3WDHjE2ug/v5zM8ZInZ0LD2zyjNmHBFw==,
-      }
-    hasBin: true
 
   "@types/acorn@4.0.6":
     resolution:
@@ -3263,12 +3126,6 @@ packages:
     resolution:
       {
         integrity: sha512-lkX1HJXwyMcprw/5YUZc2s7DrpAiHB21/V+E1rHUrVNokkvB6bqMzT0VfV6/86ZNabt1k14YOIaT7nDvOX3Iiw==,
-      }
-
-  globalyzer@0.1.0:
-    resolution:
-      {
-        integrity: sha512-40oNTM9UfG6aBmuKxk/giHn5nQ8RVz/SS4Ir6zgzOv9/qC3kKZ9v4etGTcJbEl/NyVQH7FGU7d+X1egr57Md2Q==,
       }
 
   globrex@0.1.2:
@@ -4377,12 +4234,6 @@ packages:
         integrity: sha512-wieBHXygIm7OyQOu5hQlkk62/WyCFYGlWg7L6/ZCUZwx0o398Zkn4pVmMyfYhfMG8kGrj/Krt8eIk6UKC6VzwA==,
       }
 
-  tiny-glob@0.2.9:
-    resolution:
-      {
-        integrity: sha512-g/55ssRPUjShh+xkfx9UPDXqhckHEsHr4Vd9zX55oSdGZc/MD0m3sferOkwWtp98bv+kcVfEHtRJgBVJzelrzg==,
-      }
-
   tinyexec@0.3.2:
     resolution:
       {
@@ -5461,81 +5312,35 @@ snapshots:
 
   "@shikijs/vscode-textmate@10.0.2": {}
 
-  "@swc/core-darwin-arm64@1.6.7":
-    optional: true
-
   "@swc/core-darwin-arm64@1.7.10":
-    optional: true
-
-  "@swc/core-darwin-x64@1.6.7":
     optional: true
 
   "@swc/core-darwin-x64@1.7.10":
     optional: true
 
-  "@swc/core-linux-arm-gnueabihf@1.6.7":
-    optional: true
-
   "@swc/core-linux-arm-gnueabihf@1.7.10":
-    optional: true
-
-  "@swc/core-linux-arm64-gnu@1.6.7":
     optional: true
 
   "@swc/core-linux-arm64-gnu@1.7.10":
     optional: true
 
-  "@swc/core-linux-arm64-musl@1.6.7":
-    optional: true
-
   "@swc/core-linux-arm64-musl@1.7.10":
-    optional: true
-
-  "@swc/core-linux-x64-gnu@1.6.7":
     optional: true
 
   "@swc/core-linux-x64-gnu@1.7.10":
     optional: true
 
-  "@swc/core-linux-x64-musl@1.6.7":
-    optional: true
-
   "@swc/core-linux-x64-musl@1.7.10":
-    optional: true
-
-  "@swc/core-win32-arm64-msvc@1.6.7":
     optional: true
 
   "@swc/core-win32-arm64-msvc@1.7.10":
     optional: true
 
-  "@swc/core-win32-ia32-msvc@1.6.7":
-    optional: true
-
   "@swc/core-win32-ia32-msvc@1.7.10":
-    optional: true
-
-  "@swc/core-win32-x64-msvc@1.6.7":
     optional: true
 
   "@swc/core-win32-x64-msvc@1.7.10":
     optional: true
-
-  "@swc/core@1.6.7":
-    dependencies:
-      "@swc/counter": 0.1.3
-      "@swc/types": 0.1.12
-    optionalDependencies:
-      "@swc/core-darwin-arm64": 1.6.7
-      "@swc/core-darwin-x64": 1.6.7
-      "@swc/core-linux-arm-gnueabihf": 1.6.7
-      "@swc/core-linux-arm64-gnu": 1.6.7
-      "@swc/core-linux-arm64-musl": 1.6.7
-      "@swc/core-linux-x64-gnu": 1.6.7
-      "@swc/core-linux-x64-musl": 1.6.7
-      "@swc/core-win32-arm64-msvc": 1.6.7
-      "@swc/core-win32-ia32-msvc": 1.6.7
-      "@swc/core-win32-x64-msvc": 1.6.7
 
   "@swc/core@1.7.10":
     dependencies:
@@ -5558,13 +5363,6 @@ snapshots:
   "@swc/types@0.1.12":
     dependencies:
       "@swc/counter": 0.1.3
-
-  "@swwind/exbuild@1.0.8":
-    dependencies:
-      "@swc/core": 1.6.7
-      tiny-glob: 0.2.9
-    transitivePeerDependencies:
-      - "@swc/helpers"
 
   "@types/acorn@4.0.6":
     dependencies:
@@ -6078,8 +5876,6 @@ snapshots:
       is-glob: 4.0.3
 
   glob-to-regexp@0.4.1: {}
-
-  globalyzer@0.1.0: {}
 
   globrex@0.1.2: {}
 
@@ -6981,11 +6777,6 @@ snapshots:
   supports-preserve-symlinks-flag@1.0.0: {}
 
   tabbable@6.5.0: {}
-
-  tiny-glob@0.2.9:
-    dependencies:
-      globalyzer: 0.1.0
-      globrex: 0.1.2
 
   tinyexec@0.3.2: {}
 

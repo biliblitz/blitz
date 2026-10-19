@@ -13,19 +13,18 @@
     "url": "git+https://github.com/biliblitz/blitz.git"
   },
   "types": "./dist/index.d.ts",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs"
+      "import": "./dist/index.js"
     }
   },
   "scripts": {
-    "build": "rm -rf dist && tsc --build && exbuild"
+    "build": "rm -rf dist && tsc --build"
   },
   "license": "MIT",
   "devDependencies": {
-    "@swwind/exbuild": "^1.0.8",
     "@types/node": "^22.0.0",
     "typescript": "~5.9.3",
     "vite": "^8.3.4"
