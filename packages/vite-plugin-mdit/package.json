@@ -1,6 +1,6 @@
 {
   "name": "@biliblitz/vite-plugin-mdit",
-  "version": "0.0.1",
+  "version": "0.4.0",
   "description": "A blitzing minimal backend-framework for Vue (Vite plugin for MarkdownIt)",
   "type": "module",
   "files": [

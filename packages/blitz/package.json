@@ -1,6 +1,6 @@
 {
   "name": "@biliblitz/blitz",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "A blitzing minimal backend-framework for Vue",
   "type": "module",
   "files": [
