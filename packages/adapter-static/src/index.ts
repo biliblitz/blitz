@@ -55,7 +55,7 @@ export function staticAdapter(options: Options): Plugin {
         build: {
           target: "esnext",
           outDir: "dist/static",
-          rollupOptions: {
+          rolldownOptions: {
             input: [staticAdapterId],
             output: {
               entryFileNames: "_server.js",

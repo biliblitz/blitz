@@ -15,6 +15,26 @@ And contains following targets
 - [static][docs-static] - static websites ([GitHub Pages][github-pages], [Cloudflare Pages][cloudflare-pages], etc.)
 - [workers][docs-workers] - [Cloudflare Workers][cloudflare-workers]
 
+## Development
+
+Use Node.js 22.12+ (or 20.19+) and the pnpm version pinned in `package.json`.
+
+```sh
+corepack enable
+pnpm install --frozen-lockfile
+rustup target add wasm32-wasip1
+cargo test
+pnpm build
+pnpm docs:build
+```
+
+Internal package dependencies use `workspace:^`. Always use `pnpm pack` or
+`pnpm publish` so these become ordinary version ranges in published packages
+(for example, `workspace:^` becomes `^0.3.3` for `@biliblitz/blitz`). Bump each
+changed package's own `version` before releasing; pnpm does not manage version
+bumps. The publish workflow runs on commits starting with `release` on `master`,
+and recursively publishes packages whose versions are not already on npm.
+
 ## Documents
 
 See [docs (zh_CN, WIP)][docs].

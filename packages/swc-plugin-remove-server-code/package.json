@@ -29,7 +29,7 @@
     "url": "git+https://github.com/biliblitz/blitz.git"
   },
   "scripts": {
-    "build": "cargo build-wasi --release && cp ../../target/wasm32-wasi/release/remove_server_code.wasm .",
+    "build": "cargo build-wasi --release && cp ../../target/wasm32-wasip1/release/remove_server_code.wasm .",
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {

@@ -26,9 +26,9 @@
   "license": "MIT",
   "devDependencies": {
     "@swwind/exbuild": "^1.0.8",
-    "@types/node": "^20.14.11",
-    "typescript": "^5.5.4",
-    "vite": "^5"
+    "@types/node": "^22.0.0",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.4"
   },
   "dependencies": {
     "@types/hast": "^3.0.4",
@@ -39,5 +39,11 @@
     "unified": "^11.0.5",
     "vfile": "^6.0.2",
     "vfile-matter": "^5.0.0"
+  },
+  "peerDependencies": {
+    "vite": "^8.3.4"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
   }
 }

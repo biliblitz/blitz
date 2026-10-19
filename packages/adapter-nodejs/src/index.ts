@@ -9,7 +9,7 @@ export function nodejsAdapter(): Plugin {
         build: {
           target: "esnext",
           outDir: "dist/nodejs",
-          rollupOptions: {
+          rolldownOptions: {
             input: "./src/entry.nodejs.ts",
             output: {
               entryFileNames: "server.js",

@@ -18,15 +18,13 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22, 24]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
       - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9.6.0
+      - uses: pnpm/action-setup@v4
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -35,7 +33,7 @@ jobs:
       - name: Install
         run: |
           rustup target add wasm32-wasip1
-          pnpm install
+          pnpm install --frozen-lockfile
       - name: Build & Test
         run: |
           cargo test

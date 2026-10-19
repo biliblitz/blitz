@@ -76,7 +76,7 @@ export function blitz(): Plugin<{ fetch?: { env: any; ctx: any } }> {
           build: {
             target: "esnext",
             outDir: "dist/client",
-            rollupOptions: {
+            rolldownOptions: {
               input: ["./src/entry.client.ts"],
               output: {
                 entryFileNames: "build/p-[hash].js",
@@ -99,7 +99,7 @@ export function blitz(): Plugin<{ fetch?: { env: any; ctx: any } }> {
         return {
           appType: "custom",
           build: {
-            rollupOptions: {
+            rolldownOptions: {
               input: ["./src/entry.client.ts"],
             },
           },

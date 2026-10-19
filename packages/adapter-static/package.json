@@ -25,16 +25,20 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "hono": "^4"
+    "hono": "^4",
+    "vite": "^8.3.4"
   },
   "devDependencies": {
-    "@biliblitz/blitz": "^0.3.0",
+    "@biliblitz/blitz": "workspace:^",
     "@swwind/exbuild": "^1.0.8",
-    "@types/node": "^20.14.11",
-    "typescript": "^5.5.4",
-    "vite": "^5"
+    "@types/node": "^22.0.0",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.4"
   },
   "dependencies": {
     "kolorist": "^1.8.0"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
   }
 }
