@@ -11,6 +11,9 @@ import {
 } from "./router.ts";
 import { type FetchEvent, createFetchEvent } from "./event.ts";
 import { Hono, type Context } from "hono";
+import { RegExpRouter } from "hono/router/reg-exp-router";
+import { PatternRouter } from "hono/router/pattern-router";
+import { SmartRouter } from "hono/router/smart-router";
 import { HTTPException } from "hono/http-exception";
 import { RedirectException } from "./exception.ts";
 import { shallowRef, type Plugin } from "vue";
@@ -52,7 +55,13 @@ export function createServer(
   render: ServerRenderer,
   { manifest }: ServerOptions,
 ) {
-  const app = new Hono<{ Bindings: Env }>();
+  const app = new Hono<{ Bindings: Env }>({
+    // TrieRouter cannot match multi-segment parameters followed by a suffix
+    // such as / or /_data.json. Keep regexp matching in the fallback too.
+    router: new SmartRouter({
+      routers: [new RegExpRouter(), new PatternRouter()],
+    }),
+  });
 
   app.use(async (c, next) => {
     c.setRenderer(async (runtime) => {

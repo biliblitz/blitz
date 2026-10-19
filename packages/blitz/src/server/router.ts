@@ -11,14 +11,10 @@ export type ErrorResponse = { ok: "error"; error: string; status: number };
 export type RedirectResponse = { ok: "redirect"; redirect: string };
 
 export type ActionResponse<T = ActionReturnValue> =
-  | { ok: "action"; action: T }
-  | ErrorResponse
-  | RedirectResponse;
+  { ok: "action"; action: T } | ErrorResponse | RedirectResponse;
 
 export type LoaderResponse =
-  | { ok: "loader"; loaders: LoaderStore }
-  | ErrorResponse
-  | RedirectResponse;
+  { ok: "loader"; loaders: LoaderStore } | ErrorResponse | RedirectResponse;
 
 export function createHonoRouter({ route, children }: Directory) {
   const app = new Hono();
@@ -55,12 +51,7 @@ export function createHonoRouter({ route, children }: Directory) {
       },
     );
 
-    app.get("/", async (c) => {
-      const event = c.get("event");
-      await event.runLayer(index);
-      return await c.render(event.runtime);
-    });
-
+    // Reserve the data endpoint before a catch-all page can consume its name.
     app.get("/_data.json", async (c) => {
       const event = c.get("event");
       await event.runLayer(index);
@@ -68,6 +59,12 @@ export function createHonoRouter({ route, children }: Directory) {
         ok: "loader",
         loaders: event.loaders,
       });
+    });
+
+    app.get("/", async (c) => {
+      const event = c.get("event");
+      await event.runLayer(index);
+      return await c.render(event.runtime);
     });
 
     app.on(["POST", "DELETE", "PUT", "PATCH"], "/_data.json", async (c) => {
@@ -126,11 +123,10 @@ export function createHonoRouter({ route, children }: Directory) {
     const name = dirname.slice(1, -1);
     app.route(`/:${name}/`, createHonoRouter(child));
   }
-  // TODO: I can't make hono work.
   for (const [dirname, child] of catches) {
-    // console.warn("using catch-all route is not supported right now");
     const name = dirname.slice(2, -2);
-    app.route(`/:${name}{.+}/`, createHonoRouter(child));
+    // Leave the trailing slash and the data endpoint suffix outside the param.
+    app.route(`/:${name}{.+?}/`, createHonoRouter(child));
   }
 
   return app;

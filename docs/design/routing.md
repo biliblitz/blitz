@@ -23,10 +23,6 @@
 - `/proxy/foo/bar/`，路由参数将会是 `{ url: "foo/bar" }`
 - `/proxy/https://mikanani.me/`，路由参数将会是 `{ url: "https://mikanani.me" }`
 
-:::info
-捕获路由可能现在还不太工作，我也不知道为什么 Hono 路由找不到。如果你有什么头猪，可以告诉我。
-:::
-
 ## 渲染层级
 
 每个文件目录都会检测两个文件，分别是 `index.xxx` 和 `layout.xxx`。
