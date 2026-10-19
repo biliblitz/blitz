@@ -17,7 +17,8 @@ And contains following targets
 
 ## Development
 
-Use Node.js 22.12+ (or 20.19+) and the pnpm version pinned in `package.json`.
+Use Node.js 22.13+ and the pnpm version pinned in `package.json` (pnpm 11,
+the JavaScript implementation).
 
 ```sh
 corepack enable

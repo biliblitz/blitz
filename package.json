@@ -35,8 +35,8 @@
     "pre-commit": "pnpm pretty-quick --staged"
   },
   "private": true,
-  "packageManager": "pnpm@12.14.0",
+  "packageManager": "pnpm@11.28.6",
   "engines": {
-    "node": "^20.19.0 || >=22.12.0"
+    "node": ">=22.13.0"
   }
 }
