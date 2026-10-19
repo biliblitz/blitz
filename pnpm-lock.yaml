@@ -218,7 +218,7 @@ importers:
         version: 2.14.0
       vitepress:
         specifier: ^1.6.4
-        version: 1.6.4(@algolia/client-search@5.60.0)(@types/node@22.20.5)(lightningcss@1.33.0)(postcss@8.5.30)(search-insights@2.15.0)(typescript@5.9.3)
+        version: 1.6.4(@algolia/client-search@5.60.0)(@types/node@22.20.5)(lightningcss@1.33.0)(postcss@8.5.30)(search-insights@2.15.0)(typescript@6.0.3)
 
   examples/adapter-nodejs:
     dependencies:
@@ -233,16 +233,16 @@ importers:
         version: 1.9.16
       "@unhead/vue":
         specifier: ^1.9.16
-        version: 1.9.16(vue@3.5.44(typescript@5.9.3))
+        version: 1.9.16(vue@3.5.44(typescript@6.0.3))
       hono:
         specifier: ^4.2.3
         version: 4.5.0
       vue:
         specifier: ^3
-        version: 3.5.44(typescript@5.9.3)
+        version: 3.5.44(typescript@6.0.3)
       vue-router:
         specifier: ^4.4.3
-        version: 4.6.4(vue@3.5.44(typescript@5.9.3))
+        version: 4.6.4(vue@3.5.44(typescript@6.0.3))
     devDependencies:
       "@biliblitz/adapter-nodejs":
         specifier: workspace:^
@@ -258,19 +258,16 @@ importers:
         version: 1.9.16(rollup@4.20.0)
       "@vitejs/plugin-vue":
         specifier: ^6.0.10
-        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@5.9.3))
+        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@6.0.3))
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
-      vite-tsconfig-paths:
-        specifier: ^6.1.1
-        version: 6.1.1(typescript@5.9.3)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))
       vue-tsc:
         specifier: ^3.3.13
-        version: 3.3.13(typescript@5.9.3)
+        version: 3.3.13(typescript@6.0.3)
 
   examples/adapter-static:
     dependencies:
@@ -285,16 +282,16 @@ importers:
         version: 1.9.16
       "@unhead/vue":
         specifier: ^1.9.16
-        version: 1.9.16(vue@3.5.44(typescript@5.9.3))
+        version: 1.9.16(vue@3.5.44(typescript@6.0.3))
       hono:
         specifier: ^4.2.3
         version: 4.5.0
       vue:
         specifier: ^3
-        version: 3.5.44(typescript@5.9.3)
+        version: 3.5.44(typescript@6.0.3)
       vue-router:
         specifier: ^4.4.3
-        version: 4.6.4(vue@3.5.44(typescript@5.9.3))
+        version: 4.6.4(vue@3.5.44(typescript@6.0.3))
     devDependencies:
       "@biliblitz/adapter-static":
         specifier: workspace:^
@@ -310,19 +307,16 @@ importers:
         version: 1.9.16(rollup@4.20.0)
       "@vitejs/plugin-vue":
         specifier: ^6.0.10
-        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@5.9.3))
+        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@6.0.3))
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
-      vite-tsconfig-paths:
-        specifier: ^6.1.1
-        version: 6.1.1(typescript@5.9.3)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))
       vue-tsc:
         specifier: ^3.3.13
-        version: 3.3.13(typescript@5.9.3)
+        version: 3.3.13(typescript@6.0.3)
 
   examples/adapter-workers:
     dependencies:
@@ -337,13 +331,13 @@ importers:
         version: 1.9.16
       "@unhead/vue":
         specifier: ^1.9.16
-        version: 1.9.16(vue@3.5.44(typescript@5.9.3))
+        version: 1.9.16(vue@3.5.44(typescript@6.0.3))
       vue:
         specifier: ^3
-        version: 3.5.44(typescript@5.9.3)
+        version: 3.5.44(typescript@6.0.3)
       vue-router:
         specifier: ^4.4.3
-        version: 4.6.4(vue@3.5.44(typescript@5.9.3))
+        version: 4.6.4(vue@3.5.44(typescript@6.0.3))
       wrangler:
         specifier: ^3.68.0
         version: 3.68.0(@cloudflare/workers-types@4.20240729.0)
@@ -365,22 +359,19 @@ importers:
         version: 1.9.16(rollup@4.20.0)
       "@vitejs/plugin-vue":
         specifier: ^6.0.10
-        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@5.9.3))
+        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@6.0.3))
       esbuild:
         specifier: ^0.28.2
         version: 0.28.2
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
-      vite-tsconfig-paths:
-        specifier: ^6.1.1
-        version: 6.1.1(typescript@5.9.3)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))
       vue-tsc:
         specifier: ^3.3.13
-        version: 3.3.13(typescript@5.9.3)
+        version: 3.3.13(typescript@6.0.3)
 
   examples/markdown:
     dependencies:
@@ -392,13 +383,13 @@ importers:
         version: 1.9.16
       "@unhead/vue":
         specifier: ^1.9.16
-        version: 1.9.16(vue@3.5.44(typescript@5.9.3))
+        version: 1.9.16(vue@3.5.44(typescript@6.0.3))
       vue:
         specifier: ^3
-        version: 3.5.44(typescript@5.9.3)
+        version: 3.5.44(typescript@6.0.3)
       vue-router:
         specifier: ^4.4.3
-        version: 4.6.4(vue@3.5.44(typescript@5.9.3))
+        version: 4.6.4(vue@3.5.44(typescript@6.0.3))
     devDependencies:
       "@biliblitz/vite":
         specifier: workspace:^
@@ -414,19 +405,16 @@ importers:
         version: 1.9.16(rollup@4.20.0)
       "@vitejs/plugin-vue":
         specifier: ^6.0.10
-        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@5.9.3))
+        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@6.0.3))
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
-      vite-tsconfig-paths:
-        specifier: ^6.1.1
-        version: 6.1.1(typescript@5.9.3)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))
       vue-tsc:
         specifier: ^3.3.13
-        version: 3.3.13(typescript@5.9.3)
+        version: 3.3.13(typescript@6.0.3)
 
   examples/mdit:
     dependencies:
@@ -438,13 +426,13 @@ importers:
         version: 1.9.16
       "@unhead/vue":
         specifier: ^1.9.16
-        version: 1.9.16(vue@3.5.44(typescript@5.9.3))
+        version: 1.9.16(vue@3.5.44(typescript@6.0.3))
       vue:
         specifier: ^3
-        version: 3.5.44(typescript@5.9.3)
+        version: 3.5.44(typescript@6.0.3)
       vue-router:
         specifier: ^4.4.3
-        version: 4.6.4(vue@3.5.44(typescript@5.9.3))
+        version: 4.6.4(vue@3.5.44(typescript@6.0.3))
     devDependencies:
       "@biliblitz/vite":
         specifier: workspace:^
@@ -460,22 +448,19 @@ importers:
         version: 1.9.16(rollup@4.20.0)
       "@vitejs/plugin-vue":
         specifier: ^6.0.10
-        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@5.9.3))
+        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@6.0.3))
       markdown-it:
         specifier: ^14.1.0
         version: 14.1.0
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
-      vite-tsconfig-paths:
-        specifier: ^6.1.1
-        version: 6.1.1(typescript@5.9.3)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))
       vue-tsc:
         specifier: ^3.3.13
-        version: 3.3.13(typescript@5.9.3)
+        version: 3.3.13(typescript@6.0.3)
 
   examples/mdx:
     dependencies:
@@ -487,13 +472,13 @@ importers:
         version: 1.9.16
       "@unhead/vue":
         specifier: ^1.9.16
-        version: 1.9.16(vue@3.5.44(typescript@5.9.3))
+        version: 1.9.16(vue@3.5.44(typescript@6.0.3))
       vue:
         specifier: ^3
-        version: 3.5.44(typescript@5.9.3)
+        version: 3.5.44(typescript@6.0.3)
       vue-router:
         specifier: ^4.4.3
-        version: 4.6.4(vue@3.5.44(typescript@5.9.3))
+        version: 4.6.4(vue@3.5.44(typescript@6.0.3))
     devDependencies:
       "@biliblitz/vite":
         specifier: workspace:^
@@ -509,19 +494,16 @@ importers:
         version: 1.9.16(rollup@4.20.0)
       "@vitejs/plugin-vue":
         specifier: ^6.0.10
-        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@5.9.3))
+        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@6.0.3))
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
-      vite-tsconfig-paths:
-        specifier: ^6.1.1
-        version: 6.1.1(typescript@5.9.3)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))
       vue-tsc:
         specifier: ^3.3.13
-        version: 3.3.13(typescript@5.9.3)
+        version: 3.3.13(typescript@6.0.3)
 
   examples/minimal:
     dependencies:
@@ -533,13 +515,13 @@ importers:
         version: 1.9.16
       "@unhead/vue":
         specifier: ^1.9.16
-        version: 1.9.16(vue@3.5.44(typescript@5.9.3))
+        version: 1.9.16(vue@3.5.44(typescript@6.0.3))
       vue:
         specifier: ^3
-        version: 3.5.44(typescript@5.9.3)
+        version: 3.5.44(typescript@6.0.3)
       vue-router:
         specifier: ^4.4.3
-        version: 4.6.4(vue@3.5.44(typescript@5.9.3))
+        version: 4.6.4(vue@3.5.44(typescript@6.0.3))
     devDependencies:
       "@biliblitz/vite":
         specifier: workspace:^
@@ -552,19 +534,16 @@ importers:
         version: 1.9.16(rollup@4.20.0)
       "@vitejs/plugin-vue":
         specifier: ^6.0.10
-        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@5.9.3))
+        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@6.0.3))
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
-      vite-tsconfig-paths:
-        specifier: ^6.1.1
-        version: 6.1.1(typescript@5.9.3)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))
       vue-tsc:
         specifier: ^3.3.13
-        version: 3.3.13(typescript@5.9.3)
+        version: 3.3.13(typescript@6.0.3)
 
   examples/routing:
     dependencies:
@@ -579,16 +558,16 @@ importers:
         version: 1.9.16
       "@unhead/vue":
         specifier: ^1.9.16
-        version: 1.9.16(vue@3.5.44(typescript@5.9.3))
+        version: 1.9.16(vue@3.5.44(typescript@6.0.3))
       hono:
         specifier: ^4.5.4
         version: 4.5.4
       vue:
         specifier: ^3
-        version: 3.5.44(typescript@5.9.3)
+        version: 3.5.44(typescript@6.0.3)
       vue-router:
         specifier: ^4.4.3
-        version: 4.6.4(vue@3.5.44(typescript@5.9.3))
+        version: 4.6.4(vue@3.5.44(typescript@6.0.3))
     devDependencies:
       "@biliblitz/adapter-nodejs":
         specifier: workspace:^
@@ -607,25 +586,22 @@ importers:
         version: 1.9.16(rollup@4.20.0)
       "@vitejs/plugin-vue":
         specifier: ^6.0.10
-        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@5.9.3))
+        version: 6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@6.0.3))
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
-      vite-tsconfig-paths:
-        specifier: ^6.1.1
-        version: 6.1.1(typescript@5.9.3)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))
       vue-tsc:
         specifier: ^3.3.13
-        version: 3.3.13(typescript@5.9.3)
+        version: 3.3.13(typescript@6.0.3)
 
   packages/adapter-nodejs:
     devDependencies:
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
@@ -646,8 +622,8 @@ importers:
         specifier: ^22.0.0
         version: 22.20.5
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
@@ -665,8 +641,8 @@ importers:
         specifier: ^22.0.0
         version: 22.20.5
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
@@ -678,23 +654,23 @@ importers:
         version: 1.9.16
       "@unhead/vue":
         specifier: ^1.9.16
-        version: 1.9.16(vue@3.5.44(typescript@5.9.3))
+        version: 1.9.16(vue@3.5.44(typescript@6.0.3))
       hono:
         specifier: ^4
         version: 4.5.0
       vue:
         specifier: ^3
-        version: 3.5.44(typescript@5.9.3)
+        version: 3.5.44(typescript@6.0.3)
       vue-router:
         specifier: ^4
-        version: 4.6.4(vue@3.5.44(typescript@5.9.3))
+        version: 4.6.4(vue@3.5.44(typescript@6.0.3))
     devDependencies:
       "@types/node":
         specifier: ^22.0.0
         version: 22.20.5
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
@@ -730,8 +706,8 @@ importers:
         specifier: ^4.20.0
         version: 4.20.0
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
@@ -767,8 +743,8 @@ importers:
         specifier: ^22.0.0
         version: 22.20.5
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
@@ -798,8 +774,8 @@ importers:
         specifier: ^22.0.0
         version: 22.20.5
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
@@ -820,8 +796,8 @@ importers:
         specifier: ^22.0.0
         version: 22.20.5
       typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
@@ -3128,12 +3104,6 @@ packages:
         integrity: sha512-lkX1HJXwyMcprw/5YUZc2s7DrpAiHB21/V+E1rHUrVNokkvB6bqMzT0VfV6/86ZNabt1k14YOIaT7nDvOX3Iiw==,
       }
 
-  globrex@0.1.2:
-    resolution:
-      {
-        integrity: sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==,
-      }
-
   gray-matter@4.0.3:
     resolution:
       {
@@ -4273,20 +4243,6 @@ packages:
         integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==,
       }
 
-  tsconfck@3.0.3:
-    resolution:
-      {
-        integrity: sha512-4t0noZX9t6GcPTfBAbIbbIU4pfpCwh0ueq3S4O/5qXI1VwK1outmxhe9dOiEWqMz3MW2LKgDTpqWV+37IWuVbA==,
-      }
-    engines: { node: ^18 || >=20 }
-    deprecated: unmaintained
-    hasBin: true
-    peerDependencies:
-      typescript: ^5.0.0
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
   tslib@2.6.3:
     resolution:
       {
@@ -4299,10 +4255,10 @@ packages:
         integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==,
       }
 
-  typescript@5.9.3:
+  typescript@6.0.3:
     resolution:
       {
-        integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==,
+        integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==,
       }
     engines: { node: ">=14.17" }
     hasBin: true
@@ -4429,14 +4385,6 @@ packages:
       {
         integrity: sha512-zND7NlS8rJYb/sPqkb13ZvbbUoExdbi4w3SfRrMq6R3FvnLQmmfpajJNITuuYm6AZ5uao9vy4BAos3EXBPf2rg==,
       }
-
-  vite-tsconfig-paths@6.1.1:
-    resolution:
-      {
-        integrity: sha512-2cihq7zliibCCZ8P9cKJrQBkfgdvcFkOOc3Y02o3GWUDLgqjWsZudaoiuOwO/gzTzy17cS5F7ZPo4bsnS4DGkg==,
-      }
-    peerDependencies:
-      vite: "*"
 
   vite@5.4.21:
     resolution:
@@ -5447,24 +5395,24 @@ snapshots:
       "@unhead/schema": 1.9.16
       "@unhead/shared": 1.9.16
 
-  "@unhead/vue@1.9.16(vue@3.5.44(typescript@5.9.3))":
+  "@unhead/vue@1.9.16(vue@3.5.44(typescript@6.0.3))":
     dependencies:
       "@unhead/schema": 1.9.16
       "@unhead/shared": 1.9.16
       hookable: 5.5.3
       unhead: 1.9.16
-      vue: 3.5.44(typescript@5.9.3)
+      vue: 3.5.44(typescript@6.0.3)
 
-  "@vitejs/plugin-vue@5.2.4(vite@5.4.21(@types/node@22.20.5)(lightningcss@1.33.0))(vue@3.5.44(typescript@5.9.3))":
+  "@vitejs/plugin-vue@5.2.4(vite@5.4.21(@types/node@22.20.5)(lightningcss@1.33.0))(vue@3.5.44(typescript@6.0.3))":
     dependencies:
       vite: 5.4.21(@types/node@22.20.5)(lightningcss@1.33.0)
-      vue: 3.5.44(typescript@5.9.3)
+      vue: 3.5.44(typescript@6.0.3)
 
-  "@vitejs/plugin-vue@6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@5.9.3))":
+  "@vitejs/plugin-vue@6.0.10(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5))(vue@3.5.44(typescript@6.0.3))":
     dependencies:
       "@rolldown/pluginutils": 1.0.1
       vite: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
-      vue: 3.5.44(typescript@5.9.3)
+      vue: 3.5.44(typescript@6.0.3)
 
   "@volar/language-core@2.4.28":
     dependencies:
@@ -5472,13 +5420,13 @@ snapshots:
 
   "@volar/source-map@2.4.28": {}
 
-  "@volar/typescript@2.4.28(typescript@5.9.3)":
+  "@volar/typescript@2.4.28(typescript@6.0.3)":
     dependencies:
       "@volar/language-core": 2.4.28
       path-browserify: 1.0.1
       vscode-uri: 3.0.8
     optionalDependencies:
-      typescript: 5.9.3
+      typescript: 6.0.3
 
   "@vue/compiler-core@3.5.44":
     dependencies:
@@ -5564,20 +5512,20 @@ snapshots:
 
   "@vue/shared@3.5.44": {}
 
-  "@vueuse/core@12.8.2(typescript@5.9.3)":
+  "@vueuse/core@12.8.2(typescript@6.0.3)":
     dependencies:
       "@types/web-bluetooth": 0.0.21
       "@vueuse/metadata": 12.8.2
-      "@vueuse/shared": 12.8.2(typescript@5.9.3)
-      vue: 3.5.44(typescript@5.9.3)
+      "@vueuse/shared": 12.8.2(typescript@6.0.3)
+      vue: 3.5.44(typescript@6.0.3)
     transitivePeerDependencies:
       - typescript
 
-  "@vueuse/integrations@12.8.2(focus-trap@7.8.0)(typescript@5.9.3)":
+  "@vueuse/integrations@12.8.2(focus-trap@7.8.0)(typescript@6.0.3)":
     dependencies:
-      "@vueuse/core": 12.8.2(typescript@5.9.3)
-      "@vueuse/shared": 12.8.2(typescript@5.9.3)
-      vue: 3.5.44(typescript@5.9.3)
+      "@vueuse/core": 12.8.2(typescript@6.0.3)
+      "@vueuse/shared": 12.8.2(typescript@6.0.3)
+      vue: 3.5.44(typescript@6.0.3)
     optionalDependencies:
       focus-trap: 7.8.0
     transitivePeerDependencies:
@@ -5585,9 +5533,9 @@ snapshots:
 
   "@vueuse/metadata@12.8.2": {}
 
-  "@vueuse/shared@12.8.2(typescript@5.9.3)":
+  "@vueuse/shared@12.8.2(typescript@6.0.3)":
     dependencies:
-      vue: 3.5.44(typescript@5.9.3)
+      vue: 3.5.44(typescript@6.0.3)
     transitivePeerDependencies:
       - typescript
 
@@ -5876,8 +5824,6 @@ snapshots:
       is-glob: 4.0.3
 
   glob-to-regexp@0.4.1: {}
-
-  globrex@0.1.2: {}
 
   gray-matter@4.0.3:
     dependencies:
@@ -6795,15 +6741,11 @@ snapshots:
 
   trough@2.2.0: {}
 
-  tsconfck@3.0.3(typescript@5.9.3):
-    optionalDependencies:
-      typescript: 5.9.3
-
   tslib@2.6.3: {}
 
   tslib@2.8.1: {}
 
-  typescript@5.9.3: {}
+  typescript@6.0.3: {}
 
   uc.micro@2.1.0: {}
 
@@ -6913,16 +6855,6 @@ snapshots:
       unist-util-stringify-position: 4.0.0
       vfile-message: 4.0.2
 
-  vite-tsconfig-paths@6.1.1(typescript@5.9.3)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)):
-    dependencies:
-      debug: 4.3.5
-      globrex: 0.1.2
-      tsconfck: 3.0.3(typescript@5.9.3)
-      vite: 8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(yaml@2.4.5)
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
-
   vite@5.4.21(@types/node@22.20.5)(lightningcss@1.33.0):
     dependencies:
       esbuild: 0.21.5
@@ -6946,7 +6878,7 @@ snapshots:
       fsevents: 2.3.3
       yaml: 2.4.5
 
-  vitepress@1.6.4(@algolia/client-search@5.60.0)(@types/node@22.20.5)(lightningcss@1.33.0)(postcss@8.5.30)(search-insights@2.15.0)(typescript@5.9.3):
+  vitepress@1.6.4(@algolia/client-search@5.60.0)(@types/node@22.20.5)(lightningcss@1.33.0)(postcss@8.5.30)(search-insights@2.15.0)(typescript@6.0.3):
     dependencies:
       "@docsearch/css": 3.8.2
       "@docsearch/js": 3.8.2(@algolia/client-search@5.60.0)(search-insights@2.15.0)
@@ -6955,17 +6887,17 @@ snapshots:
       "@shikijs/transformers": 2.5.0
       "@shikijs/types": 2.5.0
       "@types/markdown-it": 14.1.2
-      "@vitejs/plugin-vue": 5.2.4(vite@5.4.21(@types/node@22.20.5)(lightningcss@1.33.0))(vue@3.5.44(typescript@5.9.3))
+      "@vitejs/plugin-vue": 5.2.4(vite@5.4.21(@types/node@22.20.5)(lightningcss@1.33.0))(vue@3.5.44(typescript@6.0.3))
       "@vue/devtools-api": 7.7.10
       "@vue/shared": 3.5.44
-      "@vueuse/core": 12.8.2(typescript@5.9.3)
-      "@vueuse/integrations": 12.8.2(focus-trap@7.8.0)(typescript@5.9.3)
+      "@vueuse/core": 12.8.2(typescript@6.0.3)
+      "@vueuse/integrations": 12.8.2(focus-trap@7.8.0)(typescript@6.0.3)
       focus-trap: 7.8.0
       mark.js: 8.11.1
       minisearch: 7.2.0
       shiki: 2.5.0
       vite: 5.4.21(@types/node@22.20.5)(lightningcss@1.33.0)
-      vue: 3.5.44(typescript@5.9.3)
+      vue: 3.5.44(typescript@6.0.3)
     optionalDependencies:
       postcss: 8.5.30
     transitivePeerDependencies:
@@ -6997,18 +6929,18 @@ snapshots:
 
   vscode-uri@3.0.8: {}
 
-  vue-router@4.6.4(vue@3.5.44(typescript@5.9.3)):
+  vue-router@4.6.4(vue@3.5.44(typescript@6.0.3)):
     dependencies:
       "@vue/devtools-api": 6.6.4
-      vue: 3.5.44(typescript@5.9.3)
+      vue: 3.5.44(typescript@6.0.3)
 
-  vue-tsc@3.3.13(typescript@5.9.3):
+  vue-tsc@3.3.13(typescript@6.0.3):
     dependencies:
-      "@volar/typescript": 2.4.28(typescript@5.9.3)
+      "@volar/typescript": 2.4.28(typescript@6.0.3)
       "@vue/language-core": 3.3.13
-      typescript: 5.9.3
+      typescript: 6.0.3
 
-  vue@3.5.44(typescript@5.9.3):
+  vue@3.5.44(typescript@6.0.3):
     dependencies:
       "@vue/compiler-dom": 3.5.44
       "@vue/compiler-sfc": 3.5.44
@@ -7016,7 +6948,7 @@ snapshots:
       "@vue/server-renderer": 3.5.44
       "@vue/shared": 3.5.44
     optionalDependencies:
-      typescript: 5.9.3
+      typescript: 6.0.3
 
   web-namespaces@2.0.1: {}
 

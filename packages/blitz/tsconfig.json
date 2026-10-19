@@ -16,7 +16,8 @@
     "verbatimModuleSyntax": true,
     "types": ["vite/client"],
     "rewriteRelativeImportExtensions": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "rootDir": "src"
   },
   "include": ["src/**/*.ts"]
 }

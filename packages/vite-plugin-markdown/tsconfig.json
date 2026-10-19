@@ -15,7 +15,8 @@
     "noUnusedParameters": true,
     "verbatimModuleSyntax": true,
     "rewriteRelativeImportExtensions": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "rootDir": "src"
   },
   "include": ["src/**/*.ts"]
 }
